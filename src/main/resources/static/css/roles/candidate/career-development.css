@@ -1,0 +1,91 @@
+/* Career Development Page Styles */
+
+.career-development-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.career-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.career-suggestions-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.career-suggestions-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-md);
+}
+
+.career-suggestions-list {
+    list-style: none;
+    padding: 0;
+}
+
+.career-suggestion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: var(--light-grey);
+    border-radius: var(--radius-md);
+}
+
+.career-suggestion-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary-green);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.career-suggestion-text {
+    flex: 1;
+    color: var(--dark-grey);
+    line-height: 1.6;
+}
+
+.career-progress-section {
+    margin-top: var(--spacing-xl);
+}
+
+.career-progress-item {
+    margin-bottom: var(--spacing-lg);
+}
+
+.career-progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+    color: var(--dark-grey);
+}
+
+.career-progress-bar {
+    height: 8px;
+    background-color: var(--light-grey);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.career-progress-fill {
+    height: 100%;
+    background-color: var(--primary-green);
+    transition: width 0.3s;
+}
+

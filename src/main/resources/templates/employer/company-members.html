@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thành viên công ty - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1 th:text="${company != null ? 'Thành viên - ' + company.companyName : 'Thành viên công ty'}">Thành viên công ty</h1>
+                <button class="btn btn-primary" onclick="addMember()">+ Thêm thành viên</button>
+            </div>
+            
+            <div class="card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Danh sách thành viên</h2>
+                </div>
+                
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên</th>
+                                <th>Email</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tham gia</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="member : ${companyMembers}">
+                                <td th:text="${member.user != null ? member.user.name : 'N/A'}">Member Name</td>
+                                <td th:text="${member.user != null ? member.user.email : 'N/A'}">email@example.com</td>
+                                <td>
+                                    <span class="badge badge-info" th:text="${member.roleInCompany != null ? member.roleInCompany : 'N/A'}">Role</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge" 
+                                          th:classappend="${member.status != null and member.status == 'active' ? 'approved' : 'pending'}"
+                                          th:text="${member.status != null ? member.status : 'N/A'}">Status</span>
+                                </td>
+                                <td th:text="${member.joinedAt != null ? #temporals.format(member.joinedAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
+                                <td>
+                                    <div class="action-cell">
+                                        <button class="btn-icon edit" onclick="editMember(/*[[${member.id}]]*/)" title="Chỉnh sửa">✏️</button>
+                                        <button class="btn-icon delete" onclick="removeMember(/*[[${member.id}]]*/)" title="Xóa">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${companyMembers == null or companyMembers.isEmpty()}">
+                                <td colspan="6" class="empty-state">
+                                    <div class="empty-state-icon">👥</div>
+                                    <p class="empty-state-message">Chưa có thành viên nào</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        const companyId = /*[[${company != null ? company.id : null}]]*/ null;
+        
+        function addMember() {
+            if (companyId) {
+                window.location.href = '/employer/companies/' + companyId + '/members/add';
+            }
+        }
+        
+        function editMember(memberId) {
+            if (companyId) {
+                window.location.href = '/employer/companies/' + companyId + '/members/' + memberId + '/edit';
+            }
+        }
+        
+        async function removeMember(memberId) {
+            if (confirm('Bạn có chắc chắn muốn xóa thành viên này?')) {
+                try {
+                    const response = await api.delete('/api/company-members/' + memberId);
+                    if (response && response.success) {
+                        showToast('Xóa thành viên thành công', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showToast('Lỗi khi xóa thành viên', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

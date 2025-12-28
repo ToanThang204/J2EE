@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo CV - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/roles/candidate/cv.css}" rel="stylesheet">
+    <link th:href="@{/css/forms.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1>Tạo CV mới</h1>
+                <a href="/candidate/cv-index" class="btn btn-secondary">Quay lại</a>
+            </div>
+            
+            <div class="card">
+                <form id="cvForm" class="form-layout">
+                    <div class="form-group">
+                        <label class="form-label">Tiêu đề CV <span class="required-indicator">*</span></label>
+                        <input type="text" class="form-input" id="title" required placeholder="VD: CV Frontend Developer">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Mục tiêu nghề nghiệp</label>
+                        <textarea class="form-input" id="objective" rows="5" placeholder="Mô tả mục tiêu nghề nghiệp của bạn..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Kinh nghiệm</label>
+                        <textarea class="form-input" id="experience" rows="10" placeholder="Mô tả kinh nghiệm làm việc của bạn..."></textarea>
+                        <small style="color: var(--medium-grey);">Bạn có thể sử dụng HTML để định dạng</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Học vấn</label>
+                        <textarea class="form-input" id="education" rows="8" placeholder="Mô tả trình độ học vấn của bạn..."></textarea>
+                        <small style="color: var(--medium-grey);">Bạn có thể sử dụng HTML để định dạng</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Kỹ năng</label>
+                        <textarea class="form-input" id="skills" rows="6" placeholder="Liệt kê các kỹ năng của bạn..."></textarea>
+                        <small style="color: var(--medium-grey);">Bạn có thể sử dụng HTML để định dạng</small>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Lưu CV</button>
+                        <button type="button" class="btn btn-secondary" onclick="previewCV()">Xem trước</button>
+                        <a href="/candidate/cv-index" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/candidate/cv-builder.js}"></script>
+</body>
+</html>
+

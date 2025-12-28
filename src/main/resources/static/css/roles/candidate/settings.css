@@ -1,0 +1,99 @@
+/* Candidate Settings Styles */
+
+.settings-page-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.settings-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border-grey);
+    margin-bottom: var(--spacing-lg);
+}
+
+.settings-tab {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--medium-grey);
+    transition: all 0.2s;
+    margin-bottom: -2px;
+}
+
+.settings-tab:hover {
+    color: var(--dark-grey);
+}
+
+.settings-tab.active {
+    color: var(--primary-green);
+    border-bottom-color: var(--primary-green);
+}
+
+.settings-tab-content {
+    display: none;
+}
+
+.settings-tab-content.active {
+    display: block;
+}
+
+.settings-section {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.settings-section-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-grey);
+}
+
+.settings-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.settings-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.settings-checkbox-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.settings-checkbox-item label {
+    cursor: pointer;
+    color: var(--dark-grey);
+}
+
+.danger-zone {
+    border: 2px solid var(--red);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.danger-zone-title {
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+}
+
+.danger-zone-description {
+    color: var(--medium-grey);
+    margin-bottom: var(--spacing-lg);
+}
+

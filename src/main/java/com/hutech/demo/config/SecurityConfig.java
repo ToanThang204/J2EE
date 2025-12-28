@@ -42,14 +42,29 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Public view routes
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/register",
+                                "/forgot-password",
+                                "/reset-password",
+                                "/jobs",
+                                "/jobs/**",
+                                "/companies/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/error"
+                        ).permitAll()
+                        
+                        // Public API endpoints
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/public/**",
                                 "/api/payment/webhook",
                                 "/api/categories",
-                                "/api/categories/**",
-                                "/error"
+                                "/api/categories/**"
                         ).permitAll()
                         
                         // Admin endpoints

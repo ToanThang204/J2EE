@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${category != null ? category.name + ' - WebCV' : 'Việc làm theo danh mục - WebCV'}">Việc làm theo danh mục - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/cards.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
+        <div class="page-header">
+            <h1 th:text="${category != null ? 'Việc làm - ' + category.name : 'Việc làm theo danh mục'}">Việc làm theo danh mục</h1>
+        </div>
+        
+        <div th:if="${category != null and category.description != null}" class="card" style="margin-bottom: var(--spacing-lg);">
+            <p th:text="${category.description}">Category description</p>
+        </div>
+        
+        <div class="jobs-grid" th:if="${jobs != null and !jobs.isEmpty()}">
+            <div th:each="job : ${jobs}" class="job-card" th:onclick="'window.location.href=\'/jobs/' + ${job.id} + '\''">
+                <div class="job-card-header">
+                    <div class="company-logo-small" th:text="${job.company != null ? job.company.companyName.substring(0, 2).toUpperCase() : 'CO'}">CO</div>
+                    <div class="company-name-small" th:text="${job.company != null ? job.company.companyName : 'Company'}">Company Name</div>
+                </div>
+                <h3 class="job-title" th:text="${job.title}">Job Title</h3>
+                <div class="job-meta">
+                    <div class="job-meta-item">
+                        <span>📍</span>
+                        <span th:text="${job.location != null ? job.location : 'N/A'}">Location</span>
+                    </div>
+                </div>
+                <div class="job-footer">
+                    <span class="salary-badge" th:text="${job.salaryRange != null ? job.salaryRange : 'Cạnh tranh'}">Salary</span>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${jobs == null or jobs.isEmpty()}" class="empty-state">
+            <div class="empty-state-icon">💼</div>
+            <h3 class="empty-state-title">Không có việc làm nào trong danh mục này</h3>
+            <p class="empty-state-message">Hãy quay lại sau để xem các cơ hội việc làm mới!</p>
+            <a th:href="@{/jobs}" class="btn btn-primary">Xem tất cả việc làm</a>
+        </div>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+</body>
+</html>
+

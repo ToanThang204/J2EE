@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="chat-widget" class="chat-widget" id="chatWidget" style="display: none;">
+        <div class="chat-header" style="background-color: var(--primary-green); color: var(--white); padding: var(--spacing-md); border-radius: var(--radius-md) var(--radius-md) 0 0; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: var(--font-size-lg);">Chat</h3>
+            <button onclick="toggleChat()" style="background: none; border: none; color: var(--white); font-size: var(--font-size-xl); cursor: pointer;">×</button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages" style="height: 400px; overflow-y: auto; padding: var(--spacing-md); background-color: var(--light-grey);">
+            <div class="empty-state" style="padding: var(--spacing-lg);">
+                <p style="color: var(--medium-grey); text-align: center;">Chưa có tin nhắn nào</p>
+            </div>
+        </div>
+        
+        <div class="chat-input" style="padding: var(--spacing-md); background-color: var(--white); border-top: 1px solid var(--border-grey); border-radius: 0 0 var(--radius-md) var(--radius-md);">
+            <form id="chatForm" style="display: flex; gap: var(--spacing-sm);">
+                <input type="text" 
+                       id="messageInput" 
+                       class="form-input" 
+                       placeholder="Nhập tin nhắn..." 
+                       style="flex: 1;"
+                       required>
+                <button type="submit" class="btn btn-primary">Gửi</button>
+            </form>
+        </div>
+    </div>
+    
+    <button class="chat-toggle-btn" 
+            onclick="toggleChat()" 
+            style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background-color: var(--primary-green); color: var(--white); border: none; cursor: pointer; box-shadow: var(--shadow-lg); font-size: var(--font-size-xl); z-index: 999;">
+        💬
+    </button>
+    
+    <script>
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            if (widget) {
+                widget.style.display = widget.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+        
+        document.getElementById('chatForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            try {
+                const conversationId = /*[[${conversationId}]]*/ null;
+                if (!conversationId) {
+                    showToast('Vui lòng chọn cuộc trò chuyện', 'error');
+                    return;
+                }
+                
+                const response = await api.post('/api/chat/messages', {
+                    conversationId: conversationId,
+                    content: message
+                });
+                
+                if (response && response.success) {
+                    messageInput.value = '';
+                    loadMessages();
+                }
+            } catch (error) {
+                showToast('Lỗi khi gửi tin nhắn', 'error');
+            }
+        });
+        
+        async function loadMessages() {
+            const conversationId = /*[[${conversationId}]]*/ null;
+            if (!conversationId) return;
+            
+            try {
+                const response = await api.get('/api/chat/conversations/' + conversationId + '/messages');
+                if (response && response.success && response.data) {
+                    displayMessages(response.data);
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+        
+        function displayMessages(messages) {
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+            
+            container.innerHTML = messages.map(msg => `
+                <div style="margin-bottom: var(--spacing-md); ${msg.senderId === currentUserId ? 'text-align: right;' : ''}">
+                    <div style="display: inline-block; background-color: ${msg.senderId === currentUserId ? 'var(--primary-green)' : 'var(--white)'}; color: ${msg.senderId === currentUserId ? 'var(--white)' : 'var(--dark-grey)'}; padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-md); max-width: 70%;">
+                        <p style="margin: 0;">${msg.content || ''}</p>
+                        <small style="opacity: 0.7; font-size: 11px;">${msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString('vi-VN') : ''}</small>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // Load messages on widget open
+        document.getElementById('chatWidget')?.addEventListener('click', function() {
+            loadMessages();
+        });
+        
+        // Auto refresh messages every 3 seconds when chat is open
+        setInterval(() => {
+            if (document.getElementById('chatWidget')?.style.display !== 'none') {
+                loadMessages();
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
+

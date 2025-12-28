@@ -1,0 +1,63 @@
+/* Candidate Dashboard Styles */
+
+.candidate-dashboard-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.candidate-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.candidate-quick-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.quick-action-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: var(--spacing-md);
+    background-color: var(--white);
+    border: 2px solid var(--border-grey);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    text-decoration: none;
+    color: var(--dark-grey);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.quick-action-btn:hover {
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.quick-action-icon {
+    font-size: var(--font-size-2xl);
+}
+
+.quick-action-text {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+}
+
+.recent-applications-section {
+    margin-top: var(--spacing-xl);
+}
+
+.recent-applications-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+

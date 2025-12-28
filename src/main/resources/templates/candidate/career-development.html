@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phát triển sự nghiệp - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1>Phát triển sự nghiệp</h1>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">Thống kê ứng tuyển</h2>
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-card-icon blue">📋</div>
+                        <div class="summary-card-content">
+                            <div class="summary-card-number" th:text="${totalApplications != null ? totalApplications : 0}">0</div>
+                            <div class="summary-card-label">Tổng đơn ứng tuyển</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="summary-card-icon green">✅</div>
+                        <div class="summary-card-content">
+                            <div class="summary-card-number" th:text="${approvedApplications != null ? approvedApplications : 0}">0</div>
+                            <div class="summary-card-label">Đơn được duyệt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="summary-card-icon orange">⏳</div>
+                        <div class="summary-card-content">
+                            <div class="summary-card-number" th:text="${pendingApplications != null ? pendingApplications : 0}">0</div>
+                            <div class="summary-card-label">Đơn chờ duyệt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: var(--spacing-lg);">
+                <h2 class="section-title">Gợi ý phát triển</h2>
+                <div class="alert alert-info">
+                    <p>Dựa trên hồ sơ và kinh nghiệm của bạn, chúng tôi gợi ý:</p>
+                    <ul style="margin-top: var(--spacing-md); padding-left: var(--spacing-lg);">
+                        <li>Cập nhật CV thường xuyên để tăng cơ hội được nhận</li>
+                        <li>Ứng tuyển vào các vị trí phù hợp với kỹ năng của bạn</li>
+                        <li>Tham gia các khóa học để nâng cao kỹ năng</li>
+                        <li>Xây dựng mạng lưới kết nối với các chuyên gia trong ngành</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+</body>
+</html>
+

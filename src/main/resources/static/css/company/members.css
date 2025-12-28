@@ -1,0 +1,77 @@
+/* Company Members Styles */
+
+.members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.member-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.member-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-name {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.member-email {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.member-role {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--light-grey);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    color: var(--dark-grey);
+}
+
+.member-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.invite-member-form {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.invite-member-form h3 {
+    margin-bottom: var(--spacing-lg);
+}
+

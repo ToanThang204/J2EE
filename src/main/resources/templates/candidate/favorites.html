@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Việc làm đã lưu - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/roles/candidate/favorites.css}" rel="stylesheet">
+    <link th:href="@{/css/cards.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1>Việc làm đã lưu</h1>
+            </div>
+            
+            <div th:if="${savedJobs != null and !savedJobs.isEmpty()}">
+                <div th:each="savedJob : ${savedJobs}" class="saved-job-card">
+                    <div class="saved-job-info">
+                        <h3 class="application-card-title" th:text="${savedJob.job != null ? savedJob.job.title : 'N/A'}">Job Title</h3>
+                        <p class="application-card-company" th:text="${savedJob.job != null and savedJob.job.company != null ? savedJob.job.company.companyName : 'N/A'}">Company Name</p>
+                        <span class="application-date" th:text="${savedJob.createdAt != null ? 'Đã lưu: ' + ${#temporals.format(savedJob.createdAt, 'dd-MM-yyyy')} : ''}">Date</span>
+                    </div>
+                    <div class="saved-job-actions">
+                        <a th:href="@{'/jobs/' + ${savedJob.job != null ? savedJob.job.id : ''}}" class="btn btn-primary">Xem chi tiết</a>
+                        <button class="btn btn-secondary" onclick="removeFavorite(/*[[${savedJob.id}]]*/)">Bỏ lưu</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${savedJobs == null or savedJobs.isEmpty()}" class="empty-state">
+                <div class="empty-state-icon">❤️</div>
+                <h3 class="empty-state-title">Chưa có việc làm nào được lưu</h3>
+                <p class="empty-state-message">Lưu các việc làm bạn quan tâm để xem lại sau!</p>
+                <a th:href="@{/jobs}" class="btn btn-primary">Tìm việc làm ngay</a>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/candidate/favorites.js}"></script>
+</body>
+</html>
+

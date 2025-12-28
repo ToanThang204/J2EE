@@ -1,0 +1,109 @@
+/* Job Detail Page Styles */
+
+.job-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-grey);
+}
+
+.job-detail-title-section h1 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.job-detail-company {
+    color: var(--medium-grey);
+    font-size: var(--font-size-lg);
+}
+
+.job-detail-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.job-detail-content {
+    line-height: 1.8;
+}
+
+.job-detail-content h3 {
+    color: var(--dark-grey);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--border-grey);
+}
+
+.job-detail-content p {
+    color: var(--medium-grey);
+    margin-bottom: var(--spacing-lg);
+}
+
+.job-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background-color: var(--light-grey);
+    border-radius: var(--radius-md);
+}
+
+.job-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.job-info-item strong {
+    color: var(--dark-grey);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.job-info-item p {
+    color: var(--medium-grey);
+    margin: 0;
+}
+
+.job-detail-footer {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-grey);
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.job-apply-section {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-top: var(--spacing-xl);
+    position: sticky;
+    bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .job-detail-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .job-detail-actions {
+        width: 100%;
+    }
+    
+    .job-detail-actions .btn {
+        flex: 1;
+    }
+    
+    .job-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

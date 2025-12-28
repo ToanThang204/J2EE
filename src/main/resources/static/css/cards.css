@@ -1,0 +1,257 @@
+/* Job Cards and Other Card Components */
+
+.jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.job-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.job-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.job-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.company-logo-small {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-grey);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-grey);
+    font-weight: 700;
+    color: var(--dark-grey);
+}
+
+.company-name-small {
+    font-weight: 600;
+    color: var(--dark-grey);
+    font-size: var(--font-size-sm);
+}
+
+.job-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-md);
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+
+.job-meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.job-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-grey);
+}
+
+.salary-badge {
+    background-color: var(--primary-green);
+    color: var(--white);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.ai-tag {
+    background-color: var(--primary-green);
+    color: var(--white);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.favorite-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: var(--font-size-lg);
+}
+
+.favorite-icon:hover {
+    background-color: var(--light-grey);
+}
+
+.favorite-icon.active {
+    color: var(--red);
+}
+
+/* Company Cards */
+.company-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.company-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Application Cards */
+.application-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Resume Cards */
+.resume-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.resume-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.resume-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+}
+
+.resume-card-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.resume-card-meta {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+
+.resume-card-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* Saved Job Cards */
+.saved-job-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.saved-job-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.saved-job-info {
+    flex: 1;
+}
+
+.saved-job-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* Application Status Colors */
+.status-badge.pending {
+    background-color: #FEF3C7;
+    color: var(--orange);
+}
+
+.status-badge.reviewed {
+    background-color: #DBEAFE;
+    color: var(--blue);
+}
+
+.status-badge.interview {
+    background-color: #E0E7FF;
+    color: #6366F1;
+}
+
+.status-badge.rejected {
+    background-color: #FEE2E2;
+    color: var(--red);
+}
+
+.status-badge.hired {
+    background-color: #D1FAE5;
+    color: var(--primary-green);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .saved-job-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+    
+    .saved-job-actions {
+        width: 100%;
+    }
+    
+    .saved-job-actions .btn {
+        flex: 1;
+    }
+}
+

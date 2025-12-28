@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <aside th:fragment="sidebar" class="sidebar" th:classappend="${currentUser != null and currentUser.role.name() == 'ADMIN' ? 'sidebar-dark' : 'sidebar-light'}">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">WebCV</span>
+            <span class="sidebar-subtitle" 
+                  th:text="${currentUser != null and currentUser.role.name() == 'ADMIN' ? 'Admin Dashboard' : (currentUser.role.name() == 'EMPLOYER' ? 'Employer Dashboard' : 'Candidate Dashboard')}">
+                Dashboard
+            </span>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <!-- Admin Sidebar -->
+            <th:block th:if="${currentUser != null and currentUser.role.name() == 'ADMIN'}">
+                <a th:href="@{/admin/dashboard}" class="nav-item" th:classappend="${#httpServletRequest.requestURI == '/admin/dashboard' ? 'active' : ''}">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a th:href="@{/admin/users}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/admin/users') ? 'active' : ''}">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-text">Quản lý User</span>
+                </a>
+                <a th:href="@{/admin/categories}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/admin/categories') ? 'active' : ''}">
+                    <span class="nav-icon">💎</span>
+                    <span class="nav-text">Danh mục ngành nghề</span>
+                </a>
+            </th:block>
+            
+            <!-- Employer Sidebar -->
+            <th:block th:if="${currentUser != null and currentUser.role.name() == 'EMPLOYER'}">
+                <a th:href="@{/employer/company/info}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/employer/company/info') ? 'active' : ''}">
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-text">Thông tin công ty</span>
+                </a>
+                <a th:href="@{/employer/profile}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/employer/profile') ? 'active' : ''}">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-text">Thông tin cá nhân</span>
+                </a>
+                <a th:href="@{/employer/jobs}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/employer/jobs') ? 'active' : ''}">
+                    <span class="nav-icon">💼</span>
+                    <span class="nav-text">Quản lý việc làm</span>
+                </a>
+                <a th:href="@{/employer/applications}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/employer/applications') ? 'active' : ''}">
+                    <span class="nav-icon">📄</span>
+                    <span class="nav-text">Quản lý ứng tuyển</span>
+                </a>
+                <a th:href="@{/employer/payment}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/employer/payment') ? 'active' : ''}">
+                    <span class="nav-icon">💰</span>
+                    <span class="nav-text">Thanh toán</span>
+                </a>
+            </th:block>
+            
+            <!-- Candidate Sidebar -->
+            <th:block th:if="${currentUser != null and currentUser.role.name() == 'CANDIDATE'}">
+                <a th:href="@{/candidate/dashboard}" class="nav-item" th:classappend="${#httpServletRequest.requestURI == '/candidate/dashboard' ? 'active' : ''}">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a th:href="@{/candidate/profile}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/candidate/profile') ? 'active' : ''}">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-text">Hồ sơ</span>
+                </a>
+                <a th:href="@{/candidate/resumes}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/candidate/resumes') ? 'active' : ''}">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">CV của tôi</span>
+                </a>
+                <a th:href="@{/candidate/applications}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/candidate/applications') ? 'active' : ''}">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">Đơn ứng tuyển</span>
+                </a>
+                <a th:href="@{/candidate/saved-jobs}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.contains('/candidate/saved-jobs') ? 'active' : ''}">
+                    <span class="nav-icon">❤️</span>
+                    <span class="nav-text">Việc làm đã lưu</span>
+                </a>
+            </th:block>
+        </nav>
+    </aside>
+</body>
+</html>
+

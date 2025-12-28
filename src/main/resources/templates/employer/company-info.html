@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin công ty - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/company/info.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="company-info-card">
+                <div class="company-info-header">
+                    <div>
+                        <h1 class="company-info-title">Thông tin công ty</h1>
+                        <p class="company-info-subtitle">Quản lý và cập nhật thông tin công ty của bạn</p>
+                    </div>
+                    <button class="btn-edit" onclick="editCompany()">
+                        <span>✏️</span>
+                        Chỉnh sửa thông tin
+                    </button>
+                </div>
+                
+                <div class="company-logo-section" th:if="${company != null}">
+                    <div class="company-logo">
+                        <span style="font-size: var(--font-size-2xl); font-weight: 700;" 
+                              th:text="${company.name != null ? company.name.substring(0, 2).toUpperCase() : 'CO'}">
+                            CO
+                        </span>
+                    </div>
+                    <h2 class="company-name" th:text="${company.name}">Company Name</h2>
+                </div>
+                
+                <div class="info-section" th:if="${company != null and company.description != null}">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <span>i</span>
+                        </div>
+                        <h3 class="section-title">Về công ty</h3>
+                    </div>
+                    <div class="section-content">
+                        <p class="about-company-text" th:text="${company.description}">
+                            Company description
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="info-section" th:if="${company != null}">
+                    <div class="section-header">
+                        <div class="section-icon square">
+                            <span>=</span>
+                        </div>
+                        <h3 class="section-title">Thông tin liên hệ</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="contact-info-grid">
+                            <div class="contact-item">
+                                <div class="contact-icon">📍</div>
+                                <div>
+                                    <div class="contact-label">ĐỊA CHỈ</div>
+                                    <div class="contact-value" th:text="${company.address != null ? company.address : 'Chưa cập nhật'}">
+                                        Address
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">📧</div>
+                                <div>
+                                    <div class="contact-label">EMAIL</div>
+                                    <div class="contact-value" th:text="${company.email != null ? company.email : 'Chưa cập nhật'}">
+                                        Email
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">📞</div>
+                                <div>
+                                    <div class="contact-label">SỐ ĐIỆN THOẠI</div>
+                                    <div class="contact-value" th:text="${company.phone != null ? company.phone : 'Chưa cập nhật'}">
+                                        Phone
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">🌐</div>
+                                <div>
+                                    <div class="contact-label">WEBSITE</div>
+                                    <div class="contact-value">
+                                        <a th:href="${company.website != null ? company.website : '#'}" 
+                                           th:text="${company.website != null ? company.website : 'Chưa cập nhật'}"
+                                           target="_blank">Website</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div th:if="${company == null}" class="empty-state">
+                    <div class="empty-state-icon">🏢</div>
+                    <h3 class="empty-state-title">Bạn chưa có công ty</h3>
+                    <p class="empty-state-message">Tạo công ty để bắt đầu đăng tin tuyển dụng và quản lý ứng viên.</p>
+                    <a th:href="@{/employer/companies/create}" class="btn btn-primary">Tạo công ty ngay</a>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/company/info.js}"></script>
+</body>
+</html>
+

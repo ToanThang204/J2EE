@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt hệ thống - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/forms.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="admin-header">
+                <h1>Cài đặt hệ thống</h1>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">Cài đặt chung</h2>
+                <form id="settingsForm" class="form-layout">
+                    <div class="form-group">
+                        <label class="form-label">Tên hệ thống</label>
+                        <input type="text" class="form-input" id="systemName" value="WebCV" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email liên hệ</label>
+                        <input type="email" class="form-input" id="contactEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại liên hệ</label>
+                        <input type="tel" class="form-input" id="contactPhone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Địa chỉ</label>
+                        <textarea class="form-input" id="address" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Mô tả hệ thống</label>
+                        <textarea class="form-input" id="description" rows="5"></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Đặt lại</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card" style="margin-top: var(--spacing-lg);">
+                <h2 class="section-title">Cài đặt thanh toán</h2>
+                <form id="paymentSettingsForm" class="form-layout">
+                    <div class="form-group">
+                        <label class="form-label">Sepay API Key</label>
+                        <input type="text" class="form-input" id="sepayApiKey" placeholder="Nhập API key">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Sepay Secret Key</label>
+                        <input type="password" class="form-input" id="sepaySecretKey" placeholder="Nhập secret key">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                systemName: document.getElementById('systemName').value,
+                contactEmail: document.getElementById('contactEmail').value,
+                contactPhone: document.getElementById('contactPhone').value,
+                address: document.getElementById('address').value,
+                description: document.getElementById('description').value
+            };
+            
+            try {
+                const response = await api.put('/api/admin/settings', data);
+                if (response && response.success) {
+                    showToast('Lưu cài đặt thành công', 'success');
+                }
+            } catch (error) {
+                showToast('Lỗi khi lưu cài đặt', 'error');
+            }
+        });
+        
+        document.getElementById('paymentSettingsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                sepayApiKey: document.getElementById('sepayApiKey').value,
+                sepaySecretKey: document.getElementById('sepaySecretKey').value
+            };
+            
+            try {
+                const response = await api.put('/api/admin/settings/payment', data);
+                if (response && response.success) {
+                    showToast('Lưu cài đặt thanh toán thành công', 'success');
+                }
+            } catch (error) {
+                showToast('Lỗi khi lưu cài đặt thanh toán', 'error');
+            }
+        });
+        
+        function resetForm() {
+            document.getElementById('settingsForm').reset();
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý công ty - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="admin-header">
+                <h1>Quản lý công ty</h1>
+                <div class="action-buttons">
+                    <a href="/admin/companies/pending" class="btn btn-secondary">Công ty chờ duyệt</a>
+                    <a href="/admin/companies/new" class="btn btn-secondary">Công ty mới</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Tất cả công ty</h2>
+                    <div class="action-buttons">
+                        <input type="text" id="searchInput" class="form-input" placeholder="Tìm kiếm..." style="max-width: 300px;">
+                        <button class="btn btn-primary" onclick="searchCompanies()">Tìm kiếm</button>
+                    </div>
+                </div>
+                
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên công ty</th>
+                                <th>Email</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="company : ${companies}">
+                                <td th:text="${company.id}">1</td>
+                                <td th:text="${company.companyName}">Company Name</td>
+                                <td th:text="${company.email != null ? company.email : 'N/A'}">email@example.com</td>
+                                <td>
+                                    <span class="status-badge" 
+                                          th:classappend="${company.status != null and company.status.name() == 'APPROVED' ? 'approved' : 'pending'}"
+                                          th:text="${company.status != null ? company.status.name() : 'N/A'}">APPROVED</span>
+                                </td>
+                                <td th:text="${company.createdAt != null ? #temporals.format(company.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
+                                <td>
+                                    <div class="action-cell">
+                                        <button class="btn-icon view" onclick="viewCompany(/*[[${company.id}]]*/)" title="Xem chi tiết">👁️</button>
+                                        <button class="btn-icon edit" onclick="editCompany(/*[[${company.id}]]*/)" title="Chỉnh sửa">✏️</button>
+                                        <button class="btn-icon delete" onclick="deleteCompany(/*[[${company.id}]]*/)" title="Xóa">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${companies == null or companies.isEmpty()}">
+                                <td colspan="6" class="empty-state">
+                                    <div class="empty-state-icon">🏢</div>
+                                    <p class="empty-state-message">Chưa có công ty nào</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        function searchCompanies() {
+            const searchTerm = document.getElementById('searchInput').value;
+            window.location.href = '/admin/companies?search=' + encodeURIComponent(searchTerm);
+        }
+        
+        function viewCompany(companyId) {
+            window.location.href = '/companies/' + companyId;
+        }
+        
+        function editCompany(companyId) {
+            window.location.href = '/admin/companies/' + companyId + '/edit';
+        }
+        
+        async function deleteCompany(companyId) {
+            if (confirm('Bạn có chắc chắn muốn xóa công ty này?')) {
+                try {
+                    const response = await api.delete('/api/admin/companies/' + companyId);
+                    if (response && response.success) {
+                        showToast('Xóa công ty thành công', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showToast('Lỗi khi xóa công ty', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

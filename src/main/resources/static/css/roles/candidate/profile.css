@@ -1,0 +1,73 @@
+/* Candidate Profile Styles */
+
+.candidate-profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-avatar-section {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-avatar-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto var(--spacing-md);
+    border: 3px solid var(--border-grey);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-grey);
+    font-size: var(--font-size-3xl);
+    color: var(--medium-grey);
+}
+
+.profile-info-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-grey);
+}
+
+.profile-info-label {
+    font-weight: 600;
+    color: var(--medium-grey);
+}
+
+.profile-info-value {
+    color: var(--dark-grey);
+}
+
+.profile-skills-section {
+    margin-top: var(--spacing-xl);
+}
+
+.skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.skill-tag {
+    padding: var(--spacing-xs) var(--spacing-md);
+    background-color: var(--light-grey);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    color: var(--dark-grey);
+}
+
+.profile-edit-section {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--border-grey);
+}
+

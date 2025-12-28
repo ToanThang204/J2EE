@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điều khoản sử dụng - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
+        <div class="card">
+            <h1>Điều khoản sử dụng</h1>
+            <p><strong>Cập nhật lần cuối:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy')}">01-01-2024</span></p>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>1. Chấp nhận điều khoản</h2>
+                <p>Bằng việc truy cập và sử dụng WebCV, bạn đồng ý tuân thủ các điều khoản và điều kiện này. Nếu bạn không đồng ý, vui lòng không sử dụng dịch vụ.</p>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>2. Sử dụng dịch vụ</h2>
+                <p>Bạn cam kết sử dụng WebCV một cách hợp pháp và phù hợp với mục đích của dịch vụ. Bạn không được:</p>
+                <ul style="margin-left: var(--spacing-lg); margin-top: var(--spacing-md);">
+                    <li>Sử dụng dịch vụ cho mục đích bất hợp pháp</li>
+                    <li>Đăng tải thông tin sai sự thật hoặc vi phạm quyền của người khác</li>
+                    <li>Can thiệp vào hoạt động bình thường của hệ thống</li>
+                    <li>Truy cập trái phép vào tài khoản của người khác</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>3. Tài khoản người dùng</h2>
+                <p>Bạn chịu trách nhiệm bảo mật thông tin đăng nhập của mình. Bạn phải thông báo ngay cho chúng tôi nếu phát hiện việc sử dụng trái phép tài khoản của bạn.</p>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>4. Nội dung người dùng</h2>
+                <p>Bạn giữ quyền sở hữu đối với nội dung bạn đăng tải lên WebCV. Tuy nhiên, bằng việc đăng tải, bạn cấp cho chúng tôi quyền sử dụng, hiển thị và phân phối nội dung đó trong phạm vi cung cấp dịch vụ.</p>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>5. Quyền sở hữu trí tuệ</h2>
+                <p>Tất cả nội dung trên WebCV, bao gồm logo, thiết kế, văn bản, và phần mềm, đều thuộc quyền sở hữu của chúng tôi hoặc các bên cấp phép và được bảo vệ bởi luật bản quyền.</p>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>6. Miễn trừ trách nhiệm</h2>
+                <p>WebCV được cung cấp "nguyên trạng" và chúng tôi không đảm bảo rằng dịch vụ sẽ luôn hoạt động không gián đoạn hoặc không có lỗi. Chúng tôi không chịu trách nhiệm về bất kỳ thiệt hại nào phát sinh từ việc sử dụng dịch vụ.</p>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>7. Thay đổi điều khoản</h2>
+                <p>Chúng tôi có quyền thay đổi các điều khoản này bất cứ lúc nào. Việc tiếp tục sử dụng dịch vụ sau khi có thay đổi được coi là bạn đã chấp nhận các điều khoản mới.</p>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>8. Liên hệ</h2>
+                <p>Nếu bạn có bất kỳ câu hỏi nào về điều khoản sử dụng, vui lòng liên hệ với chúng tôi qua email: support@webcv.com</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+</body>
+</html>
+

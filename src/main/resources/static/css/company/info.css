@@ -1,0 +1,169 @@
+/* Company Info Page Styles */
+
+.company-info-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.company-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+}
+
+.company-info-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-sm);
+}
+
+.company-info-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--medium-grey);
+}
+
+.btn-edit {
+    background-color: var(--light-blue);
+    color: var(--white);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: background-color 0.2s;
+}
+
+.btn-edit:hover {
+    background-color: var(--blue);
+}
+
+.company-logo-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.company-logo {
+    width: 100px;
+    height: 100px;
+    border: 1px solid var(--border-grey);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+}
+
+.company-name {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--dark-grey);
+}
+
+.info-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.section-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 700;
+}
+
+.section-icon.square {
+    border-radius: var(--radius-md);
+}
+
+.section-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--dark-grey);
+}
+
+.section-content {
+    padding-left: calc(40px + var(--spacing-md));
+}
+
+.about-company-text {
+    border-left: 4px solid #D1FAE5;
+    padding-left: var(--spacing-md);
+    color: var(--medium-grey);
+    line-height: 1.8;
+}
+
+.contact-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+}
+
+.contact-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--primary-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    flex-shrink: 0;
+}
+
+.contact-label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--medium-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.contact-value {
+    color: var(--dark-grey);
+}
+
+.contact-value a {
+    color: var(--primary-green);
+}
+
+.contact-value a:hover {
+    color: var(--secondary-green);
+}
+
+@media (max-width: 768px) {
+    .contact-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .company-info-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+}
+

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/components/login.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Left Panel - Green -->
+        <div class="auth-left-panel">
+            <div class="logo">WebCV</div>
+            <div class="welcome-message">Chào mừng bạn quay trở lại!</div>
+            <ul class="features-list">
+                <li class="feature-item">
+                    <div class="feature-icon">💼</div>
+                    <span>Truy cập hàng nghìn việc làm</span>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <span>Theo dõi ứng tuyển</span>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon">🔔</div>
+                    <span>Nhận thông báo việc làm mới</span>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon">⬆️</div>
+                    <span>Nâng cấp lên nhà tuyển dụng</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Right Panel - White Form -->
+        <div class="auth-right-panel">
+            <div class="auth-form-card">
+                <h1 class="auth-form-title">Đăng nhập</h1>
+                <p class="auth-form-subtitle">Đăng nhập vào tài khoản của bạn</p>
+                
+                <form class="auth-form" id="loginForm" th:action="@{/api/auth/login}" method="post">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               class="form-input" 
+                               placeholder="phamquanghieu100804@gmail.com"
+                               required>
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Mật khẩu</label>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               class="form-input" 
+                               placeholder="••••••••"
+                               required>
+                        <a th:href="@{/forgot-password}" class="forgot-password-link">Quên mật khẩu?</a>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn-auth btn-auth-primary">
+                        Đăng nhập
+                        <span>→</span>
+                    </button>
+                </form>
+                
+                <div class="separator">
+                    <span>hoặc</span>
+                </div>
+                
+                <button type="button" class="btn-auth btn-auth-google" onclick="loginWithGoogle()">
+                    <span>G</span>
+                    Đăng nhập với Google
+                </button>
+                
+                <div class="auth-footer-link">
+                    Chưa có tài khoản? <a th:href="@{/register}">Đăng ký ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/auth.js}"></script>
+</body>
+</html>
+

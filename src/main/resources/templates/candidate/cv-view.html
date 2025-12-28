@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${resume != null ? resume.title + ' - WebCV' : 'Xem CV - WebCV'}">Xem CV - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1 th:text="${resume != null ? resume.title : 'CV'}">CV Title</h1>
+                <div class="action-buttons">
+                    <a th:href="@{'/candidate/resumes/' + ${resume.id} + '/edit'}" class="btn btn-primary">Chỉnh sửa</a>
+                    <button class="btn btn-secondary" onclick="window.print()">In CV</button>
+                    <button class="btn btn-secondary" onclick="downloadPDF()">Tải PDF</button>
+                </div>
+            </div>
+            
+            <div class="card" id="cvContent">
+                <div th:if="${resume != null}">
+                    <div style="margin-bottom: var(--spacing-xl);">
+                        <h2 th:text="${currentUser != null ? currentUser.name : 'Họ và tên'}">Full Name</h2>
+                        <p th:if="${currentUser != null and currentUser.email != null}" th:text="${currentUser.email}">email@example.com</p>
+                        <p th:if="${currentUser != null and currentUser.profile != null and currentUser.profile.phone != null}" th:text="${currentUser.profile.phone}">Phone</p>
+                    </div>
+                    
+                    <div th:if="${resume.objective != null}" style="margin-bottom: var(--spacing-lg);">
+                        <h3>Mục tiêu nghề nghiệp</h3>
+                        <p th:text="${resume.objective}">Objective</p>
+                    </div>
+                    
+                    <div th:if="${resume.experience != null}" style="margin-bottom: var(--spacing-lg);">
+                        <h3>Kinh nghiệm</h3>
+                        <div th:utext="${resume.experience}">Experience</div>
+                    </div>
+                    
+                    <div th:if="${resume.education != null}" style="margin-bottom: var(--spacing-lg);">
+                        <h3>Học vấn</h3>
+                        <div th:utext="${resume.education}">Education</div>
+                    </div>
+                    
+                    <div th:if="${resume.skills != null}" style="margin-bottom: var(--spacing-lg);">
+                        <h3>Kỹ năng</h3>
+                        <div th:utext="${resume.skills}">Skills</div>
+                    </div>
+                </div>
+                
+                <div th:if="${resume == null}" class="empty-state">
+                    <div class="empty-state-icon">📄</div>
+                    <p class="empty-state-message">CV không tồn tại</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        function downloadPDF() {
+            const resumeId = /*[[${resume != null ? resume.id : null}]]*/ null;
+            if (resumeId) {
+                window.location.href = '/api/resumes/' + resumeId + '/pdf';
+            }
+        }
+    </script>
+</body>
+</html>
+

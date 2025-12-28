@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <header th:fragment="header" class="main-header">
+        <div class="header-container">
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="display: none;">☰</button>
+            
+            <!-- Logo -->
+            <div class="header-logo">
+                <a th:href="@{/}">
+                    <span class="logo-text">WebCV</span>
+                </a>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="header-nav" th:if="${currentUser != null}">
+                <a th:href="@{/jobs}" class="nav-link">Tạo CV</a>
+                <a th:href="@{/jobs}" class="nav-link">Công ty</a>
+            </nav>
+            
+            <!-- Right Section -->
+            <div class="header-right">
+                <!-- Notification and Favorite Badges -->
+                <div class="header-badges" th:if="${currentUser != null}">
+                    <div class="header-badge favorite" title="Việc làm đã lưu">
+                        <span>❤️</span>
+                        <span class="badge-count" id="favoriteCount">0</span>
+                    </div>
+                    <div class="header-badge" title="Thông báo" onclick="window.location.href='/notifications'">
+                        <span>🔔</span>
+                        <span class="badge-count" id="notificationCount">0</span>
+                    </div>
+                </div>
+                
+                <!-- Upgrade Button (for candidates) -->
+                <a th:if="${currentUser != null and currentUser.role.name() == 'CANDIDATE'}" 
+                   th:href="@{/employer/dashboard}" 
+                   class="btn-upgrade">
+                    Nâng cấp lên Nhà tuyển dụng
+                </a>
+                
+                <!-- User Profile -->
+                <div class="user-profile" th:if="${currentUser != null}">
+                    <div class="user-avatar">
+                        <span class="avatar-icon">👤</span>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${currentUser.name}">User Name</span>
+                        <span class="user-role" th:text="${currentUser.role.name() == 'CANDIDATE' ? 'Ứng Viên' : (currentUser.role.name() == 'EMPLOYER' ? 'Nhà Tuyển Dụng' : 'Admin')}">Role</span>
+                    </div>
+                    <div class="user-dropdown">
+                        <a th:href="@{/candidate/profile}" th:if="${currentUser.role.name() == 'CANDIDATE'}">Hồ sơ</a>
+                        <a th:href="@{/employer/profile}" th:if="${currentUser.role.name() == 'EMPLOYER'}">Hồ sơ</a>
+                        <a th:href="@{/admin/dashboard}" th:if="${currentUser.role.name() == 'ADMIN'}">Dashboard</a>
+                        <a href="#" onclick="logout(); return false;">Đăng xuất</a>
+                    </div>
+                </div>
+                
+                <!-- Login/Register (if not authenticated) -->
+                <div class="auth-buttons" th:if="${currentUser == null}">
+                    <a th:href="@{/login}" class="btn-login">Đăng nhập</a>
+                    <a th:href="@{/register}" class="btn-register">Đăng ký</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+        </div>
+    </header>
+</body>
+</html>
+

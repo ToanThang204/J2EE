@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${industryContext != null ? 'Chỉnh sửa Industry Context' : 'Tạo Industry Context'} - WebCV">Tạo Industry Context - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/forms.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="admin-header">
+                <h1 th:text="${industryContext != null ? 'Chỉnh sửa Industry Context' : 'Tạo Industry Context'}">Tạo Industry Context</h1>
+                <a href="/admin/industry-contexts" class="btn btn-secondary">Quay lại</a>
+            </div>
+            
+            <div class="card">
+                <form id="industryContextForm" class="form-layout">
+                    <div class="form-group">
+                        <label class="form-label">Tên ngành <span class="required-indicator">*</span></label>
+                        <input type="text" 
+                               class="form-input" 
+                               id="industryName" 
+                               th:value="${industryContext != null ? industryContext.industryName : ''}"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Mô tả <span class="required-indicator">*</span></label>
+                        <textarea class="form-input" 
+                                  id="description" 
+                                  rows="10"
+                                  required
+                                  th:text="${industryContext != null ? industryContext.description : ''}"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Keywords (phân cách bằng dấu phẩy)</label>
+                        <input type="text" 
+                               class="form-input" 
+                               id="keywords"
+                               th:value="${industryContext != null ? industryContext.keywords : ''}"
+                               placeholder="keyword1, keyword2, keyword3">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <a href="/admin/industry-contexts" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        const contextId = /*[[${industryContext != null ? industryContext.id : null}]]*/ null;
+        
+        document.getElementById('industryContextForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                industryName: document.getElementById('industryName').value,
+                description: document.getElementById('description').value,
+                keywords: document.getElementById('keywords').value
+            };
+            
+            try {
+                let response;
+                if (contextId) {
+                    response = await api.put('/api/admin/industry-contexts/' + contextId, data);
+                } else {
+                    response = await api.post('/api/admin/industry-contexts', data);
+                }
+                
+                if (response && response.success) {
+                    showToast(contextId ? 'Cập nhật thành công' : 'Tạo thành công', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin/industry-contexts';
+                    }, 1000);
+                }
+            } catch (error) {
+                showToast('Lỗi khi lưu', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
+

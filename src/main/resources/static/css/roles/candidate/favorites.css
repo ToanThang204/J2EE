@@ -1,0 +1,65 @@
+/* Candidate Favorites/Saved Jobs Styles */
+
+.favorites-page-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.saved-job-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.saved-job-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.saved-job-info {
+    flex: 1;
+}
+
+.saved-job-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.saved-job-company {
+    color: var(--medium-grey);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.saved-job-date {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+
+.saved-job-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+@media (max-width: 768px) {
+    .saved-job-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+    
+    .saved-job-actions {
+        width: 100%;
+    }
+    
+    .saved-job-actions .btn {
+        flex: 1;
+    }
+}
+

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/forms.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1>Thanh toán</h1>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">Tạo thanh toán</h2>
+                <form id="paymentForm" class="form-layout">
+                    <div class="form-group">
+                        <label class="form-label">Công ty</label>
+                        <select class="form-input" id="companyId">
+                            <option value="">Chọn công ty</option>
+                            <option th:each="company : ${companies}" 
+                                    th:value="${company.id}" 
+                                    th:text="${company.companyName}">Company Name</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Số tiền (VND) <span class="required-indicator">*</span></label>
+                        <input type="number" class="form-input" id="amount" required min="1000" step="1000" placeholder="1000000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-input" id="description" rows="3" placeholder="Mô tả thanh toán..."></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Tạo QR thanh toán</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card" style="margin-top: var(--spacing-lg);">
+                <h2 class="section-title">Lịch sử thanh toán</h2>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Công ty</th>
+                                <th>Số tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="payment : ${payments}">
+                                <td th:text="${payment.id}">1</td>
+                                <td th:text="${payment.company != null ? payment.company.companyName : 'N/A'}">Company Name</td>
+                                <td th:text="${payment.amount != null ? payment.amount + ' ' + payment.currency : 'N/A'}">1000000 VND</td>
+                                <td>
+                                    <span class="status-badge" 
+                                          th:classappend="${payment.status != null and payment.status == 'paid' ? 'approved' : 'pending'}"
+                                          th:text="${payment.status != null ? payment.status : 'N/A'}">Status</span>
+                                </td>
+                                <td th:text="${payment.createdAt != null ? #temporals.format(payment.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
+                                <td>
+                                    <button class="btn btn-secondary" onclick="viewPayment(/*[[${payment.id}]]*/)">Xem</button>
+                                </td>
+                            </tr>
+                            <tr th:if="${payments == null or payments.isEmpty()}">
+                                <td colspan="6" class="empty-state">
+                                    <div class="empty-state-icon">💳</div>
+                                    <p class="empty-state-message">Chưa có giao dịch nào</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = /*[[${currentUser != null ? currentUser.id : null}]]*/ null;
+            const amount = document.getElementById('amount').value;
+            const companyId = document.getElementById('companyId').value;
+            const description = document.getElementById('description').value;
+            
+            try {
+                const response = await api.post('/api/payment/create-qr', {
+                    userId: userId,
+                    amount: amount,
+                    companyId: companyId || null,
+                    description: description
+                });
+                
+                if (response && response.success && response.data) {
+                    if (response.data.qrUrl) {
+                        window.location.href = '/payment/' + response.data.paymentId;
+                    } else {
+                        showToast('Tạo QR code thành công', 'success');
+                    }
+                }
+            } catch (error) {
+                showToast('Lỗi khi tạo thanh toán', 'error');
+            }
+        });
+        
+        function viewPayment(paymentId) {
+            window.location.href = '/payment/' + paymentId;
+        }
+    </script>
+</body>
+</html>
+

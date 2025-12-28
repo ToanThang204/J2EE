@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chính sách bảo mật - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
+        <div class="card">
+            <h1>Chính sách bảo mật</h1>
+            <p><strong>Cập nhật lần cuối:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy')}">01-01-2024</span></p>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>1. Thu thập thông tin</h2>
+                <p>Chúng tôi thu thập thông tin cá nhân của bạn khi bạn đăng ký tài khoản, sử dụng dịch vụ, hoặc liên hệ với chúng tôi. Thông tin thu thập bao gồm:</p>
+                <ul style="margin-left: var(--spacing-lg); margin-top: var(--spacing-md);">
+                    <li>Họ và tên</li>
+                    <li>Địa chỉ email</li>
+                    <li>Số điện thoại</li>
+                    <li>Thông tin hồ sơ và CV</li>
+                    <li>Thông tin công ty (đối với nhà tuyển dụng)</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>2. Sử dụng thông tin</h2>
+                <p>Chúng tôi sử dụng thông tin của bạn để:</p>
+                <ul style="margin-left: var(--spacing-lg); margin-top: var(--spacing-md);">
+                    <li>Cung cấp và cải thiện dịch vụ</li>
+                    <li>Xử lý đơn ứng tuyển và kết nối ứng viên với nhà tuyển dụng</li>
+                    <li>Gửi thông báo và cập nhật về dịch vụ</li>
+                    <li>Bảo vệ quyền lợi và an toàn của người dùng</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>3. Bảo mật thông tin</h2>
+                <p>Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn bằng các biện pháp bảo mật tiên tiến. Tuy nhiên, không có phương thức truyền tải hoặc lưu trữ dữ liệu nào là hoàn toàn an toàn 100%.</p>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>4. Chia sẻ thông tin</h2>
+                <p>Chúng tôi không bán, cho thuê hoặc chia sẻ thông tin cá nhân của bạn với bên thứ ba, trừ khi:</p>
+                <ul style="margin-left: var(--spacing-lg); margin-top: var(--spacing-md);">
+                    <li>Bạn đã đồng ý</li>
+                    <li>Theo yêu cầu của pháp luật</li>
+                    <li>Để bảo vệ quyền lợi và an toàn của chúng tôi và người dùng khác</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>5. Quyền của người dùng</h2>
+                <p>Bạn có quyền:</p>
+                <ul style="margin-left: var(--spacing-lg); margin-top: var(--spacing-md);">
+                    <li>Truy cập và chỉnh sửa thông tin cá nhân</li>
+                    <li>Yêu cầu xóa tài khoản</li>
+                    <li>Từ chối nhận email marketing</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: var(--spacing-xl);">
+                <h2>6. Liên hệ</h2>
+                <p>Nếu bạn có bất kỳ câu hỏi nào về chính sách bảo mật này, vui lòng liên hệ với chúng tôi qua email: support@webcv.com</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+</body>
+</html>
+

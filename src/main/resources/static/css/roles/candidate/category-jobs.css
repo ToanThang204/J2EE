@@ -1,0 +1,50 @@
+/* Category Jobs Page Styles */
+
+.category-jobs-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.category-info-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.category-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-md);
+}
+
+.category-description {
+    color: var(--medium-grey);
+    line-height: 1.8;
+}
+
+.category-stats {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-grey);
+}
+
+.category-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.category-stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+.category-stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+

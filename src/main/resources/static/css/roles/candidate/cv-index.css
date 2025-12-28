@@ -1,0 +1,77 @@
+/* CV Index/List Styles */
+
+.cv-index-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.cv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.cv-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.cv-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.cv-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+}
+
+.cv-card-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.cv-card-meta {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+
+.cv-card-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+}
+
+.cv-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-grey);
+}
+
+.cv-card-status {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+
+@media (max-width: 768px) {
+    .cv-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

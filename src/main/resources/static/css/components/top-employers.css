@@ -1,0 +1,59 @@
+/* Top Employers Component Styles */
+
+.top-employers-section {
+    margin: var(--spacing-2xl) 0;
+}
+
+.top-employers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.top-employer-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.top-employer-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.top-employer-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-grey);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--dark-grey);
+}
+
+.top-employer-name {
+    font-weight: 600;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.top-employer-jobs {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+
+@media (max-width: 768px) {
+    .top-employers-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+

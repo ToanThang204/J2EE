@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="company-sidebar" class="company-sidebar">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: var(--spacing-lg);">
+                <div class="company-logo" style="margin: 0 auto; width: 100px; height: 100px; font-size: var(--font-size-3xl);">
+                    <span th:text="${company != null and company.companyName != null ? company.companyName.substring(0, 2).toUpperCase() : 'CO'}">CO</span>
+                </div>
+                <h3 style="margin-top: var(--spacing-md);" th:text="${company != null ? company.companyName : 'Company Name'}">Company Name</h3>
+            </div>
+            
+            <div th:if="${company != null}">
+                <div style="margin-bottom: var(--spacing-md);">
+                    <strong style="color: var(--medium-grey); font-size: var(--font-size-sm);">ĐỊA CHỈ</strong>
+                    <p th:text="${company.address != null ? company.address : 'Chưa cập nhật'}">Address</p>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-md);">
+                    <strong style="color: var(--medium-grey); font-size: var(--font-size-sm);">EMAIL</strong>
+                    <p th:text="${company.email != null ? company.email : 'Chưa cập nhật'}">Email</p>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-md);">
+                    <strong style="color: var(--medium-grey); font-size: var(--font-size-sm);">SỐ ĐIỆN THOẠI</strong>
+                    <p th:text="${company.phone != null ? company.phone : 'Chưa cập nhật'}">Phone</p>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-md);" th:if="${company.website != null}">
+                    <strong style="color: var(--medium-grey); font-size: var(--font-size-sm);">WEBSITE</strong>
+                    <p>
+                        <a th:href="${company.website}" target="_blank" th:text="${company.website}">Website</a>
+                    </p>
+                </div>
+            </div>
+            
+            <div th:if="${company != null and company.jobs != null and !company.jobs.isEmpty()}" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-grey);">
+                <h4 style="margin-bottom: var(--spacing-md);">Việc làm đang tuyển</h4>
+                <div th:each="job : ${company.jobs}" style="margin-bottom: var(--spacing-sm);">
+                    <a th:href="@{'/jobs/' + ${job.id}}" style="color: var(--primary-green);">
+                        <span th:text="${job.title}">Job Title</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,132 @@
+/* Responsive Design - Mobile First Approach */
+
+/* Mobile (default) */
+@media (max-width: 768px) {
+    .main-content.with-sidebar {
+        margin-left: 0;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        transition: left 0.3s;
+        z-index: 200;
+    }
+    
+    .sidebar.mobile-open {
+        left: 0;
+    }
+    
+    .header-container {
+        flex-wrap: wrap;
+    }
+    
+    .header-nav {
+        display: none;
+    }
+    
+    .user-info {
+        display: none;
+    }
+    
+    .main-content {
+        padding: var(--spacing-md);
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-upgrade {
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        font-size: var(--font-size-xl);
+        cursor: pointer;
+        padding: var(--spacing-sm);
+        color: var(--dark-grey);
+    }
+    
+    .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 150;
+        display: none;
+    }
+    
+    .mobile-menu-overlay.show {
+        display: block;
+    }
+    
+    .sidebar.mobile-open {
+        z-index: 200;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .main-content.with-sidebar {
+        margin-left: 200px;
+    }
+    
+    .sidebar {
+        width: 200px;
+    }
+    
+    .jobs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+    .main-content.with-sidebar {
+        margin-left: 250px;
+    }
+    
+    .mobile-menu-toggle {
+        display: none;
+    }
+    
+    .jobs-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    .jobs-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+

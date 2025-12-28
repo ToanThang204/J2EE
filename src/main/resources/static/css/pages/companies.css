@@ -1,0 +1,75 @@
+/* Companies List Page Styles */
+
+.companies-page-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.companies-filters {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.company-card-large {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.company-card-large:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.company-card-large .company-logo {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+}
+
+.company-card-large .company-info {
+    flex: 1;
+}
+
+.company-card-large .company-name {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.company-card-large .company-description {
+    color: var(--medium-grey);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.company-card-large .company-meta {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+
+.company-card-large .company-jobs-count {
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .company-card-large {
+        flex-direction: column;
+    }
+    
+    .company-card-large .company-logo {
+        margin: 0 auto;
+    }
+}
+

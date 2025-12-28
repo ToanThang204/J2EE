@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="ai-feedback-widget" class="ai-feedback-widget">
+        <div class="card" style="border-left: 4px solid var(--primary-green);">
+            <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--primary-green); display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 700;">
+                    AI
+                </div>
+                <h3 style="margin: 0;">Phân tích AI</h3>
+            </div>
+            
+            <div th:if="${aiFeedback != null}">
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                        <span style="font-weight: 600;">Điểm khớp</span>
+                        <span style="font-size: var(--font-size-xl); font-weight: 700; color: var(--primary-green);" 
+                              th:text="${aiFeedback.score != null ? aiFeedback.score + '%' : 'N/A'}">85%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" th:style="'width: ' + ${aiFeedback.score != null ? aiFeedback.score : 0} + '%'"></div>
+                    </div>
+                </div>
+                
+                <div th:if="${aiFeedback.content != null}">
+                    <p style="color: var(--medium-grey); line-height: 1.8;" th:text="${aiFeedback.content}">AI Feedback content</p>
+                </div>
+                
+                <div style="margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--border-grey);">
+                    <button class="btn btn-secondary" onclick="refreshAIFeedback()" style="width: 100%;">Làm mới phân tích</button>
+                </div>
+            </div>
+            
+            <div th:if="${aiFeedback == null}" style="text-align: center; padding: var(--spacing-lg);">
+                <p style="color: var(--medium-grey);">Chưa có phân tích AI. Nhấn nút bên dưới để phân tích.</p>
+                <button class="btn btn-primary" onclick="analyzeMatch()" style="margin-top: var(--spacing-md);">Phân tích AI</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function refreshAIFeedback() {
+            const jobId = /*[[${jobId}]]*/ null;
+            const resumeId = /*[[${resumeId}]]*/ null;
+            if (jobId && resumeId) {
+                analyzeMatch(jobId, resumeId);
+            }
+        }
+        
+        async function analyzeMatch(jobId, resumeId) {
+            try {
+                showLoading();
+                const response = await api.post('/api/ai/check-match', {
+                    jobId: jobId,
+                    resumeId: resumeId
+                });
+                if (response && response.success) {
+                    showToast('Phân tích thành công', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            } catch (error) {
+                showToast('Lỗi khi phân tích', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+    </script>
+</body>
+</html>
+

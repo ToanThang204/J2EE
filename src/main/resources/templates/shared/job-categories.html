@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="job-categories" class="job-categories-widget">
+        <div class="card">
+            <h3 style="margin-bottom: var(--spacing-lg);">Danh mục việc làm</h3>
+            <div th:if="${categories != null and !categories.isEmpty()}">
+                <div th:each="category : ${categories}" style="margin-bottom: var(--spacing-md);">
+                    <a th:href="@{'/candidate/category-jobs?categoryId=' + ${category.id}}" 
+                       class="nav-link" 
+                       style="display: flex; justify-content: space-between; align-items: center;">
+                        <span th:text="${category.name}">Category Name</span>
+                        <span style="color: var(--medium-grey); font-size: var(--font-size-sm);" 
+                              th:text="${category.jobCount != null ? '(' + category.jobCount + ')' : ''}">(10)</span>
+                    </a>
+                </div>
+            </div>
+            <div th:if="${categories == null or categories.isEmpty()}" class="empty-state" style="padding: var(--spacing-md);">
+                <p style="color: var(--medium-grey); font-size: var(--font-size-sm);">Chưa có danh mục nào</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

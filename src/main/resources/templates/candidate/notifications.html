@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/roles/candidate/notifications.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1>Thông báo</h1>
+                <button class="btn btn-secondary" onclick="markAllAsRead()">Đánh dấu tất cả đã đọc</button>
+            </div>
+            
+            <div id="notificationsList">
+                <div th:each="notification : ${notifications}" class="application-card" th:classappend="${notification.read == false ? 'unread' : ''}">
+                    <div class="application-card-header">
+                        <div>
+                            <h3 class="application-card-title" th:text="${notification.title != null ? notification.title : 'Thông báo'}">Notification Title</h3>
+                            <p class="application-card-company" th:text="${notification.message != null ? notification.message : 'N/A'}">Notification message</p>
+                        </div>
+                        <span class="badge badge-info" th:if="${notification.read == false}">Mới</span>
+                    </div>
+                    <div class="application-card-footer">
+                        <span class="application-date" th:text="${notification.createdAt != null ? #temporals.format(notification.createdAt, 'dd-MM-yyyy HH:mm') : ''}">Date</span>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="markAsRead(/*[[${notification.id}]]*/)" th:if="${notification.read == false}">Đánh dấu đã đọc</button>
+                            <button class="btn-icon delete" onclick="deleteNotification(/*[[${notification.id}]]*/)" title="Xóa">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div th:if="${notifications == null or notifications.isEmpty()}" class="empty-state">
+                    <div class="empty-state-icon">🔔</div>
+                    <h3 class="empty-state-title">Chưa có thông báo nào</h3>
+                    <p class="empty-state-message">Bạn sẽ nhận được thông báo khi có cập nhật mới!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/candidate/notifications.js}"></script>
+</body>
+</html>
+

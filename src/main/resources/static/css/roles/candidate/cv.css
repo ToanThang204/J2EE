@@ -1,0 +1,96 @@
+/* CV Builder Styles */
+
+.cv-builder-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.cv-builder-form {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.cv-builder-section {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--border-grey);
+}
+
+.cv-builder-section:last-child {
+    border-bottom: none;
+}
+
+.cv-builder-section-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.cv-builder-section-title::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background-color: var(--primary-green);
+    border-radius: var(--radius-sm);
+}
+
+.cv-builder-preview {
+    background-color: var(--white);
+    border: 1px solid var(--border-grey);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+    min-height: 400px;
+}
+
+.cv-builder-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--border-grey);
+}
+
+.dynamic-section-item {
+    background-color: var(--light-grey);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    position: relative;
+}
+
+.dynamic-section-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.dynamic-section-item-title {
+    font-weight: 600;
+    color: var(--dark-grey);
+}
+
+.btn-remove-section {
+    background-color: var(--red);
+    color: var(--white);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.btn-remove-section:hover {
+    background-color: #DC2626;
+}
+

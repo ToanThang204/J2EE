@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/roles/candidate/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+            </div>
+            
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-card-icon blue">📋</div>
+                    <div class="summary-card-content">
+                        <div class="summary-card-number" th:text="${applications != null ? applications.size() : 0}">0</div>
+                        <div class="summary-card-label">Đơn ứng tuyển</div>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-card-icon green">❤️</div>
+                    <div class="summary-card-content">
+                        <div class="summary-card-number" th:text="${savedJobs != null ? savedJobs.size() : 0}">0</div>
+                        <div class="summary-card-label">Việc làm đã lưu</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Applications -->
+            <div class="card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Đơn ứng tuyển gần đây</h2>
+                    <a th:href="@{/candidate/applications}" class="btn btn-secondary">Xem tất cả</a>
+                </div>
+                <div th:if="${applications != null and !applications.isEmpty()}">
+                    <div th:each="app : ${applications}" 
+                         class="application-card" 
+                         th:classappend="${app.status != null ? app.status.name().toLowerCase() : ''}">
+                        <div class="application-card-header">
+                            <div>
+                                <h3 class="application-card-title" th:text="${app.job != null ? app.job.title : 'N/A'}">Job Title</h3>
+                                <p class="application-card-company" th:text="${app.job != null and app.job.company != null ? app.job.company.name : 'N/A'}">Company</p>
+                            </div>
+                            <span class="status-badge" 
+                                  th:classappend="${app.status != null ? app.status.name().toLowerCase() : ''}"
+                                  th:text="${app.status != null ? app.status.name() : 'N/A'}">Status</span>
+                        </div>
+                        <div class="application-card-footer">
+                            <span class="application-date" th:text="${app.createdAt != null ? 'Ứng tuyển: ' + ${#temporals.format(app.createdAt, 'dd-MM-yyyy')} : ''}">Date</span>
+                            <a th:href="@{'/jobs/' + ${app.job != null ? app.job.id : ''}}" class="btn btn-secondary" style="font-size: var(--font-size-sm);">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${applications == null or applications.isEmpty()}" class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <h3 class="empty-state-title">Chưa có đơn ứng tuyển nào</h3>
+                    <p class="empty-state-message">Bắt đầu tìm kiếm và ứng tuyển các công việc phù hợp với bạn!</p>
+                    <a th:href="@{/jobs}" class="btn btn-primary">Tìm việc làm ngay</a>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/candidate/dashboard.js}"></script>
+</body>
+</html>
+

@@ -1,0 +1,103 @@
+/* Candidate Applications Styles */
+
+.applications-page-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.applications-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border-grey);
+    margin-bottom: var(--spacing-lg);
+    overflow-x: auto;
+}
+
+.application-tab {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--medium-grey);
+    transition: all 0.2s;
+    margin-bottom: -2px;
+    white-space: nowrap;
+}
+
+.application-tab:hover {
+    color: var(--dark-grey);
+}
+
+.application-tab.active {
+    color: var(--primary-green);
+    border-bottom-color: var(--primary-green);
+}
+
+.application-card-candidate {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
+    transition: all 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.application-card-candidate:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateX(4px);
+}
+
+.application-card-candidate.pending {
+    border-left-color: var(--orange);
+}
+
+.application-card-candidate.reviewed {
+    border-left-color: var(--blue);
+}
+
+.application-card-candidate.interview {
+    border-left-color: #6366F1;
+}
+
+.application-card-candidate.rejected {
+    border-left-color: var(--red);
+}
+
+.application-card-candidate.hired {
+    border-left-color: var(--primary-green);
+}
+
+.application-card-candidate-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+}
+
+.application-card-candidate-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--dark-grey);
+    margin-bottom: var(--spacing-xs);
+}
+
+.application-card-candidate-company {
+    color: var(--medium-grey);
+    font-size: var(--font-size-sm);
+}
+
+.application-card-candidate-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-grey);
+}
+
+.application-card-candidate-date {
+    font-size: var(--font-size-sm);
+    color: var(--medium-grey);
+}
+

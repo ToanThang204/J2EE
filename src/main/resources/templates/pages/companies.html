@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách công ty - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/cards.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
+        <div class="page-header">
+            <h1>Danh sách công ty</h1>
+        </div>
+        
+        <div class="search-filter-section">
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" 
+                           id="searchInput" 
+                           class="form-input" 
+                           placeholder="Tìm kiếm công ty...">
+                </div>
+                <button class="btn btn-primary" onclick="searchCompanies()">Tìm kiếm</button>
+            </div>
+        </div>
+        
+        <div class="jobs-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+            <div th:each="company : ${companies}" class="company-card" th:onclick="'window.location.href=\'/companies/' + ${company.id} + '\''">
+                <div style="text-align: center; margin-bottom: var(--spacing-md);">
+                    <div class="company-logo-small" style="margin: 0 auto; width: 80px; height: 80px; font-size: var(--font-size-2xl);">
+                        <span th:text="${company.companyName != null ? company.companyName.substring(0, 2).toUpperCase() : 'CO'}">CO</span>
+                    </div>
+                </div>
+                <h3 style="text-align: center; margin-bottom: var(--spacing-sm);" th:text="${company.companyName}">Company Name</h3>
+                <p style="text-align: center; color: var(--medium-grey); font-size: var(--font-size-sm);" 
+                   th:text="${company.description != null ? (company.description.length() > 100 ? company.description.substring(0, 100) + '...' : company.description) : 'Chưa có mô tả'}">
+                    Company description
+                </p>
+                <div style="margin-top: var(--spacing-md); text-align: center;">
+                    <span class="badge badge-primary" th:if="${company.status != null and company.status.name() == 'APPROVED'}">Đã duyệt</span>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${companies == null or companies.isEmpty()}" class="empty-state">
+            <div class="empty-state-icon">🏢</div>
+            <h3 class="empty-state-title">Không tìm thấy công ty nào</h3>
+            <p class="empty-state-message">Hãy thử tìm kiếm với từ khóa khác.</p>
+        </div>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        function searchCompanies() {
+            const searchTerm = document.getElementById('searchInput').value;
+            if (searchTerm) {
+                window.location.href = '/pages/companies?search=' + encodeURIComponent(searchTerm);
+            } else {
+                window.location.href = '/pages/companies';
+            }
+        }
+    </script>
+</body>
+</html>
+
