@@ -3,6 +3,7 @@ package com.hutech.demo.controller.view;
 import com.hutech.demo.model.User;
 import com.hutech.demo.model.Category;
 import com.hutech.demo.model.Company;
+import com.hutech.demo.model.enums.CompanyStatus;
 import com.hutech.demo.service.UserService;
 import com.hutech.demo.service.CategoryService;
 import com.hutech.demo.service.CompanyService;
@@ -12,12 +13,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminViewController {
 
     private final UserService userService;
@@ -30,11 +31,11 @@ public class AdminViewController {
         List<Company> allCompanies = companyService.getAllCompanies();
         
         long pendingCompanies = allCompanies.stream()
-                .filter(c -> c.getStatus() != null && c.getStatus().toString().equals("PENDING"))
+                .filter(c -> c.getStatus() == CompanyStatus.PENDING)
                 .count();
         
         long approvedCompanies = allCompanies.stream()
-                .filter(c -> c.getStatus() != null && c.getStatus().toString().equals("APPROVED"))
+                .filter(c -> c.getStatus() == CompanyStatus.ACTIVE)
                 .count();
         
         model.addAttribute("totalUsers", allUsers.size());
@@ -53,12 +54,61 @@ public class AdminViewController {
         return "admin/users";
     }
 
+    @GetMapping("/admin/users/{id}")
+    public String viewUser(@PathVariable Long id, Model model) {
+        User user = userService.getUserById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        model.addAttribute("user", user);
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/user-view";
+    }
+
+    @GetMapping("/admin/users/{id}/edit")
+    public String editUser(@PathVariable Long id, Model model) {
+        User user = userService.getUserById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        model.addAttribute("user", user);
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/user-edit";
+    }
+
     @GetMapping("/admin/categories")
     public String categories(Model model) {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "admin/categories";
+    }
+
+    @GetMapping("/admin/companies-pending")
+    public String companiesPending(Model model) {
+        List<Company> pendingCompanies = companyService.getCompaniesByStatus(CompanyStatus.PENDING);
+        model.addAttribute("pendingCompanies", pendingCompanies);
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/companies-pending";
+    }
+
+    @GetMapping("/admin/companies")
+    public String companies(Model model) {
+        List<Company> companies = companyService.getAllCompanies();
+        
+        // Calculate stats in controller to avoid Thymeleaf stream issues
+        long pendingCount = companies.stream()
+                .filter(c -> c.getStatus() == CompanyStatus.PENDING)
+                .count();
+        long activeCount = companies.stream()
+                .filter(c -> c.getStatus() == CompanyStatus.ACTIVE)
+                .count();
+        long rejectedCount = companies.stream()
+                .filter(c -> c.getStatus() == CompanyStatus.REJECTED)
+                .count();
+        
+        model.addAttribute("companies", companies);
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("activeCount", activeCount);
+        model.addAttribute("rejectedCount", rejectedCount);
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/companies";
     }
 }
 

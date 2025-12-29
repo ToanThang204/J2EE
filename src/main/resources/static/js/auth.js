@@ -58,20 +58,11 @@ async function handleLogin(e) {
             
             showToast('Đăng nhập thành công!', 'success');
             
-            // Redirect based on role
+            // Redirect to homepage
             setTimeout(() => {
-                const user = response.data.user;
-                if (user && user.role) {
-                    if (user.role === 'ADMIN') {
-                        window.location.href = '/admin/dashboard';
-                    } else if (user.role === 'EMPLOYER') {
-                        window.location.href = '/employer/dashboard';
-                    } else {
-                        window.location.href = '/candidate/dashboard';
-                    }
-                } else {
-                    window.location.href = '/';
-                }
+                // Clear any cached redirects
+                sessionStorage.clear();
+                window.location.replace('/');
             }, 500);
         }
     } catch (error) {
@@ -131,20 +122,11 @@ async function handleRegister(e) {
             
             showToast('Đăng ký thành công!', 'success');
             
-            // Redirect based on role
+            // Redirect to homepage
             setTimeout(() => {
-                const user = response.data.user;
-                if (user && user.role) {
-                    if (user.role === 'ADMIN') {
-                        window.location.href = '/admin/dashboard';
-                    } else if (user.role === 'EMPLOYER') {
-                        window.location.href = '/employer/dashboard';
-                    } else {
-                        window.location.href = '/candidate/dashboard';
-                    }
-                } else {
-                    window.location.href = '/';
-                }
+                // Clear any cached redirects
+                sessionStorage.clear();
+                window.location.replace('/');
             }, 500);
         }
     } catch (error) {

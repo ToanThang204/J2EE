@@ -35,8 +35,8 @@
                             <p style="color: var(--medium-grey); font-size: var(--font-size-sm);" th:text="${job.location != null ? '📍 ' + job.location : ''}">Location</p>
                         </div>
                         <span class="status-badge" 
-                              th:classappend="${job.status != null and job.status.name() == 'ACTIVE' ? 'approved' : 'pending'}"
-                              th:text="${job.status != null ? job.status.name() : 'N/A'}">ACTIVE</span>
+                              th:classappend="${job.status != null and job.status.name() == 'OPEN' ? 'approved' : 'pending'}"
+                              th:text="${job.status != null and job.status.name() == 'OPEN' ? 'Đang tuyển' : 'Đã đóng'}">Đang tuyển</span>
                     </div>
                     <div class="application-card-footer">
                         <span class="application-date" th:text="${job.createdAt != null ? 'Đăng: ' + ${#temporals.format(job.createdAt, 'dd-MM-yyyy')} : ''}">Date</span>
@@ -63,6 +63,8 @@
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script th:src="@{/js/employer/jobs.js}"></script>
 </body>
 </html>

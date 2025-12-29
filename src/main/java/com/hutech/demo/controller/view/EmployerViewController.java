@@ -18,7 +18,6 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
 public class EmployerViewController {
 
     private final CompanyService companyService;
@@ -78,27 +77,52 @@ public class EmployerViewController {
     }
 
     @GetMapping("/employer/jobs/create")
-    public String jobCreate(Model model) {
+    public String jobCreate(Model model, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         Long userId = SecurityUtils.getCurrentUserId();
-        List<Company> companies = companyService.getAllCompanies().stream()
-                .filter(c -> c.getUserId().equals(userId))
-                .toList();
-        model.addAttribute("companies", companies);
+        
+        // Tìm công ty theo userId trước
+        List<Company> userCompanies = companyService.getCompaniesByUserId(userId);
+        Company userCompany = userCompanies.isEmpty() ? null : userCompanies.get(0);
+        
+        // Nếu không tìm thấy, lấy công ty ACTIVE đầu tiên (cho trường hợp user_id chưa được gán)
+        if (userCompany == null) {
+            List<Company> activeCompanies = companyService.getCompaniesByStatus(com.hutech.demo.model.enums.CompanyStatus.ACTIVE);
+            userCompany = activeCompanies.isEmpty() ? null : activeCompanies.get(0);
+        }
+        
+        if (userCompany == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn chưa có công ty. Vui lòng tạo công ty trước khi đăng tin tuyển dụng.");
+            return "redirect:/employer/company/info";
+        }
+        
+        model.addAttribute("company", userCompany);
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "employer/job-create";
     }
 
     @GetMapping("/employer/jobs/{id}/edit")
-    public String jobEdit(@PathVariable Long id, Model model) {
+    public String jobEdit(@PathVariable Long id, Model model, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         Job job = jobService.getJobById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
         Long userId = SecurityUtils.getCurrentUserId();
-        List<Company> companies = companyService.getAllCompanies().stream()
-                .filter(c -> c.getUserId().equals(userId))
-                .toList();
+        
+        // Tìm công ty theo userId trước
+        List<Company> userCompanies = companyService.getCompaniesByUserId(userId);
+        Company userCompany = userCompanies.isEmpty() ? null : userCompanies.get(0);
+        
+        // Nếu không tìm thấy, lấy công ty ACTIVE đầu tiên
+        if (userCompany == null) {
+            List<Company> activeCompanies = companyService.getCompaniesByStatus(com.hutech.demo.model.enums.CompanyStatus.ACTIVE);
+            userCompany = activeCompanies.isEmpty() ? null : activeCompanies.get(0);
+        }
+        
+        if (userCompany == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn chưa có công ty.");
+            return "redirect:/employer/company/info";
+        }
         
         model.addAttribute("job", job);
-        model.addAttribute("companies", companies);
+        model.addAttribute("company", userCompany);
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "employer/job-edit";
     }
@@ -134,6 +158,12 @@ public class EmployerViewController {
     public String payment(Model model) {
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "employer/payment";
+    }
+
+    @GetMapping("/employer/upgrade")
+    public String upgrade(Model model) {
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "employer/upgrade";
     }
 }
 

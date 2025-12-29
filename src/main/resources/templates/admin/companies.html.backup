@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tất cả công ty - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <style>
+        .company-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .company-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .company-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .company-meta {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .company-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-badge.PENDING {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge.ACTIVE {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.REJECTED {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-badge.SUSPENDED {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .company-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-action {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-view {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .btn-view:hover {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .btn-edit {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .btn-edit:hover {
+            background: #f57c00;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .btn-delete:hover {
+            background: #c62828;
+            color: white;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .filter-bar input,
+        .filter-bar select {
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .filter-bar input:focus,
+        .filter-bar select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .filter-bar input[type="text"] {
+            flex: 1;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="page-header">
+                <h1>🏢 Tất cả công ty</h1>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${companies != null ? companies.size() : 0}">0</div>
+                    <div class="stat-label">Tổng số công ty</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${pendingCount}">0</div>
+                    <div class="stat-label">Chờ duyệt</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${activeCount}">0</div>
+                    <div class="stat-label">Đã duyệt</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${rejectedCount}">0</div>
+                    <div class="stat-label">Từ chối</div>
+                </div>
+            </div>
+            
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm công ty...">
+                <select id="statusFilter" onchange="filterByStatus()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="PENDING">Chờ duyệt</option>
+                    <option value="ACTIVE">Đã duyệt</option>
+                    <option value="REJECTED">Từ chối</option>
+                    <option value="SUSPENDED">Tạm ngưng</option>
+                </select>
+                <button class="btn btn-primary" onclick="searchCompanies()">Tìm kiếm</button>
+            </div>
+            
+            <!-- Company Cards -->
+            <div id="companiesList">
+                <div class="company-card" th:each="company : ${companies}">
+                    <div class="company-logo" th:text="${company.companyName != null ? company.companyName.substring(0,1).toUpperCase() : '?'}">C</div>
+                    
+                    <div class="company-info">
+                        <div class="company-name" th:text="${company.companyName}">Company Name</div>
+                        <div class="company-meta">
+                            <div class="company-meta-item">
+                                <span>📧</span>
+                                <span th:text="${company.email != null ? company.email : 'Chưa có email'}">email@example.com</span>
+                            </div>
+                            <div class="company-meta-item" th:if="${company.phone != null}">
+                                <span>📞</span>
+                                <span th:text="${company.phone}">Phone</span>
+                            </div>
+                            <div class="company-meta-item" th:if="${company.createdAt != null}">
+                                <span>📅</span>
+                                <span th:text="${'Đăng ký: ' + #temporals.format(company.createdAt, 'dd/MM/yyyy')}">Date</span>
+                            </div>
+                        </div>
+                        <span class="status-badge" 
+                              th:classappend="${company.status != null ? company.status.name() : 'PENDING'}"
+                              th:text="${company.status != null ? (company.status.name() == 'ACTIVE' ? 'Đã duyệt' : (company.status.name() == 'PENDING' ? 'Chờ duyệt' : (company.status.name() == 'REJECTED' ? 'Từ chối' : company.status.name()))) : 'Chờ duyệt'}">
+                            Status
+                        </span>
+                    </div>
+                    
+                    <div class="company-actions">
+                        <button class="btn-action btn-view" th:onclick="'viewCompany(' + ${company.id} + ')'">
+                            👁️ Xem
+                        </button>
+                        <button class="btn-action btn-edit" th:onclick="'approveCompany(' + ${company.id} + ')'" th:if="${company.status != null && company.status.name() == 'PENDING'}">
+                            ✅ Duyệt
+                        </button>
+                        <button class="btn-action btn-delete" th:onclick="'deleteCompany(' + ${company.id} + ')'">
+                            ❌ Xóa
+                        </button>
+                    </div>
+                </div>
+                
+                <div th:if="${companies == null or companies.isEmpty()}" style="text-align: center; padding: 60px; color: #999;">
+                    <div style="font-size: 64px; margin-bottom: 16px;">🏢</div>
+                    <h3>Chưa có công ty nào</h3>
+                    <p>Danh sách công ty sẽ hiển thị ở đây</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
+    <script>
+        function searchCompanies() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const status = document.getElementById('statusFilter').value;
+            let url = '/admin/companies?';
+            if (searchTerm) url += 'search=' + encodeURIComponent(searchTerm);
+            if (status) url += '&status=' + status;
+            window.location.href = url;
+        }
+        
+        function filterByStatus() {
+            searchCompanies();
+        }
+        
+        function viewCompany(companyId) {
+            window.location.href = '/admin/companies/' + companyId;
+        }
+        
+        async function editCompany(companyId) {
+            if (confirm('Duyệt công ty này?')) {
+                try {
+                    const response = await api.put('/companies/' + companyId + '/approve', {});
+                    if (response && response.success) {
+                        showToast('Duyệt công ty thành công!', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showToast('Lỗi khi duyệt công ty', 'error');
+                }
+            }
+        }
+        
+        async function deleteCompany(companyId) {
+            if (confirm('Bạn có chắc chắn muốn xóa công ty này?')) {
+                try {
+                    const response = await api.delete('/companies/' + companyId);
+                    if (response) {
+                        showToast('Xóa công ty thành công', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showToast('Lỗi khi xóa công ty', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="admin-header">
+                <h1>Quản lý công ty</h1>
+                <div class="action-buttons">
+                    <a href="/admin/companies/pending" class="btn btn-secondary">Công ty chờ duyệt</a>
+                    <a href="/admin/companies/new" class="btn btn-secondary">Công ty mới</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Tất cả công ty</h2>
+                    <div class="action-buttons">
+                        <input type="text" id="searchInput" class="form-input" placeholder="Tìm kiếm..." style="max-width: 300px;">
+                        <button class="btn btn-primary" onclick="searchCompanies()">Tìm kiếm</button>
+                    </div>
+                </div>
+                
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên công ty</th>
+                                <th>Email</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="company : ${companies}">
+                                <td th:text="${company.id}">1</td>
+                                <td th:text="${company.companyName}">Company Name</td>
+                                <td th:text="${company.email != null ? company.email : 'N/A'}">email@example.com</td>
+                                <td>
+                                    <span class="status-badge" 
+                                          th:classappend="${company.status != null and company.status.name() == 'APPROVED' ? 'approved' : 'pending'}"
+                                          th:text="${company.status != null ? company.status.name() : 'N/A'}">APPROVED</span>
+                                </td>
+                                <td th:text="${company.createdAt != null ? #temporals.format(company.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
+                                <td>
+                                    <div class="action-cell">
+                                        <button class="btn-icon view" onclick="viewCompany(/*[[${company.id}]]*/)" title="Xem chi tiết">👁️</button>
+                                        <button class="btn-icon edit" onclick="editCompany(/*[[${company.id}]]*/)" title="Chỉnh sửa">✏️</button>
+                                        <button class="btn-icon delete" onclick="deleteCompany(/*[[${company.id}]]*/)" title="Xóa">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${companies == null or companies.isEmpty()}">
+                                <td colspan="6" class="empty-state">
+                                    <div class="empty-state-icon">🏢</div>
+                                    <p class="empty-state-message">Chưa có công ty nào</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script>
+        function searchCompanies() {
+            const searchTerm = document.getElementById('searchInput').value;
+            window.location.href = '/admin/companies?search=' + encodeURIComponent(searchTerm);
+        }
+        
+        function viewCompany(companyId) {
+            window.location.href = '/companies/' + companyId;
+        }
+        
+        async function approveCompany(companyId) {
+            if (confirm('Bạn có chắc chắn muốn duyệt công ty này?')) {
+                try {
+                    const response = await api.put('/companies/' + companyId + '/approve', {});
+                    if (response && response.success) {
+                        showToast('Duyệt công ty thành công', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showToast('Lỗi khi duyệt công ty: ' + (error.message || 'Unknown error'), 'error');
+                    console.error('Error approving company:', error);
+                }
+            }
+        }
+        
+        function editCompany(companyId) {
+            window.location.href = '/admin/companies/' + companyId + '/edit';
+        }
+        
+        async function deleteCompany(companyId) {
+            if (confirm('Bạn có chắc chắn muốn xóa công ty này?')) {
+                try {
+                    const response = await api.delete('/api/admin/companies/' + companyId);
+                    if (response && response.success) {
+                        showToast('Xóa công ty thành công', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showToast('Lỗi khi xóa công ty', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

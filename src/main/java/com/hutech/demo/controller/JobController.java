@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -20,8 +21,29 @@ public class JobController {
     private final JobService jobService;
 
     @GetMapping
-    public ResponseEntity<List<Job>> getAllJobs() {
-        return ResponseEntity.ok(jobService.getAllJobs());
+    public ResponseEntity<?> getAllJobs(@RequestParam(required = false) Integer limit) {
+        try {
+            List<Job> jobs = jobService.getAllJobs();
+            // Chỉ lấy jobs đang OPEN
+            jobs = jobs.stream()
+                    .filter(job -> job.getStatus() == JobStatus.OPEN)
+                    .sorted((j1, j2) -> j2.getCreatedAt().compareTo(j1.getCreatedAt()))
+                    .toList();
+            
+            if (limit != null && limit > 0 && jobs.size() > limit) {
+                jobs = jobs.subList(0, limit);
+            }
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "data", jobs
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
+        }
     }
 
     @GetMapping("/{id}")
@@ -51,36 +73,81 @@ public class JobController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
-    public ResponseEntity<Job> createJob(@RequestBody Job job) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        job.getCompany().setUserId(currentUserId);
-        Job createdJob = jobService.createJob(job);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdJob);
+    public ResponseEntity<?> createJob(@RequestBody Job job) {
+        try {
+            Long currentUserId = SecurityUtils.getCurrentUserId();
+            job.getCompany().setUserId(currentUserId);
+            if (job.getPostedDate() == null) {
+                job.setPostedDate(java.time.LocalDateTime.now());
+            }
+            Job createdJob = jobService.createJob(job);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "success", true,
+                "message", "Đăng tin tuyển dụng thành công",
+                "data", createdJob
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
-    public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job job) {
-        Job existingJob = jobService.getJobById(id).orElseThrow(() -> new RuntimeException("Job not found"));
-        
-        if (!SecurityUtils.isAdmin() && !existingJob.getCompany().getUserId().equals(SecurityUtils.getCurrentUserId())) {
-            throw new AccessDeniedException("Bạn không có quyền sửa job này");
+    public ResponseEntity<?> updateJob(@PathVariable Long id, @RequestBody Job job) {
+        try {
+            Job existingJob = jobService.getJobById(id).orElseThrow(() -> new RuntimeException("Job not found"));
+            
+            if (!SecurityUtils.isAdmin() && !existingJob.getCompany().getUserId().equals(SecurityUtils.getCurrentUserId())) {
+                throw new AccessDeniedException("Bạn không có quyền sửa job này");
+            }
+            
+            Job updatedJob = jobService.updateJob(id, job);
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Cập nhật việc làm thành công",
+                "data", updatedJob
+            ));
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
         }
-        
-        Job updatedJob = jobService.updateJob(id, job);
-        return ResponseEntity.ok(updatedJob);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
-    public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
-        Job existingJob = jobService.getJobById(id).orElseThrow(() -> new RuntimeException("Job not found"));
-        
-        if (!SecurityUtils.isAdmin() && !existingJob.getCompany().getUserId().equals(SecurityUtils.getCurrentUserId())) {
-            throw new AccessDeniedException("Bạn không có quyền xóa job này");
+    public ResponseEntity<?> deleteJob(@PathVariable Long id) {
+        try {
+            Job existingJob = jobService.getJobById(id).orElseThrow(() -> new RuntimeException("Job not found"));
+            
+            if (!SecurityUtils.isAdmin() && !existingJob.getCompany().getUserId().equals(SecurityUtils.getCurrentUserId())) {
+                throw new AccessDeniedException("Bạn không có quyền xóa job này");
+            }
+            
+            jobService.deleteJob(id);
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Xóa việc làm thành công"
+            ));
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
         }
-        
-        jobService.deleteJob(id);
-        return ResponseEntity.noContent().build();
     }
 }

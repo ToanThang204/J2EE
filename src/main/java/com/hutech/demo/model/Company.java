@@ -1,5 +1,6 @@
 package com.hutech.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hutech.demo.model.enums.CompanyStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -55,12 +56,15 @@ public class Company {
     private LocalDateTime updatedAt;
 
     // Relationships
+    @JsonIgnore
     @ManyToMany(mappedBy = "companies")
     private Set<User> users = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<Job> jobs;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "company")
     private List<CompanyUser> companyUsers;
 

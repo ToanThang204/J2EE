@@ -24,14 +24,13 @@
             
             <div class="card">
                 <form id="jobForm" class="form-layout">
+                    <input type="hidden" id="companyId" th:value="${company != null ? company.id : ''}">
+                    
                     <div class="form-group">
-                        <label class="form-label">Công ty <span class="required-indicator">*</span></label>
-                        <select class="form-input" id="companyId" required>
-                            <option value="">Chọn công ty</option>
-                            <option th:each="company : ${companies}" 
-                                    th:value="${company.id}" 
-                                    th:text="${company.companyName}">Company Name</option>
-                        </select>
+                        <label class="form-label">Công ty</label>
+                        <div class="form-input" style="background-color: #f5f5f5; color: #666; cursor: not-allowed;" readonly>
+                            <span th:text="${company != null ? company.companyName : 'Chưa có công ty'}">Tên công ty</span>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -93,30 +92,48 @@
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
         document.getElementById('jobForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const companyId = document.getElementById('companyId').value;
+            if (!companyId) {
+                showToast('Không tìm thấy công ty. Vui lòng tạo công ty trước.', 'error');
+                return;
+            }
+            
+            // Xử lý expirationDate: thêm time nếu có giá trị
+            const expirationDateValue = document.getElementById('expirationDate').value;
+            const expirationDate = expirationDateValue ? expirationDateValue + 'T23:59:59' : null;
+            
             const data = {
-                companyId: document.getElementById('companyId').value,
+                company: {
+                    id: parseInt(companyId)
+                },
                 title: document.getElementById('title').value,
                 description: document.getElementById('description').value,
-                requirements: document.getElementById('requirements').value,
-                location: document.getElementById('location').value,
-                salaryRange: document.getElementById('salaryRange').value,
-                employmentType: document.getElementById('employmentType').value,
-                expirationDate: document.getElementById('expirationDate').value
+                requirements: document.getElementById('requirements').value || '',
+                location: document.getElementById('location').value || '',
+                salaryRange: document.getElementById('salaryRange').value || '',
+                employmentType: document.getElementById('employmentType').value || '',
+                expirationDate: expirationDate,
+                status: 'OPEN'
             };
             
             try {
-                const response = await api.post('/api/jobs', data);
+                const response = await api.post('/jobs', data);
                 if (response && response.success) {
                     showToast('Đăng tin tuyển dụng thành công', 'success');
                     setTimeout(() => {
                         window.location.href = '/employer/jobs';
                     }, 1000);
+                } else {
+                    showToast(response.message || 'Lỗi khi đăng tin', 'error');
                 }
             } catch (error) {
+                console.error('Error:', error);
                 showToast('Lỗi khi đăng tin', 'error');
             }
         });

@@ -47,9 +47,9 @@
                                 <td th:text="${company.createdAt != null ? #temporals.format(company.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
                                 <td>
                                     <div class="action-cell">
-                                        <button class="btn btn-primary" onclick="approveCompany(/*[[${company.id}]]*/)">Duyệt</button>
-                                        <button class="btn btn-secondary" onclick="viewCompany(/*[[${company.id}]]*/)">Xem</button>
-                                        <button class="btn-icon delete" onclick="rejectCompany(/*[[${company.id}]]*/)" title="Từ chối">❌</button>
+                                        <button class="btn btn-primary" th:onclick="'approveCompany(' + ${company.id} + ')'">Duyệt</button>
+                                        <button class="btn btn-secondary" th:onclick="'viewCompany(' + ${company.id} + ')'">Xem</button>
+                                        <button class="btn-icon delete" th:onclick="'rejectCompany(' + ${company.id} + ')'" title="Từ chối">❌</button>
                                     </div>
                                 </td>
                             </tr>
@@ -71,29 +71,35 @@
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
         async function approveCompany(companyId) {
-            try {
-                const response = await api.put('/api/admin/companies/' + companyId + '/approve', {});
-                if (response && response.success) {
-                    showToast('Duyệt công ty thành công', 'success');
-                    setTimeout(() => window.location.reload(), 1000);
+            if (confirm('Bạn có chắc chắn muốn duyệt công ty này?')) {
+                try {
+                    const response = await api.put('/companies/' + companyId + '/approve', {});
+                    if (response && response.success) {
+                        showToast('Duyệt công ty thành công! Role đã được nâng cấp thành EMPLOYER', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showToast('Lỗi khi duyệt công ty: ' + (error.message || 'Unknown error'), 'error');
+                    console.error('Error approving company:', error);
                 }
-            } catch (error) {
-                showToast('Lỗi khi duyệt công ty', 'error');
             }
         }
         
         async function rejectCompany(companyId) {
             if (confirm('Bạn có chắc chắn muốn từ chối công ty này?')) {
                 try {
-                    const response = await api.put('/api/admin/companies/' + companyId + '/reject', {});
+                    const response = await api.put('/companies/' + companyId + '/reject', {});
                     if (response && response.success) {
                         showToast('Từ chối công ty thành công', 'success');
                         setTimeout(() => window.location.reload(), 1000);
                     }
                 } catch (error) {
-                    showToast('Lỗi khi từ chối công ty', 'error');
+                    showToast('Lỗi khi từ chối công ty: ' + (error.message || 'Unknown error'), 'error');
+                    console.error('Error rejecting company:', error);
                 }
             }
         }

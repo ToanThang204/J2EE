@@ -13,15 +13,9 @@ public class AuthViewController {
 
     @GetMapping("/login")
     public String login(Model model) {
-        // If already authenticated, redirect based on role
+        // If already authenticated, redirect to homepage
         if (SecurityUtils.getCurrentUser() != null) {
-            if (SecurityUtils.isAdmin()) {
-                return "redirect:/admin/dashboard";
-            } else if (SecurityUtils.isEmployer()) {
-                return "redirect:/employer/dashboard";
-            } else if (SecurityUtils.isCandidate()) {
-                return "redirect:/candidate/dashboard";
-            }
+            return "redirect:/";
         }
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "auth/login";

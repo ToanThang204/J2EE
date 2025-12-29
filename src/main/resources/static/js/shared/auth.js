@@ -48,26 +48,20 @@ async function handleLogin(e) {
         if (response && response.success) {
             if (response.data && response.data.token) {
                 localStorage.setItem('token', response.data.token);
+                console.log('Auth: Token saved to localStorage');
                 if (response.data.user) {
                     localStorage.setItem('user', JSON.stringify(response.data.user));
+                    console.log('Auth: User saved to localStorage:', response.data.user);
                 }
             }
             
             showToast('Đăng nhập thành công!', 'success');
             
+            // Redirect to homepage
             setTimeout(() => {
-                const user = response.data.user;
-                if (user && user.role) {
-                    if (user.role === 'ADMIN') {
-                        window.location.href = '/admin/dashboard';
-                    } else if (user.role === 'EMPLOYER') {
-                        window.location.href = '/employer/dashboard';
-                    } else {
-                        window.location.href = '/candidate/dashboard';
-                    }
-                } else {
-                    window.location.href = '/';
-                }
+                sessionStorage.clear();
+                console.log('Auth: Redirecting to homepage...');
+                window.location.replace('/');
             }, 500);
         }
     } catch (error) {
@@ -124,19 +118,10 @@ async function handleRegister(e) {
             
             showToast('Đăng ký thành công!', 'success');
             
+            // Redirect to homepage
             setTimeout(() => {
-                const user = response.data.user;
-                if (user && user.role) {
-                    if (user.role === 'ADMIN') {
-                        window.location.href = '/admin/dashboard';
-                    } else if (user.role === 'EMPLOYER') {
-                        window.location.href = '/employer/dashboard';
-                    } else {
-                        window.location.href = '/candidate/dashboard';
-                    }
-                } else {
-                    window.location.href = '/';
-                }
+                sessionStorage.clear();
+                window.location.replace('/');
             }, 500);
         }
     } catch (error) {

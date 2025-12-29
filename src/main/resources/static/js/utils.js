@@ -90,7 +90,8 @@ function throttle(func, limit) {
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/login';
+    sessionStorage.clear();
+    window.location.href = '/';
 }
 
 // Toggle mobile menu

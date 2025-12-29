@@ -14,7 +14,7 @@
             </div>
             
             <!-- Navigation -->
-            <nav class="header-nav" th:if="${currentUser != null}">
+            <nav class="header-nav" style="display: none;">
                 <a th:href="@{/jobs}" class="nav-link">Tạo CV</a>
                 <a th:href="@{/jobs}" class="nav-link">Công ty</a>
             </nav>
@@ -22,7 +22,7 @@
             <!-- Right Section -->
             <div class="header-right">
                 <!-- Notification and Favorite Badges -->
-                <div class="header-badges" th:if="${currentUser != null}">
+                <div class="header-badges" style="display: none;">
                     <div class="header-badge favorite" title="Việc làm đã lưu">
                         <span>❤️</span>
                         <span class="badge-count" id="favoriteCount">0</span>
@@ -34,31 +34,31 @@
                 </div>
                 
                 <!-- Upgrade Button (for candidates) -->
-                <a th:if="${currentUser != null and currentUser.role.name() == 'CANDIDATE'}" 
-                   th:href="@{/employer/dashboard}" 
-                   class="btn-upgrade">
+                <a th:href="@{/employer/upgrade}" 
+                   class="btn-upgrade"
+                   style="display: none;">
                     Nâng cấp lên Nhà tuyển dụng
                 </a>
                 
                 <!-- User Profile -->
-                <div class="user-profile" th:if="${currentUser != null}">
+                <div class="user-profile" style="display: none;">
                     <div class="user-avatar">
                         <span class="avatar-icon">👤</span>
                     </div>
                     <div class="user-info">
-                        <span class="user-name" th:text="${currentUser.name}">User Name</span>
-                        <span class="user-role" th:text="${currentUser.role.name() == 'CANDIDATE' ? 'Ứng Viên' : (currentUser.role.name() == 'EMPLOYER' ? 'Nhà Tuyển Dụng' : 'Admin')}">Role</span>
+                        <span class="user-name">User Name</span>
+                        <span class="user-role">Role</span>
                     </div>
                     <div class="user-dropdown">
-                        <a th:href="@{/candidate/profile}" th:if="${currentUser.role.name() == 'CANDIDATE'}">Hồ sơ</a>
-                        <a th:href="@{/employer/profile}" th:if="${currentUser.role.name() == 'EMPLOYER'}">Hồ sơ</a>
-                        <a th:href="@{/admin/dashboard}" th:if="${currentUser.role.name() == 'ADMIN'}">Dashboard</a>
+                        <a th:href="@{/candidate/profile}" class="profile-link-candidate">Hồ sơ</a>
+                        <a th:href="@{/employer/profile}" class="profile-link-employer">Hồ sơ</a>
+                        <a th:href="@{/admin/dashboard}" class="profile-link-admin">Dashboard</a>
                         <a href="#" onclick="logout(); return false;">Đăng xuất</a>
                     </div>
                 </div>
                 
                 <!-- Login/Register (if not authenticated) -->
-                <div class="auth-buttons" th:if="${currentUser == null}">
+                <div class="auth-buttons">
                     <a th:href="@{/login}" class="btn-login">Đăng nhập</a>
                     <a th:href="@{/register}" class="btn-register">Đăng ký</a>
                 </div>
@@ -69,6 +69,9 @@
         <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
         </div>
     </header>
+    
+    <!-- Header Auth Script -->
+    <script th:src="@{/js/shared/header.js}"></script>
 </body>
 </html>
 

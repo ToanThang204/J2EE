@@ -1,7 +1,11 @@
 package com.hutech.demo.service;
 
+import com.hutech.demo.dto.request.UpgradeToEmployerRequest;
+import com.hutech.demo.model.Company;
 import com.hutech.demo.model.User;
+import com.hutech.demo.model.enums.CompanyStatus;
 import com.hutech.demo.model.enums.UserRole;
+import com.hutech.demo.repository.CompanyRepository;
 import com.hutech.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -55,5 +60,54 @@ public class UserService {
     @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public User upgradeToEmployer(Long userId, UpgradeToEmployerRequest request) {
+        // Get user
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // Check if user is already employer
+        if (user.getRole() == UserRole.EMPLOYER || user.getRole() == UserRole.ADMIN) {
+            throw new RuntimeException("Bạn đã là nhà tuyển dụng hoặc quản trị viên");
+        }
+        
+        // Check if user already has pending company request
+        List<Company> existingRequests = companyRepository.findAll().stream()
+                .filter(c -> c.getUser() != null && c.getUser().getId().equals(userId))
+                .filter(c -> c.getStatus() == CompanyStatus.PENDING)
+                .toList();
+        
+        if (!existingRequests.isEmpty()) {
+            throw new RuntimeException("Bạn đã có yêu cầu nâng cấp đang chờ duyệt");
+        }
+        
+        // Create company with PENDING status
+        Company company = new Company();
+        company.setCompanyName(request.getCompanyName());
+        company.setAddress(request.getAddress());
+        company.setDescription(request.getDescription());
+        company.setWebsite(request.getWebsite());
+        company.setEmail(request.getEmail());
+        company.setPhone(request.getPhone());
+        company.setLogo(request.getLogo());
+        company.setStatus(CompanyStatus.PENDING);
+        company.setUser(user);
+        
+        // Debug: Check logo before saving
+        System.out.println("=== Before Save ===");
+        System.out.println("Company Logo: " + (company.getLogo() != null ? "Set (length: " + company.getLogo().length() + ")" : "NULL"));
+        
+        Company savedCompany = companyRepository.save(company);
+        
+        // Debug: Check logo after saving
+        System.out.println("=== After Save ===");
+        System.out.println("Saved Company ID: " + savedCompany.getId());
+        System.out.println("Saved Company Logo: " + (savedCompany.getLogo() != null ? "Set (length: " + savedCompany.getLogo().length() + ")" : "NULL"));
+        System.out.println("==================");
+        
+        // NOTE: User role will be upgraded to EMPLOYER when admin approves the company
+        return user;
     }
 }

@@ -25,29 +25,91 @@
             </div>
         </div>
         
-        <div class="recent-jobs-section" th:if="${recentJobs != null and !recentJobs.isEmpty()}">
+        <div class="recent-jobs-section">
             <h2>Việc làm mới nhất</h2>
-            <div class="jobs-grid">
-                <div th:each="job : ${recentJobs}" class="job-card" th:onclick="'window.location.href=\'/jobs/' + ${job.id} + '\''">
-                    <div class="job-card-header">
-                        <div class="company-logo-small" th:text="${job.company != null ? job.company.name.substring(0, 2).toUpperCase() : 'CO'}">
-                            CO
+            <div class="jobs-grid" id="recentJobsContainer">
+                <div th:each="job : ${recentJobs}" class="job-card" style="cursor: pointer;">
+                    <!-- Logo và Tiêu đề -->
+                    <div class="job-card-top">
+                        <div class="company-logo-box">
+                            <div class="company-logo-img" th:text="${job.company != null and job.company.companyName != null and job.company.companyName.length() >= 3 ? job.company.companyName.substring(0, 3).toUpperCase() : (job.company != null and job.company.companyName != null and job.company.companyName.length() > 0 ? job.company.companyName.substring(0, job.company.companyName.length()).toUpperCase() : 'CO')}">
+                                CO
+                            </div>
                         </div>
-                        <div class="company-name-small" th:text="${job.company != null ? job.company.name : 'Company'}">
-                            Company Name
+                        <div class="job-info">
+                            <h3 class="job-card-title" th:text="${job.title}">Job Title</h3>
+                            <p class="job-company-name">
+                                <span class="company-icon">🏢</span>
+                                <span th:text="${job.company != null ? job.company.companyName : 'Company'}">Company Name</span>
+                            </p>
+                            <!-- Thông tin chi tiết -->
+                            <div class="job-details-inline">
+                                <div class="job-detail-item">
+                                    <span class="detail-icon">📍</span>
+                                    <span th:text="${job.location != null and !job.location.isEmpty() ? job.location : 'Không yêu cầu'}">Location</span>
+                                </div>
+                                <div class="job-detail-item">
+                                    <span class="detail-icon">📅</span>
+                                    <span>Hạn nộp: </span>
+                                    <span th:text="${job.expirationDate != null ? #temporals.format(job.expirationDate, 'dd-MM-yyyy') : 'Đang cập nhật'}">23-01-2026</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <h3 class="job-title" th:text="${job.title}">Job Title</h3>
-                    <div class="job-meta">
-                        <div class="job-meta-item">
-                            <span>📍</span>
-                            <span th:text="${job.location != null ? job.location : 'N/A'}">Location</span>
+                    
+                    <!-- Footer với mức lương và nút hành động -->
+                    <div class="job-card-bottom">
+                        <div class="salary-box" th:text="${job.salaryRange != null and !job.salaryRange.isEmpty() ? job.salaryRange : 'Thỏa thuận'}">
+                            18-25 triệu VNĐ
+                        </div>
+                        <div class="job-actions">
+                            <button class="btn-ai" onclick="event.stopPropagation(); alert('AI matching feature')">
+                                <span>✨</span> AI
+                            </button>
+                            <button class="btn-favorite" onclick="event.stopPropagation(); this.classList.toggle('active')" title="Lưu việc làm">
+                                <span>❤️</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="job-footer">
-                        <span class="salary-badge" th:text="${job.salaryRange != null ? job.salaryRange : 'Cạnh tranh'}">
-                            Salary
-                        </span>
+                    
+                    <!-- Popup chi tiết khi hover -->
+                    <div class="job-detail-popup">
+                        <div class="popup-header">
+                            <h3 th:text="${job.title}">Tiêu đề công việc</h3>
+                        </div>
+                        <div class="popup-body">
+                            <div class="popup-info-row">
+                                <strong>Công ty:</strong>
+                                <span th:text="${job.company != null ? job.company.companyName : 'N/A'}">Company Name</span>
+                            </div>
+                            <div class="popup-info-row">
+                                <strong>Lương:</strong>
+                                <span th:text="${job.salaryRange != null and !job.salaryRange.isEmpty() ? job.salaryRange : 'Thỏa thuận'}">18 - 25 triệu VNĐ</span>
+                            </div>
+                            <div class="popup-info-row">
+                                <strong>Địa điểm:</strong>
+                                <span th:text="${job.location != null and !job.location.isEmpty() ? job.location : 'Không yêu cầu'}">Hà Nội</span>
+                            </div>
+                            <div class="popup-info-row">
+                                <strong>Hạn nộp:</strong>
+                                <span th:text="${job.expirationDate != null ? #temporals.format(job.expirationDate, 'dd-MM-yyyy') : 'Đang cập nhật'}">23-01-2026</span>
+                            </div>
+                            <div class="popup-description">
+                                <strong>Mô tả:</strong>
+                                <p th:text="${job.description != null and !job.description.isEmpty() ? (job.description.length() > 200 ? job.description.substring(0, 200) + '...' : job.description) : 'Trực tiếp giảng dạy các lớp học Tiếng Anh cho học viên theo nhóm tuổi và cấp độ. Chuẩn bị giáo án, tài liệu và tổ chức các hoạt động học tập tương tác, sáng tạo...'}">
+                                    Mô tả công việc
+                                </p>
+                            </div>
+                            <div class="popup-requirements">
+                                <strong>Yêu cầu:</strong>
+                                <p th:text="${job.requirements != null and !job.requirements.isEmpty() ? (job.requirements.length() > 150 ? job.requirements.substring(0, 150) + '...' : job.requirements) : 'Phải ấm chuẩn, yêu trẻ, có chứng chỉ giảng dạy quốc tế (TEFL/TESOL)...'}">
+                                    Yêu cầu công việc
+                                </p>
+                            </div>
+                            <button class="btn-apply" th:onclick="'window.location.href=\'/jobs/' + ${job.id} + '\''">
+                                Ứng tuyển ngay
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -62,28 +124,12 @@
     
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
     
-    <!-- Scroll to Top Button -->
-    <button class="scroll-to-top-btn" id="scrollToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Lên đầu trang">
-        ↑
-    </button>
-    
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/debug.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/shared/home.js}"></script>
-    <script>
-        // Scroll to top button
-        window.addEventListener('scroll', function() {
-            const scrollBtn = document.getElementById('scrollToTop');
-            if (scrollBtn) {
-                if (window.pageYOffset > 300) {
-                    scrollBtn.classList.add('show');
-                } else {
-                    scrollBtn.classList.remove('show');
-                }
-            }
-        });
-    </script>
 </body>
 </html>
 

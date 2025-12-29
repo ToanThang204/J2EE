@@ -63,8 +63,8 @@
                                   th:text="${app.status != null ? app.status.name() : 'N/A'}">Status</span>
                         </div>
                         <div class="application-card-footer">
-                            <span class="application-date" th:text="${app.createdAt != null ? 'Ứng tuyển: ' + ${#temporals.format(app.createdAt, 'dd-MM-yyyy')} : ''}">Date</span>
-                            <a th:href="@{'/jobs/' + ${app.job != null ? app.job.id : ''}}" class="btn btn-secondary" style="font-size: var(--font-size-sm);">Xem chi tiết</a>
+                            <span class="application-date" th:text="${app.createdAt != null ? 'Ứng tuyển: ' + #temporals.format(app.createdAt, 'dd-MM-yyyy') : ''}">Date</span>
+                            <a th:href="@{/jobs/{id}(id=${app.job != null ? app.job.id : ''})}" class="btn btn-secondary" style="font-size: var(--font-size-sm);">Xem chi tiết</a>
                         </div>
                     </div>
                 </div>

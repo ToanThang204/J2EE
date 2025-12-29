@@ -18,7 +18,6 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('CANDIDATE', 'ADMIN')")
 public class CandidateViewController {
 
     private final ResumeService resumeService;
@@ -27,6 +26,12 @@ public class CandidateViewController {
 
     @GetMapping("/candidate/dashboard")
     public String dashboard(Model model) {
+        // Authentication will be handled by JavaScript on page load
+        return "candidate/dashboard";
+    }
+
+    @GetMapping("/candidate/dashboard-old")
+    public String dashboardOld(Model model) {
         Long userId = SecurityUtils.getCurrentUserId();
         List<Application> applications = applicationService.getApplicationsByUser(userId);
         List<SavedJob> savedJobs = savedJobService.getSavedJobsByUser(userId);
@@ -39,7 +44,7 @@ public class CandidateViewController {
 
     @GetMapping("/candidate/profile")
     public String profile(Model model) {
-        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        // Authentication will be handled by JavaScript on page load
         return "candidate/profile";
     }
 

@@ -1,9 +1,11 @@
 package com.hutech.demo.controller;
 
+import com.hutech.demo.dto.request.UpgradeToEmployerRequest;
 import com.hutech.demo.model.User;
 import com.hutech.demo.model.enums.UserRole;
 import com.hutech.demo.service.UserService;
 import com.hutech.demo.util.SecurityUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -69,8 +73,90 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("message", "Xóa người dùng thành công");
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", e.getMessage());
+            }});
+        }
+    }
+
+    @PutMapping("/{id}/suspend")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> suspendUser(@PathVariable Long id) {
+        try {
+            User user = userService.getUserById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user.setStatus(com.hutech.demo.model.enums.UserStatus.SUSPENDED);
+            userService.updateUser(id, user);
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("message", "Tạm ngưng tài khoản thành công");
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", e.getMessage());
+            }});
+        }
+    }
+
+    @PutMapping("/{id}/activate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> activateUser(@PathVariable Long id) {
+        try {
+            User user = userService.getUserById(id)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user.setStatus(com.hutech.demo.model.enums.UserStatus.ACTIVE);
+            userService.updateUser(id, user);
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("success", true);
+                put("message", "Kích hoạt tài khoản thành công");
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {{
+                put("success", false);
+                put("message", e.getMessage());
+            }});
+        }
+    }
+
+    @PostMapping("/upgrade-to-employer")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    public ResponseEntity<Map<String, Object>> upgradeToEmployer(@Valid @RequestBody UpgradeToEmployerRequest request) {
+        try {
+            Long userId = SecurityUtils.getCurrentUserId();
+            
+            // Debug logging
+            System.out.println("=== Upgrade Request Debug ===");
+            System.out.println("User ID: " + userId);
+            System.out.println("Company Name: " + request.getCompanyName());
+            System.out.println("Logo received: " + (request.getLogo() != null ? "Yes (length: " + request.getLogo().length() + ")" : "No"));
+            if (request.getLogo() != null) {
+                System.out.println("Logo prefix: " + request.getLogo().substring(0, Math.min(50, request.getLogo().length())));
+            }
+            System.out.println("===========================");
+            
+            User updatedUser = userService.upgradeToEmployer(userId, request);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Nâng cấp thành công! Bạn đã trở thành nhà tuyển dụng.");
+            response.put("user", updatedUser);
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }

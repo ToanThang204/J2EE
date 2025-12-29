@@ -58,9 +58,16 @@
                                 <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
                                 <td>
                                     <div class="action-cell">
-                                        <button class="btn-icon view" onclick="viewUser(/*[[${user.id}]]*/)" title="Xem chi tiết">👁️</button>
-                                        <button class="btn-icon edit" onclick="editUser(/*[[${user.id}]]*/)" title="Chỉnh sửa">✏️</button>
-                                        <button class="btn-icon delete" onclick="deleteUser(/*[[${user.id}]]*/)" title="Xóa">🗑️</button>
+                                        <button class="btn-icon view" th:onclick="'viewUser(' + ${user.id} + ')'" title="Xem chi tiết">👁️</button>
+                                        <button class="btn-icon edit" th:onclick="'editUser(' + ${user.id} + ')'" title="Chỉnh sửa">✏️</button>
+                                        <button class="btn-icon" 
+                                                th:classappend="${user.status != null and user.status.name() == 'ACTIVE' ? 'delete' : 'approve'}"
+                                                th:data-user-id="${user.id}"
+                                                th:data-status="${user.status != null ? user.status.name() : 'ACTIVE'}"
+                                                onclick="toggleUserStatusClick(this)"
+                                                th:title="${user.status != null and user.status.name() == 'ACTIVE' ? 'Tạm ngưng' : 'Kích hoạt'}">
+                                            <span th:text="${user.status != null and user.status.name() == 'ACTIVE' ? '⏸️' : '▶️'}">⏸️</span>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -82,6 +89,8 @@
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
         function searchUsers() {
             const searchTerm = document.getElementById('searchInput').value;
@@ -96,16 +105,26 @@
             window.location.href = '/admin/users/' + userId + '/edit';
         }
         
-        async function deleteUser(userId) {
-            if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
+        function toggleUserStatusClick(button) {
+            const userId = button.getAttribute('data-user-id');
+            const currentStatus = button.getAttribute('data-status');
+            toggleUserStatus(userId, currentStatus);
+        }
+        
+        async function toggleUserStatus(userId, currentStatus) {
+            const action = currentStatus === 'ACTIVE' ? 'suspend' : 'activate';
+            const actionText = currentStatus === 'ACTIVE' ? 'tạm ngưng' : 'kích hoạt';
+            
+            if (confirm(`Bạn có chắc chắn muốn ${actionText} tài khoản này?`)) {
                 try {
-                    const response = await api.delete('/admin/users/' + userId);
+                    const response = await api.put('/users/' + userId + '/' + action, {});
                     if (response && response.success) {
-                        showToast('Xóa người dùng thành công', 'success');
+                        showToast(`${actionText.charAt(0).toUpperCase() + actionText.slice(1)} tài khoản thành công`, 'success');
                         setTimeout(() => window.location.reload(), 1000);
                     }
                 } catch (error) {
-                    showToast('Lỗi khi xóa người dùng', 'error');
+                    showToast('Lỗi khi ' + actionText + ' tài khoản: ' + (error.message || 'Unknown error'), 'error');
+                    console.error('Error toggling user status:', error);
                 }
             }
         }

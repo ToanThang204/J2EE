@@ -51,8 +51,13 @@ public class AuthService {
 
         user = userRepository.save(user);
 
-        // Send welcome email
-        emailService.sendWelcomeEmail(user);
+        // Send welcome email (non-blocking)
+        try {
+            emailService.sendWelcomeEmail(user);
+        } catch (Exception e) {
+            // Log error but don't fail registration
+            System.err.println("Failed to send welcome email: " + e.getMessage());
+        }
 
         // Generate token
         String token = jwtService.generateToken(user);

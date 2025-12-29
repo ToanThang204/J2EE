@@ -1,9 +1,13 @@
 // Home Page JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Clear any pending redirects when landing on homepage
+    sessionStorage.removeItem('redirectUrl');
+    
     initHeroSection();
     initJobSearch();
-    loadRecentJobs();
+    initPopupPositioning();
+    // Không cần loadRecentJobs() vì Thymeleaf đã render sẵn
 });
 
 function initHeroSection() {
@@ -40,38 +44,35 @@ function initJobSearch() {
     }
 }
 
-async function loadRecentJobs() {
-    try {
-        const response = await api.get('/jobs?limit=6');
-        if (response && response.success && response.data) {
-            displayJobs(response.data);
-        }
-    } catch (error) {
-        console.error('Error loading recent jobs:', error);
-    }
-}
+// Không cần loadRecentJobs() và displayJobs() nữa
+// Thymeleaf đã render sẵn job cards với full thông tin từ server
 
-function displayJobs(jobs) {
-    const jobsContainer = document.getElementById('recentJobsContainer');
-    if (!jobsContainer || !jobs || jobs.length === 0) return;
-    
-    jobsContainer.innerHTML = jobs.map(job => `
-        <div class="job-card" onclick="window.location.href='/jobs/${job.id}'">
-            <div class="job-card-header">
-                <div class="company-logo-small">${job.company ? job.company.companyName.substring(0, 2).toUpperCase() : 'CO'}</div>
-                <div class="company-name-small">${job.company ? job.company.companyName : 'Company'}</div>
-            </div>
-            <h3 class="job-title">${job.title || 'Job Title'}</h3>
-            <div class="job-meta">
-                <div class="job-meta-item">
-                    <span>📍</span>
-                    <span>${job.location || 'N/A'}</span>
-                </div>
-            </div>
-            <div class="job-footer">
-                <span class="salary-badge">${job.salaryRange || 'Cạnh tranh'}</span>
-            </div>
-        </div>
-    `).join('');
+function initPopupPositioning() {
+    const POPUP_MARGIN = 40; // space from window edge
+    const cards = document.querySelectorAll('.job-card');
+    if (!cards || cards.length === 0) return;
+
+    function updateCard(card) {
+        const popup = card.querySelector('.job-detail-popup');
+        if (!popup) return;
+        const rect = card.getBoundingClientRect();
+        const popupWidth = popup.offsetWidth || 350;
+        const spaceRight = window.innerWidth - rect.right;
+        if (spaceRight < popupWidth + POPUP_MARGIN) {
+            popup.classList.add('popup-left');
+        } else {
+            popup.classList.remove('popup-left');
+        }
+    }
+
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => updateCard(card));
+        // also update on mousemove to handle dynamic layout
+        card.addEventListener('mousemove', () => updateCard(card));
+    });
+
+    window.addEventListener('resize', () => {
+        cards.forEach(card => updateCard(card));
+    });
 }
 

@@ -12,6 +12,7 @@
     <link th:href="@{/css/company/info.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
@@ -22,84 +23,96 @@
         <main class="main-content with-sidebar">
             <div class="company-info-card">
                 <div class="company-info-header">
-                    <div>
-                        <h1 class="company-info-title">Thông tin công ty</h1>
-                        <p class="company-info-subtitle">Quản lý và cập nhật thông tin công ty của bạn</p>
+                    <div class="header-content">
+                        <div class="title-wrapper">
+                            <i class="fas fa-building header-icon"></i>
+                            <div>
+                                <h1 class="company-info-title">Thông tin công ty</h1>
+                                <p class="company-info-subtitle">Quản lý và cập nhật thông tin công ty của bạn</p>
+                            </div>
+                        </div>
                     </div>
                     <button class="btn-edit" onclick="editCompany()">
-                        <span>✏️</span>
-                        Chỉnh sửa thông tin
+                        <i class="fas fa-edit"></i>
+                        <span>Chỉnh sửa thông tin</span>
                     </button>
                 </div>
                 
-                <div class="company-logo-section" th:if="${company != null}">
-                    <div class="company-logo">
-                        <span style="font-size: var(--font-size-2xl); font-weight: 700;" 
-                              th:text="${company.name != null ? company.name.substring(0, 2).toUpperCase() : 'CO'}">
-                            CO
-                        </span>
+                <!-- Company Logo Section -->
+                <div class="company-logo-section" style="display: none;">
+                    <div class="logo-wrapper">
+                        <div class="company-logo">
+                            <!-- Logo will be dynamically inserted here -->
+                        </div>
                     </div>
-                    <h2 class="company-name" th:text="${company.name}">Company Name</h2>
+                    <div class="company-details">
+                        <h2 class="company-name">Company Name</h2>
+                    </div>
                 </div>
                 
-                <div class="info-section" th:if="${company != null and company.description != null}">
+                <!-- Description Section -->
+                <div class="info-section about-section" style="display: none;">
                     <div class="section-header">
                         <div class="section-icon">
-                            <span>i</span>
+                            <i class="fas fa-info-circle"></i>
                         </div>
                         <h3 class="section-title">Về công ty</h3>
+                        <div class="section-divider"></div>
                     </div>
                     <div class="section-content">
-                        <p class="about-company-text" th:text="${company.description}">
-                            Company description
-                        </p>
+                        <div class="description-wrapper">
+                            <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                            <p class="info-description">Company description</p>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="info-section" th:if="${company != null}">
+                <!-- Contact Info Section -->
+                <div class="info-section contact-section" id="contactSection" style="display: none;">
                     <div class="section-header">
-                        <div class="section-icon square">
-                            <span>=</span>
+                        <div class="section-icon">
+                            <i class="fas fa-address-book"></i>
                         </div>
                         <h3 class="section-title">Thông tin liên hệ</h3>
+                        <div class="section-divider"></div>
                     </div>
                     <div class="section-content">
                         <div class="contact-info-grid">
                             <div class="contact-item">
-                                <div class="contact-icon">📍</div>
-                                <div>
-                                    <div class="contact-label">ĐỊA CHỈ</div>
-                                    <div class="contact-value" th:text="${company.address != null ? company.address : 'Chưa cập nhật'}">
-                                        Address
-                                    </div>
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <div class="contact-label"><i class="fas fa-tag"></i> ĐỊA CHỈ</div>
+                                    <div class="contact-value" data-company-address>Chưa cập nhật</div>
                                 </div>
                             </div>
                             <div class="contact-item">
-                                <div class="contact-icon">📧</div>
-                                <div>
-                                    <div class="contact-label">EMAIL</div>
-                                    <div class="contact-value" th:text="${company.email != null ? company.email : 'Chưa cập nhật'}">
-                                        Email
-                                    </div>
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <div class="contact-label"><i class="fas fa-tag"></i> EMAIL</div>
+                                    <div class="contact-value" data-company-email>Chưa cập nhật</div>
                                 </div>
                             </div>
                             <div class="contact-item">
-                                <div class="contact-icon">📞</div>
-                                <div>
-                                    <div class="contact-label">SỐ ĐIỆN THOẠI</div>
-                                    <div class="contact-value" th:text="${company.phone != null ? company.phone : 'Chưa cập nhật'}">
-                                        Phone
-                                    </div>
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <div class="contact-label"><i class="fas fa-tag"></i> SỐ ĐIỆN THOẠI</div>
+                                    <div class="contact-value" data-company-phone>Chưa cập nhật</div>
                                 </div>
                             </div>
                             <div class="contact-item">
-                                <div class="contact-icon">🌐</div>
-                                <div>
-                                    <div class="contact-label">WEBSITE</div>
-                                    <div class="contact-value">
-                                        <a th:href="${company.website != null ? company.website : '#'}" 
-                                           th:text="${company.website != null ? company.website : 'Chưa cập nhật'}"
-                                           target="_blank">Website</a>
+                                <div class="contact-icon">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <div class="contact-label"><i class="fas fa-tag"></i> WEBSITE</div>
+                                    <div class="contact-value" data-company-website>
+                                        <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i> Chưa cập nhật</a>
                                     </div>
                                 </div>
                             </div>
@@ -107,11 +120,17 @@
                     </div>
                 </div>
                 
-                <div th:if="${company == null}" class="empty-state">
-                    <div class="empty-state-icon">🏢</div>
+                <!-- Empty State - shown when no company -->
+                <div class="empty-state" id="emptyState" style="display: block;">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
                     <h3 class="empty-state-title">Bạn chưa có công ty</h3>
                     <p class="empty-state-message">Tạo công ty để bắt đầu đăng tin tuyển dụng và quản lý ứng viên.</p>
-                    <a th:href="@{/employer/companies/create}" class="btn btn-primary">Tạo công ty ngay</a>
+                    <a href="/employer/companies/create" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Tạo công ty ngay</span>
+                    </a>
                 </div>
             </div>
         </main>
@@ -122,6 +141,8 @@
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script th:src="@{/js/company/info.js}"></script>
 </body>
 </html>

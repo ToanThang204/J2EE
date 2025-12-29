@@ -2,33 +2,395 @@
 
 .jobs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: var(--spacing-lg);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
     margin-top: var(--spacing-lg);
+    max-width: 100%;
+    width: 100%;
+    overflow: visible;
+}
+
+@media (max-width: 1200px) {
+    .jobs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .job-card {
     background-color: var(--white);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    box-shadow: var(--shadow-md);
-    transition: all 0.3s;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     position: relative;
+    border: 2px solid #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 240px;
+    overflow: visible;
+    width: 100%;
 }
 
 .job-card:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    z-index: 10;
 }
 
-.job-card-header {
+/* Job Detail Popup */
+.job-detail-popup {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 20px;
+    width: 350px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border: 2px solid #10b981;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.job-card:hover .job-detail-popup {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* If popup should appear to the left of the card */
+.job-detail-popup.popup-left {
+    left: auto;
+    right: 100%;
+    margin-left: 0;
+    margin-right: 20px;
+}
+.popup-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 14px 14px 0 0;
+}
+
+.popup-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.popup-body {
+    padding: 20px;
+}
+
+.popup-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+}
+
+.popup-info-row strong {
+    color: #4b5563;
+    font-weight: 600;
+}
+
+.popup-info-row span {
+    color: #1a202c;
+    text-align: right;
+    flex: 1;
+    margin-left: 12px;
+}
+
+.popup-description,
+.popup-requirements {
+    margin-top: 16px;
+}
+
+.popup-description strong,
+.popup-requirements strong {
+    display: block;
+    color: #1a202c;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.popup-description p,
+.popup-requirements p {
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.btn-apply {
+    width: 100%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-apply:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* Job Card Top - Logo và Tiêu đề */
+.job-card-top {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    height: auto;
+}
+
+.company-logo-box {
+    flex-shrink: 0;
+}
+
+.company-logo-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
+    justify-content: center;
+    font-weight: 700;
+    font-size: 22px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+    transition: all 0.3s ease;
 }
 
+.job-card:hover .company-logo-img {
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.45);
+}
+
+.job-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.job-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
+    height: auto;
+}
+
+.job-card:hover .job-card-title {
+    color: #10b981;
+}
+
+.job-company-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0 0 8px 0;
+    font-weight: 500;
+}
+
+.company-icon {
+    font-size: 14px;
+}
+
+/* Job Details Inline - trong job-info */
+.job-details-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.job-details-inline .job-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.job-details-inline .detail-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.job-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.job-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
+    height: 50px;
+}
+
+.job-card:hover .job-card-title {
+    color: #10b981;
+}
+
+.job-company-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0;
+    font-weight: 500;
+}
+
+.company-icon {
+    font-size: 14px;
+}
+
+/* Job Details */
+.job-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding: 16px 0;
+    border-top: 2px solid #f3f4f6;
+    border-bottom: 2px solid #f3f4f6;
+    height: 84px;
+}
+
+.job-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4b5563;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.detail-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* Job Card Bottom */
+.job-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 42px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 2px solid #f3f4f6;
+}
+
+.salary-box {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.salary-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.job-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-ai {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-ai:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+.btn-favorite {
+    background-color: white;
+    border: 2px solid #e5e7eb;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+.btn-favorite:hover {
+    border-color: #f87171;
+    background-color: #fef2f2;
+    transform: scale(1.1);
+}
+
+.btn-favorite.active {
+    background-color: #fef2f2;
+    border-color: #f87171;
+}
+
+/* Old styles kept for compatibility */
 .company-logo-small {
     width: 50px;
     height: 50px;

@@ -24,6 +24,26 @@ public class CompanyController {
         return ResponseEntity.ok(companyService.getAllCompanies());
     }
 
+    @GetMapping("/my-company")
+    @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
+    public ResponseEntity<Company> getMyCompany() {
+        Long userId = SecurityUtils.getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        List<Company> companies = companyService.getAllCompanies();
+        Company company = companies.stream()
+                .filter(c -> c.getUserId() != null && c.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+        
+        if (company == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(company);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Company> getCompanyById(@PathVariable Long id) {
         return companyService.getCompanyById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
@@ -73,5 +93,41 @@ public class CompanyController {
         
         companyService.deleteCompany(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> approveCompany(@PathVariable Long id) {
+        try {
+            Company company = companyService.approveCompany(id);
+            return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+                put("success", true);
+                put("message", "Duyệt công ty thành công");
+                put("company", company);
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new java.util.HashMap<String, Object>() {{
+                put("success", false);
+                put("message", e.getMessage());
+            }});
+        }
+    }
+
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> rejectCompany(@PathVariable Long id) {
+        try {
+            Company company = companyService.rejectCompany(id);
+            return ResponseEntity.ok(new java.util.HashMap<String, Object>() {{
+                put("success", true);
+                put("message", "Từ chối công ty thành công");
+                put("company", company);
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new java.util.HashMap<String, Object>() {{
+                put("success", false);
+                put("message", e.getMessage());
+            }});
+        }
     }
 }

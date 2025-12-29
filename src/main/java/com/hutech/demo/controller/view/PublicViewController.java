@@ -22,11 +22,17 @@ public class PublicViewController {
 
     @GetMapping("/")
     public String index(Model model) {
-        // Redirect to job list or show homepage
-        List<Job> recentJobs = jobService.getAllJobs();
-        if (recentJobs.size() > 6) {
-            recentJobs = recentJobs.subList(0, 6);
-        }
+        // Lấy các jobs mới nhất có status OPEN
+        List<Job> recentJobs = jobService.getAllJobs().stream()
+                .filter(job -> job.getStatus() == com.hutech.demo.model.enums.JobStatus.OPEN)
+                .sorted((j1, j2) -> {
+                    if (j2.getCreatedAt() == null) return -1;
+                    if (j1.getCreatedAt() == null) return 1;
+                    return j2.getCreatedAt().compareTo(j1.getCreatedAt());
+                })
+                .limit(6)
+                .toList();
+        
         model.addAttribute("recentJobs", recentJobs);
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "shared/index";

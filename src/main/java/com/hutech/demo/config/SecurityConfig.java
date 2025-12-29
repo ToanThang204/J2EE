@@ -58,6 +58,13 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
                         
+                        // Authenticated view routes (pages will handle auth via JS)
+                        .requestMatchers(
+                                "/candidate/**",
+                                "/employer/**",
+                                "/admin/**"
+                        ).permitAll()
+                        
                         // Public API endpoints
                         .requestMatchers(
                                 "/api/auth/**",

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa người dùng - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/forms.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+        
+        <main class="main-content with-sidebar">
+            <div class="admin-header">
+                <h1>Chỉnh sửa người dùng</h1>
+                <div class="admin-header-actions">
+                    <a href="/admin/users" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <form id="editUserForm">
+                    <input type="hidden" id="userId" th:value="${user.id}">
+                    
+                    <div class="form-group">
+                        <label for="name">Tên <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" th:value="${user.name}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" th:value="${user.email}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Vai trò <span class="required">*</span></label>
+                        <select id="role" name="role" required>
+                            <option value="CANDIDATE" th:selected="${user.role != null and user.role.name() == 'CANDIDATE'}">Ứng viên</option>
+                            <option value="EMPLOYER" th:selected="${user.role != null and user.role.name() == 'EMPLOYER'}">Nhà tuyển dụng</option>
+                            <option value="ADMIN" th:selected="${user.role != null and user.role.name() == 'ADMIN'}">Quản trị viên</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="status">Trạng thái <span class="required">*</span></label>
+                        <select id="status" name="status" required>
+                            <option value="ACTIVE" th:selected="${user.status != null and user.status.name() == 'ACTIVE'}">Hoạt động</option>
+                            <option value="SUSPENDED" th:selected="${user.status != null and user.status.name() == 'SUSPENDED'}">Tạm ngưng</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/users'">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+    
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
+    <script>
+        document.getElementById('editUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                role: document.getElementById('role').value,
+                status: document.getElementById('status').value
+            };
+            
+            try {
+                const response = await api.put('/users/' + userId, formData);
+                if (response) {
+                    showToast('Cập nhật người dùng thành công', 'success');
+                    setTimeout(() => window.location.href = '/admin/users', 1000);
+                }
+            } catch (error) {
+                showToast('Lỗi khi cập nhật người dùng: ' + (error.message || 'Unknown error'), 'error');
+                console.error('Error updating user:', error);
+            }
+        });
+    </script>
+</body>
+</html>
