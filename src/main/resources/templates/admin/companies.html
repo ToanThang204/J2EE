@@ -1,75 +1,123 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tất cả công ty - WebCV</title>
+    <title>Quản lý công ty - WebCV</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
-    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
-    <link th:href="@{/css/responsive.css}" rel="stylesheet">
-    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/admin/admin.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <header th:replace="~{layout/fragments/header :: header}"></header>
-    
     <div class="main-container">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
+
         <main class="main-content with-sidebar">
             <div class="admin-header">
                 <h1>Quản lý công ty</h1>
-                <div class="admin-header-actions">
-                    <a href="/admin/companies-pending" class="btn btn-primary">Công ty chờ duyệt</a>
+                <div class="admin-user-info">
+                    <div class="user-meta">
+                        <span class="admin-user-name"
+                            th:text="${currentUser != null ? currentUser.user.name : 'System Admin'}">System
+                            Admin</span>
+                        <span class="admin-user-role">Quản trị viên</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
                 </div>
             </div>
-            
-            <!-- Company List -->
-            <div class="card">
-                <div class="section-header-flex">
-                    <h2 class="section-title">Tất cả công ty</h2>
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Tìm kiếm..." />
-                        <button class="btn btn-primary" onclick="searchCompanies()">Tìm kiếm</button>
-                    </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-card">
+                <div class="filter-group">
+                    <input type="text" id="searchInput" class="filter-input"
+                        placeholder="Tìm kiếm tên công ty, email...">
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="ACTIVE">Hoạt động</option>
+                        <option value="PENDING">Chờ duyệt</option>
+                        <option value="REJECTED">Từ chối</option>
+                    </select>
                 </div>
-                
+                <button class="btn-filter" onclick="applyFilters()">
+                    <i class="fas fa-search"></i> Lọc
+                </button>
+                <a href="/admin/companies-pending" class="btn-view-all"
+                    style="margin-left: 10px; background-color: #f6ad55;">
+                    <i class="fas fa-clock"></i> Chờ duyệt
+                </a>
+            </div>
+
+            <!-- Company List -->
+            <div class="admin-card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Danh sách công ty (<span th:text="${companies.size()}">0</span>)</h2>
+                </div>
+
                 <div class="data-table">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Tên công ty</th>
+                                <th>Công ty</th>
                                 <th>Email</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
-                                <th>Thao tác</th>
+                                <th>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="company : ${companies}">
-                                <td th:text="${company.id}">1</td>
-                                <td th:text="${company.companyName}">Company Name</td>
+                                <td>
+                                    <div class="name-cell">
+                                        <div class="admin-avatar gray">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        <div>
+                                            <span class="name-main" th:text="${company.companyName}">Company Name</span>
+                                            <span class="id-sub" th:text="'ID: ' + ${company.id}">ID: 1</span>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td th:text="${company.email != null ? company.email : 'N/A'}">email@example.com</td>
                                 <td>
-                                    <span class="status-badge" 
-                                          th:classappend="${company.status != null ? company.status.name() : 'PENDING'}"
-                                          th:text="${company.status != null ? (company.status.name() == 'ACTIVE' ? 'Đã duyệt' : (company.status.name() == 'PENDING' ? 'Chờ duyệt' : (company.status.name() == 'REJECTED' ? 'Từ chối' : company.status.name()))) : 'Chờ duyệt'}">
-                                        ACTIVE
+                                    <span class="status-badge"
+                                        th:classappend="${company.status != null ? company.status.name().toLowerCase() : 'pending'}"
+                                        th:text="${company.status != null ? (company.status.name() == 'ACTIVE' ? 'Hoạt động' : (company.status.name() == 'PENDING' ? 'Chờ duyệt' : 'Từ chối')) : 'Chờ duyệt'}">
+                                        Hoạt động
                                     </span>
                                 </td>
-                                <td th:text="${company.createdAt != null ? #temporals.format(company.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
+                                <td>
+                                    <div th:if="${company.createdAt != null}">
+                                        <div th:text="${#temporals.format(company.createdAt, 'd/MM/yyyy')}">3/10/2025
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="action-cell">
-                                        <button class="btn-icon view" th:onclick="'viewCompany(' + ${company.id} + ')'" title="Xem">👁️</button>
-                                        <button class="btn-icon edit" th:onclick="'approveCompany(' + ${company.id} + ')'" th:if="${company.status != null && company.status.name() == 'PENDING'}" title="Duyệt">✅</button>
-                                        <button class="btn-icon delete" th:onclick="'deleteCompany(' + ${company.id} + ')'" title="Xóa">🗑️</button>
+                                        <button class="action-btn view"
+                                            th:onclick="'viewCompany(' + ${company.id} + ')'" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button th:if="${company.status != null && company.status.name() == 'PENDING'}"
+                                            class="action-btn toggle" style="background-color: #5cb85c;"
+                                            th:onclick="'approveCompany(' + ${company.id} + ')'" title="Duyệt">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="action-btn toggle" style="background-color: #e53e3e;"
+                                            th:onclick="'deleteCompany(' + ${company.id} + ')'" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                             <tr th:if="${companies == null or companies.isEmpty()}">
-                                <td colspan="6" class="empty-state">
-                                    <div class="empty-state-icon">🏢</div>
-                                    <p class="empty-state-message">Chưa có công ty nào</p>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">
+                                    Chưa có công ty nào
                                 </td>
                             </tr>
                         </tbody>
@@ -78,53 +126,44 @@
             </div>
         </main>
     </div>
-    
-    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
-    <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
-        function searchCompanies() {
-            const searchTerm = document.getElementById('searchInput').value;
-            window.location.href = '/admin/companies?search=' + encodeURIComponent(searchTerm);
+        function logout() {
+            window.location.href = '/logout';
         }
-        
-        function viewCompany(companyId) {
-            window.location.href = '/companies/' + companyId;
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value;
+            const status = document.getElementById('statusFilter').value;
+            window.location.href = `/admin/companies?search=${encodeURIComponent(search)}&status=${status}`;
         }
-        
-        async function approveCompany(companyId) {
-            if (confirm('Bạn có chắc chắn muốn duyệt công ty này?')) {
+
+        function viewCompany(id) {
+            window.location.href = '/companies/' + id;
+        }
+
+        async function approveCompany(id) {
+            if (confirm('Duyệt công ty này?')) {
                 try {
-                    const response = await api.put('/companies/' + companyId + '/approve', {});
-                    if (response && response.success) {
-                        showToast('Duyệt công ty thành công! Role đã được nâng cấp thành EMPLOYER', 'success');
-                        setTimeout(() => window.location.reload(), 1000);
-                    }
-                } catch (error) {
-                    showToast('Lỗi khi duyệt công ty: ' + (error.message || 'Unknown error'), 'error');
-                    console.error('Error approving company:', error);
-                }
+                    const response = await api.put('/companies/' + id + '/approve', {});
+                    if (response && response.success) location.reload();
+                } catch (e) { console.error(e); }
             }
         }
-        
-        async function deleteCompany(companyId) {
-            if (confirm('Bạn có chắc chắn muốn xóa công ty này?')) {
+
+        async function deleteCompany(id) {
+            if (confirm('Xóa công ty này?')) {
                 try {
-                    const response = await api.delete('/companies/' + companyId);
-                    if (response && response.success) {
-                        showToast('Xóa công ty thành công', 'success');
-                        setTimeout(() => window.location.reload(), 1000);
-                    }
-                } catch (error) {
-                    showToast('Lỗi khi xóa công ty', 'error');
-                }
+                    const response = await api.delete('/companies/' + id);
+                    if (response && response.success) location.reload();
+                } catch (e) { console.error(e); }
             }
         }
     </script>
 </body>
-</html>
 
+</html>

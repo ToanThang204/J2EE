@@ -1,62 +1,92 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công ty chờ duyệt - WebCV</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
-    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
-    <link th:href="@{/css/responsive.css}" rel="stylesheet">
-    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/admin/admin.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <header th:replace="~{layout/fragments/header :: header}"></header>
-    
     <div class="main-container">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
+
         <main class="main-content with-sidebar">
             <div class="admin-header">
                 <h1>Công ty chờ duyệt</h1>
-                <a href="/admin/companies" class="btn btn-secondary">Xem tất cả</a>
-            </div>
-            
-            <div class="card">
-                <div class="section-header-flex">
-                    <h2 class="section-title">Danh sách công ty chờ duyệt</h2>
+                <div class="admin-user-info">
+                    <div class="user-meta">
+                        <span class="admin-user-name"
+                            th:text="${currentUser != null ? currentUser.user.name : 'System Admin'}">System
+                            Admin</span>
+                        <span class="admin-user-role">Quản trị viên</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
                 </div>
-                
+            </div>
+
+            <div class="admin-card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Danh sách chờ duyệt (<span
+                            th:text="${pendingCompanies != null ? pendingCompanies.size() : 0}">0</span>)</h2>
+                    <a href="/admin/companies" class="btn-view-all">Xem tất cả công ty</a>
+                </div>
+
                 <div class="data-table">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Tên công ty</th>
+                                <th>Công ty</th>
                                 <th>Email</th>
                                 <th>Người đăng ký</th>
                                 <th>Ngày đăng ký</th>
-                                <th>Thao tác</th>
+                                <th>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="company : ${pendingCompanies}">
-                                <td th:text="${company.id}">1</td>
-                                <td th:text="${company.companyName}">Company Name</td>
+                                <td>
+                                    <div class="name-cell">
+                                        <div class="admin-avatar gray"><i class="fas fa-building"></i></div>
+                                        <div>
+                                            <span class="name-main" th:text="${company.companyName}">Company Name</span>
+                                            <span class="id-sub" th:text="'ID: ' + ${company.id}">ID: 1</span>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td th:text="${company.email != null ? company.email : 'N/A'}">email@example.com</td>
                                 <td th:text="${company.user != null ? company.user.name : 'N/A'}">User Name</td>
-                                <td th:text="${company.createdAt != null ? #temporals.format(company.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
+                                <td
+                                    th:text="${company.createdAt != null ? #temporals.format(company.createdAt, 'dd-MM-yyyy HH:mm') : 'N/A'}">
+                                    01-01-2024</td>
                                 <td>
                                     <div class="action-cell">
-                                        <button class="btn btn-primary" th:onclick="'approveCompany(' + ${company.id} + ')'">Duyệt</button>
-                                        <button class="btn btn-secondary" th:onclick="'viewCompany(' + ${company.id} + ')'">Xem</button>
-                                        <button class="btn-icon delete" th:onclick="'rejectCompany(' + ${company.id} + ')'" title="Từ chối">❌</button>
+                                        <button class="action-btn view"
+                                            th:onclick="'viewCompany(' + ${company.id} + ')'" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="action-btn toggle" style="background-color: #f6ad55;"
+                                            th:onclick="'requestPayment(' + ${company.id} + ')'"
+                                            title="Yêu cầu thanh toán">
+                                            <i class="fas fa-credit-card"></i>
+                                        </button>
+                                        <button class="action-btn toggle" style="background-color: #e53e3e;"
+                                            th:onclick="'rejectCompany(' + ${company.id} + ')'" title="Từ chối">
+                                            <i class="fas fa-times"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                             <tr th:if="${pendingCompanies == null or pendingCompanies.isEmpty()}">
-                                <td colspan="6" class="empty-state">
-                                    <div class="empty-state-icon">✅</div>
-                                    <p class="empty-state-message">Không có công ty nào chờ duyệt</p>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">
+                                    Không có công ty nào đang chờ duyệt
                                 </td>
                             </tr>
                         </tbody>
@@ -65,49 +95,58 @@
             </div>
         </main>
     </div>
-    
-    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
-    <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
-        async function approveCompany(companyId) {
-            if (confirm('Bạn có chắc chắn muốn duyệt công ty này?')) {
+        function logout() {
+            window.location.href = '/logout';
+        }
+
+        function viewCompany(id) {
+            window.location.href = '/companies/' + id;
+        }
+
+        async function requestPayment(id) {
+            const amount = prompt('Nhập số tiền phí nâng cấp (VND):', '2000');
+            if (amount) {
                 try {
-                    const response = await api.put('/companies/' + companyId + '/approve', {});
+                    const response = await api.post('/admin/companies/' + id + '/request-payment?amount=' + amount, {});
                     if (response && response.success) {
-                        showToast('Duyệt công ty thành công! Role đã được nâng cấp thành EMPLOYER', 'success');
-                        setTimeout(() => window.location.reload(), 1000);
+                        alert('Đã gửi yêu cầu thanh toán kèm mã QR thành công!');
+                        location.reload();
                     }
-                } catch (error) {
-                    showToast('Lỗi khi duyệt công ty: ' + (error.message || 'Unknown error'), 'error');
-                    console.error('Error approving company:', error);
+                } catch (e) {
+                    console.error('Error requesting payment:', e);
                 }
             }
         }
-        
-        async function rejectCompany(companyId) {
-            if (confirm('Bạn có chắc chắn muốn từ chối công ty này?')) {
+
+        async function approveCompany(id) {
+            // Keep this for backward compatibility or direct admin bypass if needed
+            if (confirm('Duyệt công ty này trực tiếp (không qua thanh toán)?')) {
                 try {
-                    const response = await api.put('/companies/' + companyId + '/reject', {});
-                    if (response && response.success) {
-                        showToast('Từ chối công ty thành công', 'success');
-                        setTimeout(() => window.location.reload(), 1000);
-                    }
-                } catch (error) {
-                    showToast('Lỗi khi từ chối công ty: ' + (error.message || 'Unknown error'), 'error');
-                    console.error('Error rejecting company:', error);
+                    const response = await api.put('/companies/' + id + '/approve', {});
+                    if (response && response.success) location.reload();
+                } catch (e) {
+                    console.error('Error approving company:', e);
                 }
             }
         }
-        
-        function viewCompany(companyId) {
-            window.location.href = '/companies/' + companyId;
+
+        async function rejectCompany(id) {
+            if (confirm('Từ chối công ty này?')) {
+                try {
+                    const response = await api.put('/companies/' + id + '/reject', {});
+                    if (response && response.success) location.reload();
+                } catch (e) {
+                    console.error('Error rejecting company:', e);
+                }
+            }
         }
     </script>
 </body>
-</html>
 
+</html>

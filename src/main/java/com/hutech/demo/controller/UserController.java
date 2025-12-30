@@ -29,6 +29,21 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<User> getMyProfile() {
+        try {
+            Long userId = SecurityUtils.getCurrentUserId();
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            return userService.getUserById(userId)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         if (!SecurityUtils.isAdmin() && !id.equals(SecurityUtils.getCurrentUserId())) {
@@ -76,15 +91,19 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
-            return ResponseEntity.ok(new HashMap<String, Object>() {{
-                put("success", true);
-                put("message", "Xóa người dùng thành công");
-            }});
+            return ResponseEntity.ok(new HashMap<String, Object>() {
+                {
+                    put("success", true);
+                    put("message", "Xóa người dùng thành công");
+                }
+            });
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {{
-                put("success", false);
-                put("message", e.getMessage());
-            }});
+            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {
+                {
+                    put("success", false);
+                    put("message", e.getMessage());
+                }
+            });
         }
     }
 
@@ -96,15 +115,19 @@ public class UserController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             user.setStatus(com.hutech.demo.model.enums.UserStatus.SUSPENDED);
             userService.updateUser(id, user);
-            return ResponseEntity.ok(new HashMap<String, Object>() {{
-                put("success", true);
-                put("message", "Tạm ngưng tài khoản thành công");
-            }});
+            return ResponseEntity.ok(new HashMap<String, Object>() {
+                {
+                    put("success", true);
+                    put("message", "Tạm ngưng tài khoản thành công");
+                }
+            });
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {{
-                put("success", false);
-                put("message", e.getMessage());
-            }});
+            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {
+                {
+                    put("success", false);
+                    put("message", e.getMessage());
+                }
+            });
         }
     }
 
@@ -116,15 +139,19 @@ public class UserController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             user.setStatus(com.hutech.demo.model.enums.UserStatus.ACTIVE);
             userService.updateUser(id, user);
-            return ResponseEntity.ok(new HashMap<String, Object>() {{
-                put("success", true);
-                put("message", "Kích hoạt tài khoản thành công");
-            }});
+            return ResponseEntity.ok(new HashMap<String, Object>() {
+                {
+                    put("success", true);
+                    put("message", "Kích hoạt tài khoản thành công");
+                }
+            });
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {{
-                put("success", false);
-                put("message", e.getMessage());
-            }});
+            return ResponseEntity.badRequest().body(new HashMap<String, Object>() {
+                {
+                    put("success", false);
+                    put("message", e.getMessage());
+                }
+            });
         }
     }
 
@@ -133,24 +160,26 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> upgradeToEmployer(@Valid @RequestBody UpgradeToEmployerRequest request) {
         try {
             Long userId = SecurityUtils.getCurrentUserId();
-            
+
             // Debug logging
             System.out.println("=== Upgrade Request Debug ===");
             System.out.println("User ID: " + userId);
             System.out.println("Company Name: " + request.getCompanyName());
-            System.out.println("Logo received: " + (request.getLogo() != null ? "Yes (length: " + request.getLogo().length() + ")" : "No"));
+            System.out.println("Logo received: "
+                    + (request.getLogo() != null ? "Yes (length: " + request.getLogo().length() + ")" : "No"));
             if (request.getLogo() != null) {
-                System.out.println("Logo prefix: " + request.getLogo().substring(0, Math.min(50, request.getLogo().length())));
+                System.out.println(
+                        "Logo prefix: " + request.getLogo().substring(0, Math.min(50, request.getLogo().length())));
             }
             System.out.println("===========================");
-            
+
             User updatedUser = userService.upgradeToEmployer(userId, request);
-            
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Nâng cấp thành công! Bạn đã trở thành nhà tuyển dụng.");
             response.put("user", updatedUser);
-            
+
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             Map<String, Object> response = new HashMap<>();

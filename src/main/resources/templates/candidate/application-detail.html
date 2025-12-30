@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết ứng tuyển - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+
+        <main class="main-content with-sidebar">
+            <div class="page-header" style="margin-bottom: 20px;">
+                <button onclick="window.history.back()" class="btn btn-secondary" style="margin-bottom: 16px;">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </button>
+            </div>
+
+            <div th:if="${application != null}" class="card" style="padding: 30px;">
+                <!-- Application Header -->
+                <div class="application-detail-header" style="border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px;">
+                    <h2 th:text="${application.job != null ? application.job.title : 'N/A'}" 
+                        style="margin: 0 0 10px 0; color: #333; font-size: 24px;">Job Title</h2>
+                    <p th:text="${application.job != null and application.job.company != null ? application.job.company.companyName : 'N/A'}"
+                        style="margin: 0 0 10px 0; color: #666; font-size: 16px;">Company Name</p>
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <span class="status-badge" th:text="${application.status}"
+                            th:classappend="${application.status == 'PENDING' ? 'status-pending' : (application.status == 'INTERVIEW' ? 'status-interview' : 'status-hired')}"
+                            style="padding: 8px 16px; border-radius: 20px; font-weight: 500;">Status</span>
+                        <span style="color: #999; font-size: 14px;">
+                            Ứng tuyển: <span th:text="${#dates.format(application.createdAt, 'dd/MM/yyyy')}">Date</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Job Details Section -->
+                <div th:if="${application.job != null}" style="margin-bottom: 30px;">
+                    <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">Thông tin việc làm</h3>
+                    <div style="background: #f9f9f9; padding: 20px; border-radius: 8px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <p style="color: #666; font-size: 13px; margin-bottom: 5px;">Loại công việc</p>
+                                <p th:text="${application.job.jobType != null ? application.job.jobType : 'N/A'}"
+                                    style="margin: 0; color: #333; font-weight: 500;">Job Type</p>
+                            </div>
+                            <div>
+                                <p style="color: #666; font-size: 13px; margin-bottom: 5px;">Mức lương</p>
+                                <p th:text="${application.job.salary != null ? application.job.salary : 'Thỏa thuận'}"
+                                    style="margin: 0; color: #333; font-weight: 500;">Salary</p>
+                            </div>
+                            <div>
+                                <p style="color: #666; font-size: 13px; margin-bottom: 5px;">Địa điểm</p>
+                                <p th:text="${application.job.location != null ? application.job.location : 'N/A'}"
+                                    style="margin: 0; color: #333; font-weight: 500;">Location</p>
+                            </div>
+                            <div>
+                                <p style="color: #666; font-size: 13px; margin-bottom: 5px;">Kinh nghiệm</p>
+                                <p th:text="${application.job.experience != null ? application.job.experience : 'N/A'}"
+                                    style="margin: 0; color: #333; font-weight: 500;">Experience</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <p style="color: #666; font-size: 13px; margin-bottom: 5px;">Mô tả công việc</p>
+                            <p th:text="${application.job.description != null ? application.job.description : 'N/A'}"
+                                style="margin: 0; color: #333; line-height: 1.6;">Description</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resume Section -->
+                <div th:if="${application.resume != null}" style="margin-bottom: 30px;">
+                    <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">CV được ứng tuyển</h3>
+                    <div style="background: #f9f9f9; padding: 20px; border-radius: 8px;">
+                        <p th:text="${application.resume.title != null ? application.resume.title : 'CV không có tiêu đề'}"
+                            style="margin: 0 0 10px 0; color: #333; font-weight: 500; font-size: 16px;">Resume Title</p>
+                        <p style="margin: 0; color: #666; font-size: 14px;">
+                            Cập nhật lần cuối: <span th:text="${#dates.format(application.resume.updatedAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                        </p>
+                        <a th:href="'/candidate/resumes/' + ${application.resume.id}" 
+                            class="btn btn-primary" style="margin-top: 15px; display: inline-block;">
+                            <i class="fas fa-eye"></i> Xem chi tiết CV
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin: 0 0 15px 0; color: #333; font-size: 18px;">Ghi chú của bạn</h3>
+                    <textarea id="applicationNotes" placeholder="Thêm ghi chú về ứng tuyển này..."
+                        style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical;">Thêm ghi chú tại đây...</textarea>
+                    <button onclick="saveNotes()" class="btn btn-success" style="margin-top: 10px;">
+                        <i class="fas fa-save"></i> Lưu ghi chú
+                    </button>
+                </div>
+
+                <!-- Actions -->
+                <div style="display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <button onclick="withdrawApplication()" class="btn btn-danger">
+                        <i class="fas fa-times"></i> Rút ứng tuyển
+                    </button>
+                    <button onclick="window.location.href='/candidate/applications'" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                    </button>
+                </div>
+            </div>
+
+            <div th:if="${application == null}" class="empty-state" style="text-align: center; padding: 60px 20px;">
+                <h2 style="color: #333;">Ứng tuyển không tìm thấy</h2>
+                <p style="color: #666; margin-bottom: 20px;">Ứng tuyển này không tồn tại hoặc bạn không có quyền truy cập.</p>
+                <a href="/candidate/applications" class="btn btn-primary">Quay lại danh sách ứng tuyển</a>
+            </div>
+        </main>
+    </div>
+
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script>
+        function saveNotes() {
+            const notes = document.getElementById('applicationNotes').value;
+            showToast('Ghi chú đã được lưu', 'success');
+        }
+
+        function withdrawApplication() {
+            if (confirm('Bạn có chắc chắn muốn rút ứng tuyển này không?')) {
+                showToast('Rút ứng tuyển thành công', 'success');
+                setTimeout(() => window.location.href = '/candidate/applications', 1500);
+            }
+        }
+    </script>
+</body>
+
+</html>

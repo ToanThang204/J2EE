@@ -1,82 +1,165 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hồ sơ của tôi - WebCV</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
     <link th:href="@{/css/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/forms.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
-    
-    <div class="main-container">
+
+    <div class="main-container" style="background-color: #f5f7fa; min-height: calc(100vh - 80px);">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
-        <main class="main-content with-sidebar">
-            <div class="page-header">
-                <h1>Hồ sơ của tôi</h1>
-                <button class="btn btn-primary" onclick="editProfile()">Chỉnh sửa</button>
+
+        <main class="main-content with-sidebar" style="padding: 30px;">
+            <div class="section-title-bar"
+                style="background: #5cb85c; color: white; padding: 12px 20px; border-radius: 4px; margin-bottom: 24px; font-weight: 500;">
+                Hồ sơ cá nhân
             </div>
-            
-            <div class="card">
-                <div class="avatar-upload-container">
-                    <div class="avatar-preview" th:if="${currentUser != null and currentUser.profile != null and currentUser.profile.avatar != null}">
-                        <img th:src="${currentUser.profile.avatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            <div class="card"
+                style="background: white; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); padding: 0; max-width: 900px; margin: 0 auto; overflow: hidden; border: 1px solid #edf2f7;">
+                <!-- Profile Header/Avatar Section -->
+                <div
+                    style="background: linear-gradient(135deg, #5cb85c 0%, #4cae4c 100%); padding: 40px; text-align: center; color: white;">
+                    <div style="position: relative; display: inline-block; margin-bottom: 15px;">
+                        <div
+                            style="width: 120px; height: 120px; border-radius: 50%; background: white; border: 4px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 50px; color: #5cb85c; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden;">
+                            <img th:if="${user.profile != null and user.profile.avatar != null}"
+                                th:src="${'data:image/png;base64,' + user.profile.avatar}"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                            <i th:unless="${user.profile != null and user.profile.avatar != null}"
+                                class="fas fa-user"></i>
+                        </div>
+                        <button onclick="editProfile()"
+                            style="position: absolute; bottom: 5px; right: 5px; width: 32px; height: 32px; border-radius: 50%; background: white; border: none; color: #5cb85c; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <i class="fas fa-camera" style="font-size: 14px;"></i>
+                        </button>
                     </div>
-                    <div class="avatar-preview" th:if="${currentUser == null or currentUser.profile == null or currentUser.profile.avatar == null}">
-                        <span th:text="${currentUser != null ? currentUser.name.substring(0, 1).toUpperCase() : 'U'}">U</span>
-                    </div>
+                    <h2 th:text="${user != null ? user.name : 'Người dùng'}"
+                        style="margin: 0; font-size: 24px; font-weight: 700;">Họ và tên</h2>
+                    <p th:text="${user != null ? user.email : ''}"
+                        style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">email@gmail.com</p>
                 </div>
-                
-                <div class="form-layout" style="margin-top: var(--spacing-xl);">
-                    <div class="form-group">
-                        <label class="form-label">Họ và tên</label>
-                        <input type="text" class="form-input" th:value="${currentUser != null ? currentUser.name : ''}" readonly>
+
+                <div style="padding: 40px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #f1f1f1; padding-bottom: 15px;">
+                        <h3
+                            style="margin: 0; font-size: 18px; font-weight: 600; color: #2d3748; display: flex; align-items: center;">
+                            <i class="fas fa-id-card" style="margin-right: 10px; color: #5cb85c;"></i> Thông tin chi
+                            tiết
+                        </h3>
+                        <button class="btn" onclick="editProfile()"
+                            style="background-color: #5cb85c; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; box-shadow: 0 4px 12px rgba(92, 184, 92, 0.2);">
+                            <i class="fas fa-edit" style="margin-right: 8px;"></i> Chỉnh sửa hồ sơ
+                        </button>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" th:value="${currentUser != null ? currentUser.email : ''}" readonly>
-                    </div>
-                    
-                    <div class="form-group" th:if="${currentUser != null and currentUser.profile != null}">
-                        <label class="form-label">Số điện thoại</label>
-                        <input type="tel" class="form-input" th:value="${currentUser.profile.phone != null ? currentUser.profile.phone : 'Chưa cập nhật'}" readonly>
-                    </div>
-                    
-                    <div class="form-group" th:if="${currentUser != null and currentUser.profile != null}">
-                        <label class="form-label">Địa chỉ</label>
-                        <input type="text" class="form-input" th:value="${currentUser.profile.address != null ? currentUser.profile.address : 'Chưa cập nhật'}" readonly>
-                    </div>
-                    
-                    <div class="form-group" th:if="${currentUser != null and currentUser.profile != null}">
-                        <label class="form-label">Ngày sinh</label>
-                        <input type="date" class="form-input" th:value="${currentUser.profile.dateOfBirth != null ? #temporals.format(currentUser.profile.dateOfBirth, 'yyyy-MM-dd') : ''}" readonly>
-                    </div>
-                    
-                    <div class="form-group" th:if="${currentUser != null and currentUser.profile != null}">
-                        <label class="form-label">Giới thiệu</label>
-                        <textarea class="form-input" rows="5" readonly th:text="${currentUser.profile.bio != null ? currentUser.profile.bio : 'Chưa cập nhật'}"></textarea>
+
+                    <div class="profile-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div class="info-group">
+                            <label
+                                style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Họ
+                                và tên</label>
+                            <div
+                                style="padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #2d3748; font-weight: 500; min-height: 48px; display: flex; align-items: center;">
+                                <i class="fas fa-user-circle" style="margin-right: 12px; color: #cbd5e0;"></i>
+                                <span th:text="${user != null ? user.name : ''}">Họ và tên</span>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <label
+                                style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Địa
+                                chỉ Email</label>
+                            <div
+                                style="padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #2d3748; font-weight: 500; min-height: 48px; display: flex; align-items: center;">
+                                <i class="fas fa-envelope" style="margin-right: 12px; color: #cbd5e0;"></i>
+                                <span th:text="${user != null ? user.email : ''}">Email</span>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <label
+                                style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Số
+                                điện thoại</label>
+                            <div
+                                style="padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #2d3748; font-weight: 500; min-height: 48px; display: flex; align-items: center;">
+                                <i class="fas fa-phone" style="margin-right: 12px; color: #cbd5e0;"></i>
+                                <span
+                                    th:text="${user.profile != null and user.profile.phone != null ? user.profile.phone : 'Chưa cập nhật'}">Số
+                                    điện thoại</span>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <label
+                                style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Giới
+                                tính</label>
+                            <div
+                                style="padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #2d3748; font-weight: 500; min-height: 48px; display: flex; align-items: center;">
+                                <i class="fas fa-venus-mars" style="margin-right: 12px; color: #cbd5e0;"></i>
+                                <span
+                                    th:text="${user.profile != null and user.profile.gender != null ? (user.profile.gender == 'M' ? 'Nam' : (user.profile.gender == 'F' ? 'Nữ' : 'Khác')) : 'Chưa cập nhật'}">Giới
+                                    tính</span>
+                            </div>
+                        </div>
+
+                        <div class="info-group" style="grid-column: span 2;">
+                            <label
+                                style="display: block; font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Địa
+                                chỉ hiện tại</label>
+                            <div
+                                style="padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #2d3748; font-weight: 500; min-height: 48px; display: flex; align-items: center;">
+                                <i class="fas fa-location-dot" style="margin-right: 12px; color: #cbd5e0;"></i>
+                                <span
+                                    th:text="${user.profile != null and user.profile.address != null ? user.profile.address : 'Chưa cập nhật'}">Địa
+                                    chỉ</span>
+                            </div>
+                        </div>
+
+                        <div class="info-group" style="grid-column: span 2;">
+                            <div
+                                style="background: #ebfbee; border-radius: 12px; padding: 25px; display: flex; align-items: center; justify-content: center; gap: 40px; border: 1px dashed #5cb85c;">
+                                <div style="text-align: center;">
+                                    <label
+                                        style="display: block; font-size: 12px; color: #5cb85c; font-weight: 700; margin-bottom: 5px; text-transform: uppercase;">Ngày
+                                        sinh nhật</label>
+                                    <div style="font-size: 22px; color: #2d3748; font-weight: 700;">
+                                        <i class="fas fa-cake-candles" style="margin-right: 10px; color: #5cb85c;"></i>
+                                        <span
+                                            th:text="${user.profile != null and user.profile.dateOfBirth != null ? #temporals.format(user.profile.dateOfBirth, 'MM / dd / yyyy') : 'mm / dd / yyyy'}">Birthday</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-    
+
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
     <script>
         function editProfile() {
             window.location.href = '/candidate/profile/edit';
         }
     </script>
 </body>
-</html>
 
+</html>

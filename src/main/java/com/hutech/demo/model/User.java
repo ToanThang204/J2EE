@@ -1,11 +1,14 @@
 package com.hutech.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hutech.demo.model.enums.UserRole;
 import com.hutech.demo.model.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -52,26 +55,38 @@ public class User {
     private LocalDateTime updatedAt;
 
     // Relationships
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Profile profile;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Resume> resumes;
 
+    @JsonIgnore
     @ManyToMany
-    @JoinTable(
-        name = "company_users",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "company_id")
-    )
+    @JoinTable(name = "company_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "company_id"))
     private Set<Company> companies = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Application> applications;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<SavedJob> savedJobs;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Message> messages;
 }

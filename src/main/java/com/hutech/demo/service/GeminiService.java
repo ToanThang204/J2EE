@@ -1,15 +1,21 @@
 package com.hutech.demo.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -84,26 +90,20 @@ public class GeminiService {
     }
 
     private String buildPrompt(String jobDescription, String resumeContent) {
-        return String.format("""
-            Bạn là một chuyên gia phân tích tuyển dụng. Hãy phân tích mức độ phù hợp giữa CV và mô tả công việc sau:
-
-            **MÔ TẢ CÔNG VIỆC:**
-            %s
-
-            **NỘI DUNG CV:**
-            %s
-
-            Hãy trả về kết quả dưới dạng JSON với cấu trúc sau:
-            {
-              "match_score": <số từ 0-100>,
-              "summary": "<tóm tắt ngắn gọn về độ phù hợp>",
-              "strengths": ["<điểm mạnh 1>", "<điểm mạnh 2>", ...],
-              "weaknesses": ["<điểm yếu 1>", "<điểm yếu 2>", ...],
-              "recommendations": ["<khuyến nghị 1>", "<khuyến nghị 2>", ...]
-            }
-
-            Chỉ trả về JSON, không thêm text nào khác.
-            """, jobDescription, resumeContent);
+        return "Bạn là một chuyên gia phân tích tuyển dụng. Hãy phân tích mức độ phù hợp giữa CV và mô tả công việc sau:\n\n" +
+                "**MÔ TẢ CÔNG VIỆC:**\n" +
+                jobDescription + "\n\n" +
+                "**NỘI DUNG CV:**\n" +
+                resumeContent + "\n\n" +
+                "Hãy trả về kết quả dưới dạng JSON với cấu trúc sau:\n" +
+                "{\n" +
+                "  \"match_score\": <số từ 0-100>,\n" +
+                "  \"summary\": \"<tóm tắt ngắn gọn về độ phù hợp>\",\n" +
+                "  \"strengths\": [\"<điểm mạnh 1>\", \"<điểm mạnh 2>\", ...],\n" +
+                "  \"weaknesses\": [\"<điểm yếu 1>\", \"<điểm yếu 2>\", ...],\n" +
+                "  \"recommendations\": [\"<khuyến nghị 1>\", \"<khuyến nghị 2>\", ...]\n" +
+                "}\n\n" +
+                "Chỉ trả về JSON, không thêm text nào khác.";
     }
 
     private String extractJson(String text) {

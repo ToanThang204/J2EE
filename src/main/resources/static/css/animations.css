@@ -1,6 +1,7 @@
 /* Animations and Transitions */
 
-/* Fade In */
+/* =============== FADE ANIMATIONS =============== */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -10,11 +11,61 @@
     }
 }
 
-.fade-in {
-    animation: fadeIn 0.3s ease-in;
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
-/* Slide In */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =============== SLIDE ANIMATIONS =============== */
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 @keyframes slideInUp {
     from {
         transform: translateY(20px);
@@ -26,11 +77,61 @@
     }
 }
 
-.slide-in-up {
-    animation: slideInUp 0.3s ease-out;
+@keyframes slideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
 }
 
-/* Pulse */
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* =============== SCALE ANIMATIONS =============== */
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* =============== ROTATE ANIMATIONS =============== */
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 @keyframes pulse {
     0%, 100% {
         opacity: 1;
@@ -40,14 +141,9 @@
     }
 }
 
-.pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Shake */
 @keyframes shake {
     0%, 100% {
-        transform: translateX(0);
+        transform: translateX(0)
     }
     10%, 30%, 50%, 70%, 90% {
         transform: translateX(-5px);

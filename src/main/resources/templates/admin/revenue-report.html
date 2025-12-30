@@ -1,90 +1,116 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Báo cáo doanh thu - WebCV</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
-    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
-    <link th:href="@{/css/responsive.css}" rel="stylesheet">
-    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/admin/admin.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <header th:replace="~{layout/fragments/header :: header}"></header>
-    
     <div class="main-container">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
+
         <main class="main-content with-sidebar">
             <div class="admin-header">
                 <h1>Báo cáo doanh thu</h1>
-                <div class="action-buttons">
-                    <select id="periodSelect" class="form-input" onchange="loadReport()">
+                <div class="admin-user-info">
+                    <div class="user-meta">
+                        <span class="admin-user-name"
+                            th:text="${currentUser != null ? currentUser.user.name : 'System Admin'}">System
+                            Admin</span>
+                        <span class="admin-user-role">Quản trị viên</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-card-icon green">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="summary-card-content">
+                        <div class="summary-card-number" id="totalRevenue">0</div>
+                        <div class="summary-card-label">Tổng doanh thu</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-card-icon blue">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="summary-card-content">
+                        <div class="summary-card-number" id="totalPayments">0</div>
+                        <div class="summary-card-label">Tổng số giao dịch</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-card-icon green" style="background-color: #48bb78;">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                    <div class="summary-card-content">
+                        <div class="summary-card-number" id="successfulPayments">0</div>
+                        <div class="summary-card-label">Thành công</div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-card-icon orange">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="summary-card-content">
+                        <div class="summary-card-number" id="pendingPayments">0</div>
+                        <div class="summary-card-label">Đang chờ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-card">
+                <div class="filter-group">
+                    <select id="periodSelect" class="filter-select" onchange="loadReport()">
                         <option value="today">Hôm nay</option>
                         <option value="week">Tuần này</option>
                         <option value="month" selected>Tháng này</option>
                         <option value="year">Năm nay</option>
                     </select>
                 </div>
+                <button class="btn-filter" onclick="loadReport()">
+                    <i class="fas fa-sync"></i> Làm mới
+                </button>
             </div>
-            
-            <!-- Summary Cards -->
-            <div class="summary-cards">
-                <div class="summary-card">
-                    <div class="summary-card-icon green">💰</div>
-                    <div class="summary-card-content">
-                        <div class="summary-card-number" id="totalRevenue">0</div>
-                        <div class="summary-card-label">Tổng doanh thu</div>
-                    </div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-card-icon blue">💳</div>
-                    <div class="summary-card-content">
-                        <div class="summary-card-number" id="totalPayments">0</div>
-                        <div class="summary-card-label">Tổng số giao dịch</div>
-                    </div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-card-icon orange">✅</div>
-                    <div class="summary-card-content">
-                        <div class="summary-card-number" id="successfulPayments">0</div>
-                        <div class="summary-card-label">Giao dịch thành công</div>
-                    </div>
-                </div>
-                
-                <div class="summary-card">
-                    <div class="summary-card-icon purple">⏳</div>
-                    <div class="summary-card-content">
-                        <div class="summary-card-number" id="pendingPayments">0</div>
-                        <div class="summary-card-label">Giao dịch chờ xử lý</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
+
+            <!-- Transaction List -->
+            <div class="admin-card">
                 <div class="section-header-flex">
                     <h2 class="section-title">Chi tiết giao dịch</h2>
                 </div>
-                
+
                 <div class="data-table">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Người dùng</th>
                                 <th>Công ty</th>
                                 <th>Số tiền</th>
                                 <th>Trạng thái</th>
-                                <th>Ngày thanh toán</th>
+                                <th>Ngày giao dịch</th>
                             </tr>
                         </thead>
                         <tbody id="paymentsTableBody">
                             <tr>
-                                <td colspan="6" class="empty-state">
-                                    <div class="empty-state-icon">📊</div>
-                                    <p class="empty-state-message">Đang tải dữ liệu...</p>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">
+                                    Đang tải dữ liệu...
                                 </td>
                             </tr>
                         </tbody>
@@ -93,54 +119,62 @@
             </div>
         </main>
     </div>
-    
-    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
+        function logout() {
+            window.location.href = '/logout';
+        }
+
         async function loadReport() {
             const period = document.getElementById('periodSelect').value;
             try {
-                const response = await api.get('/api/admin/revenue-report?period=' + period);
+                const response = await api.get('/admin/revenue-report?period=' + period);
                 if (response && response.success && response.data) {
                     const data = response.data;
-                    document.getElementById('totalRevenue').textContent = formatCurrency(data.totalRevenue || 0);
+                    document.getElementById('totalRevenue').textContent = formatCurrency(data.totalRevenue || 0) + ' VND';
                     document.getElementById('totalPayments').textContent = data.totalPayments || 0;
                     document.getElementById('successfulPayments').textContent = data.successfulPayments || 0;
                     document.getElementById('pendingPayments').textContent = data.pendingPayments || 0;
-                    
-                    // Update table
+
                     const tbody = document.getElementById('paymentsTableBody');
                     if (data.payments && data.payments.length > 0) {
                         tbody.innerHTML = data.payments.map(payment => `
                             <tr>
-                                <td>${payment.id}</td>
-                                <td>${payment.user ? payment.user.name : 'N/A'}</td>
-                                <td>${payment.company ? payment.company.companyName : 'N/A'}</td>
-                                <td>${formatCurrency(payment.amount)} ${payment.currency || 'VND'}</td>
-                                <td><span class="status-badge ${payment.status === 'paid' ? 'approved' : 'pending'}">${payment.status}</span></td>
+                                <td>
+                                    <div class="name-cell">
+                                        <div class="admin-avatar gray"><i class="fas fa-user"></i></div>
+                                        <span class="name-main">${payment.user ? payment.user.name : 'N/A'}</span>
+                                    </div>
+                                </td>
+                                <td style="font-weight: 600;">${payment.company ? payment.company.companyName : 'N/A'}</td>
+                                <td style="color: #38a169; font-weight: 700;">${formatCurrency(payment.amount)}đ</td>
+                                <td>
+                                    <span class="status-badge ${payment.status === 'paid' ? 'active' : 'pending'}">
+                                        ${payment.status === 'paid' ? 'THÀNH CÔNG' : 'CHỜ DUYỆT'}
+                                    </span>
+                                </td>
                                 <td>${payment.paidAt ? new Date(payment.paidAt).toLocaleDateString('vi-VN') : 'N/A'}</td>
                             </tr>
                         `).join('');
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">📊</div><p class="empty-state-message">Không có dữ liệu</p></td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">Không có giao dịch nào</td></tr>';
                     }
                 }
             } catch (error) {
-                console.error('Error loading report:', error);
-                showToast('Lỗi khi tải báo cáo', 'error');
+                console.error('Error:', error);
             }
         }
-        
+
         function formatCurrency(amount) {
             return new Intl.NumberFormat('vi-VN').format(amount);
         }
-        
-        // Load on page load
+
         document.addEventListener('DOMContentLoaded', loadReport);
     </script>
 </body>
-</html>
 
+</html>

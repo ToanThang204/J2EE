@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,71 +8,365 @@
     <link th:href="@{/css/main.css}" rel="stylesheet">
     <link th:href="@{/css/shared/header.css}" rel="stylesheet">
     <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
-    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
-    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
-    <link th:href="@{/css/roles/candidate/cv.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
     <link th:href="@{/css/forms.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link th:href="@{/css/candidate/cv-builder.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
-    
-    <div class="main-container">
-        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
-        <main class="main-content with-sidebar">
-            <div class="page-header">
-                <h1>Tạo CV mới</h1>
-                <a href="/candidate/cv-index" class="btn btn-secondary">Quay lại</a>
+
+    <div class="cv-builder-container">
+        <!-- Templates Sidebar -->
+        <aside class="templates-sidebar">
+            <h3>Mẫu CV</h3>
+
+            <!-- LAYOUT CƠ BẢN -->
+            <div class="template-category">
+                <h4>LAYOUT CƠ BẢN</h4>
+                <div class="template-grid">
+                    <div class="template-item active" onclick="selectTemplate('simple')" data-template="simple">
+                        <div class="template-preview">
+                            <div
+                                style="background: white; padding: 8px; font-size: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                    <div
+                                        style="width: 25px; height: 25px; border-radius: 50%; background: #e0e0e0; border: 1px solid #ccc; flex-shrink: 0;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div
+                                            style="font-weight: bold; font-size: 7px; margin-bottom: 2px; color: #333;">
+                                            TÊN</div>
+                                        <div style="font-size: 5px; color: #666;">Chức danh</div>
+                                    </div>
+                                </div>
+                                <div style="border-top: 1px solid #eee; padding-top: 4px; font-size: 5px; color: #333;">
+                                    Thông tin liên hệ</div>
+                            </div>
+                        </div>
+                        <div class="template-name">Đơn giản</div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="card">
-                <form id="cvForm" class="form-layout">
-                    <div class="form-group">
-                        <label class="form-label">Tiêu đề CV <span class="required-indicator">*</span></label>
-                        <input type="text" class="form-input" id="title" required placeholder="VD: CV Frontend Developer">
+
+            <!-- LAYOUT CHUYÊN NGHIỆP -->
+            <div class="template-category">
+                <h4>LAYOUT CHUYÊN NGHIỆP</h4>
+                <div class="template-grid">
+                    <div class="template-item" onclick="selectTemplate('professional')" data-template="professional">
+                        <div class="template-preview">
+                            <div
+                                style="display: flex; height: 45px; font-size: 6px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                <div
+                                    style="background: #2c3e50; padding: 5px; width: 35%; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 2px solid #1a252f;">
+                                    <div style="font-weight: bold; font-size: 7px; margin-bottom: 2px;">TÊN</div>
+                                    <div style="font-size: 5px; opacity: 0.9;">Chức danh</div>
+                                </div>
+                                <div
+                                    style="background: white; padding: 5px; width: 65%; display: flex; flex-direction: column; justify-content: center;">
+                                    <div style="font-size: 5px; margin-bottom: 2px; color: #2c3e50; font-weight: 500;">
+                                        Thông tin</div>
+                                    <div style="font-size: 5px; color: #666;">Nội dung</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-name">Modern Pro</div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Mục tiêu nghề nghiệp</label>
-                        <textarea class="form-input" id="objective" rows="5" placeholder="Mô tả mục tiêu nghề nghiệp của bạn..."></textarea>
+
+                    <div class="template-item" onclick="selectTemplate('sidebar')" data-template="sidebar">
+                        <div class="template-preview">
+                            <div
+                                style="display: flex; height: 45px; font-size: 6px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                <div
+                                    style="background: #34495e; padding: 5px; width: 30%; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 2px solid #2c3e50;">
+                                    <div
+                                        style="font-weight: bold; font-size: 7px; text-transform: uppercase; margin-bottom: 2px;">
+                                        TÊN</div>
+                                    <div style="font-size: 5px; opacity: 0.8;">Sidebar</div>
+                                </div>
+                                <div
+                                    style="background: white; padding: 5px; width: 70%; display: flex; flex-direction: column; justify-content: center;">
+                                    <div style="font-size: 5px; margin-bottom: 2px; font-weight: bold; color: #34495e;">
+                                        Section</div>
+                                    <div style="font-size: 5px; color: #666;">Nội dung chính</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="template-name">Professional Sidebar</div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Kinh nghiệm</label>
-                        <textarea class="form-input" id="experience" rows="10" placeholder="Mô tả kinh nghiệm làm việc của bạn..."></textarea>
-                        <small style="color: var(--medium-grey);">Bạn có thể sử dụng HTML để định dạng</small>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CV Preview -->
+        <main class="cv-preview">
+            <div class="cv-preview-header">
+                <h3>CV của bạn</h3>
+                <div class="preview-actions">
+                    <button onclick="toggleEditMode()" class="btn btn-secondary" id="edit-mode-btn">
+                        <i class="fas fa-edit"></i> Chế độ chỉnh sửa
+                    </button>
+                    <button onclick="saveCV()" class="btn btn-success">
+                        <i class="fas fa-save"></i> Lưu CV
+                    </button>
+                    <div class="export-dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" onclick="toggleExportDropdown()">
+                            <i class="fas fa-download"></i> Xuất CV
+                        </button>
+                        <div class="export-menu" id="export-menu" style="display: none;">
+                            <button onclick="exportCV('pdf')" class="export-option">
+                                <i class="fas fa-file-pdf"></i> Xuất PDF
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Học vấn</label>
-                        <textarea class="form-input" id="education" rows="8" placeholder="Mô tả trình độ học vấn của bạn..."></textarea>
-                        <small style="color: var(--medium-grey);">Bạn có thể sử dụng HTML để định dạng</small>
+                </div>
+            </div>
+            <div id="cv-template" class="cv-template">
+                <!-- CV content will be rendered here -->
+            </div>
+        </main>
+
+        <!-- Form Input Sidebar -->
+        <aside class="form-input-sidebar">
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" onclick="showFormTab('input')" id="tab-input">
+                    <i class="fas fa-edit"></i> Nhập liệu
+                </button>
+                <button class="tab-btn" onclick="showFormTab('customize')" id="tab-customize">
+                    <i class="fas fa-palette"></i> Tùy chỉnh
+                </button>
+            </div>
+
+            <!-- Form Input Tab -->
+            <div class="form-tab-content active" id="form-input-tab">
+                <h3>Nhập thông tin CV</h3>
+                <form id="cv-form" onsubmit="handleSubmitCV(event)">
+                    <!-- Basic Info -->
+                    <div class="form-section">
+                        <h4 class="section-title">Thông tin cơ bản</h4>
+                        <div class="form-group">
+                            <label>Tiêu đề CV</label>
+                            <input type="text" id="cv-title" placeholder="VD: CV Lê Quang Dũng" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Mục tiêu nghề nghiệp</label>
+                            <textarea id="cv-objective" rows="4" placeholder="Mô tả mục tiêu nghề nghiệp của bạn..."
+                                class="form-control"></textarea>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Kỹ năng</label>
-                        <textarea class="form-input" id="skills" rows="6" placeholder="Liệt kê các kỹ năng của bạn..."></textarea>
-                        <small style="color: var(--medium-grey);">Bạn có thể sử dụng HTML để định dạng</small>
+
+                    <!-- Header Info -->
+                    <div class="form-section">
+                        <h4 class="section-title">Thông tin cá nhân</h4>
+                        <div class="form-group">
+                            <label>Họ và tên</label>
+                            <input type="text" id="header-full-name" placeholder="Họ và tên đầy đủ" class="form-control"
+                                onchange="updateCVPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Chức danh</label>
+                            <input type="text" id="header-title" placeholder="VD: Frontend Developer"
+                                class="form-control" onchange="updateCVPreview()">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ngày sinh</label>
+                                <input type="date" id="header-birthday" class="form-control"
+                                    onchange="updateCVPreview()">
+                            </div>
+                            <div class="form-group">
+                                <label>Giới tính</label>
+                                <select id="header-gender" class="form-control" onchange="updateCVPreview()">
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="male">Nam</option>
+                                    <option value="female">Nữ</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="text" id="header-phone" placeholder="0123456789" class="form-control"
+                                onchange="updateCVPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="header-email" placeholder="email@example.com" class="form-control"
+                                onchange="updateCVPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Website / LinkedIn</label>
+                            <input type="url" id="header-website" placeholder="linkedin.com/in/profile"
+                                class="form-control" onchange="updateCVPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ</label>
+                            <input type="text" id="header-address" placeholder="Quận/Huyện, Tỉnh/Thành phố"
+                                class="form-control" onchange="updateCVPreview()">
+                        </div>
                     </div>
-                    
+
+                    <!-- Education -->
+                    <div class="form-section">
+                        <h4 class="section-title">Học vấn</h4>
+                        <div id="educations-container">
+                            <!-- Education items will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addEducation()">
+                            <i class="fas fa-plus"></i> Thêm học vấn
+                        </button>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="form-section">
+                        <h4 class="section-title">Kinh nghiệm làm việc</h4>
+                        <div id="experiences-container">
+                            <!-- Experience items will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addExperience()">
+                            <i class="fas fa-plus"></i> Thêm kinh nghiệm
+                        </button>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="form-section">
+                        <h4 class="section-title">Kỹ năng</h4>
+                        <div id="skills-container">
+                            <!-- Skills will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSkill()">
+                            <i class="fas fa-plus"></i> Thêm kỹ năng
+                        </button>
+                    </div>
+
+                    <!-- Certifications -->
+                    <div class="form-section">
+                        <h4 class="section-title">Chứng chỉ</h4>
+                        <div id="certifications-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCertification()">
+                            <i class="fas fa-plus"></i> Thêm chứng chỉ
+                        </button>
+                    </div>
+
+                    <!-- Awards -->
+                    <div class="form-section">
+                        <h4 class="section-title">Giải thưởng</h4>
+                        <div id="awards-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAward()">
+                            <i class="fas fa-plus"></i> Thêm giải thưởng
+                        </button>
+                    </div>
+
+                    <!-- Activities -->
+                    <div class="form-section">
+                        <h4 class="section-title">Hoạt động</h4>
+                        <div id="activities-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addActivity()">
+                            <i class="fas fa-plus"></i> Thêm hoạt động
+                        </button>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="form-section">
+                        <h4 class="section-title">Dự án</h4>
+                        <div id="projects-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addProject()">
+                            <i class="fas fa-plus"></i> Thêm dự án
+                        </button>
+                    </div>
+
+                    <!-- References -->
+                    <div class="form-section">
+                        <h4 class="section-title">Người tham khảo</h4>
+                        <div id="references-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addReference()">
+                            <i class="fas fa-plus"></i> Thêm người tham khảo
+                        </button>
+                    </div>
+
+                    <!-- Hobbies -->
+                    <div class="form-section">
+                        <h4 class="section-title">Sở thích</h4>
+                        <div id="hobbies-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addHobby()">
+                            <i class="fas fa-plus"></i> Thêm sở thích
+                        </button>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="form-section">
+                        <h4 class="section-title">Thông tin thêm</h4>
+                        <div id="additional-container"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAdditionalInfo()">
+                            <i class="fas fa-plus"></i> Thêm thông tin
+                        </button>
+                    </div>
+
                     <div class="action-buttons">
                         <button type="submit" class="btn btn-primary">Lưu CV</button>
-                        <button type="button" class="btn btn-secondary" onclick="previewCV()">Xem trước</button>
-                        <a href="/candidate/cv-index" class="btn btn-secondary">Hủy</a>
+                        <a href="/candidate/cv-index" class="btn btn-secondary">Quay lại</a>
                     </div>
                 </form>
             </div>
-        </main>
+
+            <!-- Customize Tab -->
+            <div class="form-tab-content" id="form-customize-tab">
+                <h3>Tùy chỉnh CV</h3>
+                <form id="customize-form">
+                    <div class="form-section">
+                        <h4 class="section-title">Màu sắc</h4>
+                        <div class="color-picker">
+                            <label>Màu chính</label>
+                            <input type="color" id="customize-primary-color" value="#28a745"
+                                onchange="updateCVPreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4 class="section-title">Phông chữ</h4>
+                        <div class="form-group">
+                            <label>Font chữ</label>
+                            <select id="customize-font" class="form-control" onchange="updateCVPreview()">
+                                <option value="Arial">Arial</option>
+                                <option value="'Times New Roman'">Times New Roman</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Verdana">Verdana</option>
+                                <option value="Calibri">Calibri</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cỡ chữ cơ bản (pt)</label>
+                            <input type="number" id="customize-font-size" value="11" min="10" max="14"
+                                class="form-control" onchange="updateCVPreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4 class="section-title">Khoảng cách</h4>
+                        <div class="form-group">
+                            <label>Lề trái/phải (cm)</label>
+                            <input type="number" id="customize-margin-h" value="2" min="0.5" max="5" step="0.5"
+                                class="form-control" onchange="updateCVPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Lề trên/dưới (cm)</label>
+                            <input type="number" id="customize-margin-v" value="2" min="0.5" max="5" step="0.5"
+                                class="form-control" onchange="updateCVPreview()">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </aside>
     </div>
-    
+
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
-    <script th:src="@{/js/config.js}"></script>
-    <script th:src="@{/js/utils.js}"></script>
+
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/candidate/cv-builder.js}"></script>
 </body>
-</html>
 
+</html>

@@ -4,6 +4,8 @@ import com.hutech.demo.model.User;
 import com.hutech.demo.model.Category;
 import com.hutech.demo.model.Company;
 import com.hutech.demo.model.enums.CompanyStatus;
+import com.hutech.demo.model.Payment;
+import com.hutech.demo.repository.PaymentRepository;
 import com.hutech.demo.service.UserService;
 import com.hutech.demo.service.CategoryService;
 import com.hutech.demo.service.CompanyService;
@@ -24,20 +26,26 @@ public class AdminViewController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final CompanyService companyService;
+    private final PaymentRepository paymentRepository;
+
+    @GetMapping("/admin")
+    public String adminIndex() {
+        return "redirect:/admin/dashboard";
+    }
 
     @GetMapping("/admin/dashboard")
     public String dashboard(Model model) {
         List<User> allUsers = userService.getAllUsers();
         List<Company> allCompanies = companyService.getAllCompanies();
-        
+
         long pendingCompanies = allCompanies.stream()
                 .filter(c -> c.getStatus() == CompanyStatus.PENDING)
                 .count();
-        
+
         long approvedCompanies = allCompanies.stream()
                 .filter(c -> c.getStatus() == CompanyStatus.ACTIVE)
                 .count();
-        
+
         model.addAttribute("totalUsers", allUsers.size());
         model.addAttribute("totalCompanies", allCompanies.size());
         model.addAttribute("pendingCompanies", pendingCompanies);
@@ -91,7 +99,7 @@ public class AdminViewController {
     @GetMapping("/admin/companies")
     public String companies(Model model) {
         List<Company> companies = companyService.getAllCompanies();
-        
+
         // Calculate stats in controller to avoid Thymeleaf stream issues
         long pendingCount = companies.stream()
                 .filter(c -> c.getStatus() == CompanyStatus.PENDING)
@@ -102,7 +110,7 @@ public class AdminViewController {
         long rejectedCount = companies.stream()
                 .filter(c -> c.getStatus() == CompanyStatus.REJECTED)
                 .count();
-        
+
         model.addAttribute("companies", companies);
         model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("activeCount", activeCount);
@@ -110,5 +118,18 @@ public class AdminViewController {
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "admin/companies";
     }
-}
 
+    @GetMapping("/admin/revenue-report")
+    public String revenueReport(Model model) {
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/revenue-report";
+    }
+
+    @GetMapping("/admin/payments-pending")
+    public String paymentsPending(Model model) {
+        List<Payment> pendingPayments = paymentRepository.findByStatus("pending");
+        model.addAttribute("pendingPayments", pendingPayments);
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/payments-pending";
+    }
+}

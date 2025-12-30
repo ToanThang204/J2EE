@@ -28,6 +28,8 @@ public class Notification {
     @Column(columnDefinition = "TEXT")
     private String message;
 
+    private String link;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime readAt;
@@ -48,12 +50,12 @@ public class Notification {
         }
     }
 
-    public void setTitle(String title) {
-        this.type = title;
+    public String getTitle() {
+        return this.type;
     }
 
-    public void setLink(String link) {
-        // Store link in message or add new field if needed
+    public void setTitle(String title) {
+        this.type = title;
     }
 
     public void setIsRead(boolean isRead) {
@@ -61,6 +63,10 @@ public class Notification {
     }
 
     public boolean getIsRead() {
+        return this.readAt != null;
+    }
+
+    public boolean isRead() {
         return this.readAt != null;
     }
 }

@@ -1,31 +1,57 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý danh mục - WebCV</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
-    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
-    <link th:href="@{/css/responsive.css}" rel="stylesheet">
-    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/admin/admin.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <header th:replace="~{layout/fragments/header :: header}"></header>
-    
     <div class="main-container">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
+
         <main class="main-content with-sidebar">
             <div class="admin-header">
                 <h1>Quản lý danh mục</h1>
-                <button class="btn btn-primary" onclick="createCategory()">+ Thêm danh mục</button>
-            </div>
-            
-            <div class="card">
-                <div class="section-header-flex">
-                    <h2 class="section-title">Danh sách danh mục</h2>
+                <div class="admin-user-info">
+                    <div class="user-meta">
+                        <span class="admin-user-name"
+                            th:text="${currentUser != null ? currentUser.user.name : 'System Admin'}">System
+                            Admin</span>
+                        <span class="admin-user-role">Quản trị viên</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
                 </div>
-                
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-card">
+                <div class="filter-group">
+                    <input type="text" id="searchInput" class="filter-input" placeholder="Tìm kiếm tên danh mục...">
+                </div>
+                <button class="btn-filter" onclick="applyFilters()">
+                    <i class="fas fa-search"></i> Lọc
+                </button>
+                <button class="btn-view-all" onclick="createCategory()"
+                    style="background-color: #5cb85c; margin-left: 10px;">
+                    <i class="fas fa-plus"></i> Thêm mới
+                </button>
+            </div>
+
+            <!-- Category List -->
+            <div class="admin-card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Danh sách danh mục (<span th:text="${categories.size()}">0</span>)</h2>
+                </div>
+
                 <div class="data-table">
                     <table>
                         <thead>
@@ -34,26 +60,38 @@
                                 <th>Tên danh mục</th>
                                 <th>Mô tả</th>
                                 <th>Ngày tạo</th>
-                                <th>Thao tác</th>
+                                <th>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="category : ${categories}">
                                 <td th:text="${category.id}">1</td>
-                                <td th:text="${category.name}">Category Name</td>
-                                <td th:text="${category.description != null ? category.description : 'N/A'}">Description</td>
-                                <td th:text="${category.createdAt != null ? #temporals.format(category.createdAt, 'dd-MM-yyyy') : 'N/A'}">01-01-2024</td>
+                                <td>
+                                    <span class="name-main" th:text="${category.name}">Category Name</span>
+                                </td>
+                                <td th:text="${category.description != null ? category.description : 'N/A'}">Mô tả</td>
+                                <td>
+                                    <div th:if="${category.createdAt != null}">
+                                        <div th:text="${#temporals.format(category.createdAt, 'd/MM/yyyy')}">3/10/2025
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="action-cell">
-                                        <button class="btn-icon edit" onclick="editCategory(/*[[${category.id}]]*/)" title="Chỉnh sửa">✏️</button>
-                                        <button class="btn-icon delete" onclick="deleteCategory(/*[[${category.id}]]*/)" title="Xóa">🗑️</button>
+                                        <button class="action-btn view"
+                                            th:onclick="'editCategory(' + ${category.id} + ')'" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="action-btn toggle" style="background-color: #e53e3e;"
+                                            th:onclick="'deleteCategory(' + ${category.id} + ')'" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                             <tr th:if="${categories == null or categories.isEmpty()}">
-                                <td colspan="5" class="empty-state">
-                                    <div class="empty-state-icon">📁</div>
-                                    <p class="empty-state-message">Chưa có danh mục nào</p>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">
+                                    Chưa có danh mục nào
                                 </td>
                             </tr>
                         </tbody>
@@ -62,37 +100,37 @@
             </div>
         </main>
     </div>
-    
-    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
-    <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
+        function logout() {
+            window.location.href = '/logout';
+        }
+
         function createCategory() {
             window.location.href = '/admin/categories/create';
         }
-        
-        function editCategory(categoryId) {
-            window.location.href = '/admin/categories/' + categoryId + '/edit';
+
+        function editCategory(id) {
+            window.location.href = '/admin/categories/' + id + '/edit';
         }
-        
-        async function deleteCategory(categoryId) {
+
+        async function deleteCategory(id) {
             if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
                 try {
-                    const response = await api.delete('/api/admin/categories/' + categoryId);
+                    const response = await api.delete('/api/admin/categories/' + id);
                     if (response && response.success) {
-                        showToast('Xóa danh mục thành công', 'success');
-                        setTimeout(() => window.location.reload(), 1000);
+                        location.reload();
                     }
                 } catch (error) {
-                    showToast('Lỗi khi xóa danh mục', 'error');
+                    console.error('Error deleting category:', error);
                 }
             }
         }
     </script>
 </body>
-</html>
 
+</html>

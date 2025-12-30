@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa hồ sơ - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/forms.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .edit-form-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #edf2f7;
+        }
+
+        .avatar-upload-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+        }
+
+        .avatar-preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #5cb85c;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #cbd5e0;
+        }
+
+        .upload-btn-wrapper {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        .upload-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #5cb85c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.1);
+            background: #4cae4c;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #5cb85c;
+            box-shadow: 0 0 0 3px rgba(92, 184, 92, 0.1);
+            background: white;
+        }
+
+        .btn-save {
+            background: #5cb85c;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(92, 184, 92, 0.2);
+        }
+
+        .btn-save:hover {
+            background: #4cae4c;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+
+    <div class="main-container" style="background-color: #f5f7fa; min-height: calc(100vh - 80px);">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+
+        <main class="main-content with-sidebar" style="padding: 30px;">
+            <div class="section-title-bar"
+                style="background: #5cb85c; color: white; padding: 12px 20px; border-radius: 4px; margin-bottom: 24px; font-weight: 500;">
+                <a href="/candidate/profile" style="color: white; text-decoration: none;"><i
+                        class="fas fa-arrow-left"></i> Quay lại</a>
+                <span style="margin-left: 15px;">Chỉnh sửa hồ sơ</span>
+            </div>
+
+            <div class="edit-form-card">
+                <form id="profileForm">
+                    <!-- Avatar Upload -->
+                    <div class="avatar-upload-container">
+                        <div id="avatarPreview" class="avatar-preview">
+                            <img th:if="${user.profile != null and user.profile.avatar != null}"
+                                th:src="${'data:image/png;base64,' + user.profile.avatar}"
+                                style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            <i th:unless="${user.profile != null and user.profile.avatar != null}"
+                                class="fas fa-user"></i>
+                        </div>
+                        <div class="upload-btn-wrapper">
+                            <label for="avatarInput" class="upload-btn">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="avatarInput" accept="image/*" style="display: none;"
+                                onchange="handleAvatarUpload(this)">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" id="name" name="fullName" class="form-input" th:value="${user.name}"
+                                placeholder="Nhập họ và tên">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" id="phone" name="phone" class="form-input"
+                                th:value="${user.profile != null ? user.profile.phone : ''}"
+                                placeholder="Nhập số điện thoại">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-input"
+                                th:value="${user.profile != null ? user.profile.dateOfBirth : ''}">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Giới tính</label>
+                            <select id="gender" name="gender" class="form-input">
+                                <option value="" th:selected="${user.profile == null || user.profile.gender == null}">
+                                    Chọn giới tính</option>
+                                <option value="M" th:selected="${user.profile != null && user.profile.gender == 'M'}">
+                                    Nam</option>
+                                <option value="F" th:selected="${user.profile != null && user.profile.gender == 'F'}">Nữ
+                                </option>
+                                <option value="O" th:selected="${user.profile != null && user.profile.gender == 'O'}">
+                                    Khác</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" id="address" name="address" class="form-input"
+                                th:value="${user.profile != null ? user.profile.address : ''}"
+                                placeholder="Nhập địa chỉ của bạn">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Giới thiệu bản thân</label>
+                            <textarea id="bio" name="bio" class="form-input" rows="4" style="resize: vertical;"
+                                th:text="${user.profile != null ? user.profile.bio : ''}"
+                                placeholder="Viết vài dòng giới thiệu bản thân..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save" style="margin-right: 8px;"></i> Lưu thay đổi
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script>
+        async function handleAvatarUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // Preview locally
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('avatarPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                };
+                reader.readAsDataURL(file);
+
+                // Upload to server
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await api.post('/candidate/profile/avatar', formData);
+
+                    if (response.success) {
+                        showToast('Cập nhật ảnh đại diện thành công!', 'success');
+                    }
+                } catch (error) {
+                    console.error('Error uploading avatar:', error);
+                    showToast('Lỗi khi tải ảnh lên!', 'error');
+                }
+            }
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                fullName: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                dateOfBirth: document.getElementById('dateOfBirth').value,
+                gender: document.getElementById('gender').value,
+                address: document.getElementById('address').value,
+                bio: document.getElementById('bio').value
+            };
+
+            try {
+                const response = await api.put('/candidate/profile', formData);
+                if (response.success) {
+                    showToast('Cập nhật thông tin thành công!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/candidate/profile';
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showToast('Lỗi khi lưu thông tin!', 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

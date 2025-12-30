@@ -1,8 +1,8 @@
 package com.hutech.demo.config;
 
-import com.hutech.demo.security.JwtAuthenticationEntryPoint;
-import com.hutech.demo.security.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,8 +23,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
+import com.hutech.demo.security.JwtAuthenticationEntryPoint;
+import com.hutech.demo.security.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -32,113 +34,121 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final UserDetailsService userDetailsService;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+        private final JwtAuthenticationFilter jwtAuthFilter;
+        private final UserDetailsService userDetailsService;
+        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        // Public view routes
-                        .requestMatchers(
-                                "/",
-                                "/login",
-                                "/register",
-                                "/forgot-password",
-                                "/reset-password",
-                                "/jobs",
-                                "/jobs/**",
-                                "/companies/**",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/error"
-                        ).permitAll()
-                        
-                        // Authenticated view routes (pages will handle auth via JS)
-                        .requestMatchers(
-                                "/candidate/**",
-                                "/employer/**",
-                                "/admin/**"
-                        ).permitAll()
-                        
-                        // Public API endpoints
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/public/**",
-                                "/api/payment/webhook",
-                                "/api/categories",
-                                "/api/categories/**"
-                        ).permitAll()
-                        
-                        // Admin endpoints
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        
-                        // Employer endpoints
-                        .requestMatchers("/api/employer/**").hasAnyRole("EMPLOYER", "ADMIN")
-                        
-                        // Candidate endpoints
-                        .requestMatchers("/api/candidate/**").hasAnyRole("CANDIDATE", "ADMIN")
-                        
-                        // Common endpoints for authenticated users
-                        .requestMatchers(
-                                "/api/users/**",
-                                "/api/jobs/**",
-                                "/api/companies/**",
-                                "/api/applications/**",
-                                "/api/resumes/**",
-                                "/api/ai/**",
-                                "/api/payment/**",
-                                "/api/chat/**",
-                                "/api/notifications/**"
-                        ).authenticated()
-                        
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                .authorizeHttpRequests(auth -> auth
+                                                // Public view routes
+                                                .requestMatchers(
+                                                                "/",
+                                                                "/login",
+                                                                "/register",
+                                                                "/forgot-password",
+                                                                "/reset-password",
+                                                                "/jobs",
+                                                                "/jobs/**",
+                                                                "/companies/**",
+                                                                "/css/**",
+                                                                "/js/**",
+                                                                "/images/**",
+                                                                "/favicon.ico",
+                                                                "/manifest.json",
+                                                                "/robots.txt",
+                                                                "/logout",
+                                                                "/error")
+                                                .permitAll()
 
-        return http.build();
-    }
+                                                // Authenticated view routes (pages will handle auth via JS)
+                                                .requestMatchers(
+                                                                "/candidate/**",
+                                                                "/employer/**",
+                                                                "/admin/**")
+                                                .permitAll()
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+                                                // Public API endpoints
+                                                .requestMatchers(
+                                                                "/api/auth/**",
+                                                                "/api/public/**",
+                                                                "/api/payment/webhook",
+                                                                "/api/categories",
+                                                                "/api/categories/**")
+                                                .permitAll()
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+                                                // Admin endpoints
+                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+                                                // Employer endpoints
+                                                .requestMatchers("/api/employer/**").hasAnyRole("EMPLOYER", "ADMIN")
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+                                                // Candidate endpoints
+                                                .requestMatchers("/api/candidate/**").hasAnyRole("CANDIDATE", "ADMIN")
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+                                                // Common endpoints for authenticated users
+                                                .requestMatchers(
+                                                                "/api/users/**",
+                                                                "/api/jobs/**",
+                                                                "/api/companies/**",
+                                                                "/api/applications/**",
+                                                                "/api/resumes/**",
+                                                                "/api/ai/**",
+                                                                "/api/payment/**",
+                                                                "/api/chat/**",
+                                                                "/api/notifications/**")
+                                                .authenticated()
+
+                                                .anyRequest().authenticated())
+                                .exceptionHandling(ex -> ex
+                                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/login?logout")
+                                                .deleteCookies("auth_token", "JSESSIONID")
+                                                .invalidateHttpSession(true)
+                                                .clearAuthentication(true)
+                                                .permitAll())
+                                .authenticationProvider(authenticationProvider())
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+                return http.build();
+        }
+
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOriginPatterns(List.of("*"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("*"));
+                configuration.setExposedHeaders(List.of("Authorization"));
+                configuration.setAllowCredentials(true);
+                configuration.setMaxAge(3600L);
+
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
+
+        @Bean
+        public AuthenticationProvider authenticationProvider() {
+                DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+                authProvider.setPasswordEncoder(passwordEncoder());
+                return authProvider;
+        }
+
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+                return config.getAuthenticationManager();
+        }
+
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 }

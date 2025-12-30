@@ -1,77 +1,141 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
     <header th:fragment="header" class="main-header">
+        <!-- FontAwesome for all pages -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
         <div class="header-container">
             <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="display: none;">☰</button>
-            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="display: none;">
+                <i class="fas fa-bars"></i>
+            </button>
+
             <!-- Logo -->
             <div class="header-logo">
                 <a th:href="@{/}">
-                    <span class="logo-text">WebCV</span>
+                    <span class="logo-text" style="color: #28a745;">WebCV</span>
                 </a>
             </div>
-            
+
             <!-- Navigation -->
-            <nav class="header-nav" style="display: none;">
-                <a th:href="@{/jobs}" class="nav-link">Tạo CV</a>
-                <a th:href="@{/jobs}" class="nav-link">Công ty</a>
+            <nav class="header-nav" style="display: flex;">
+
+                <a th:href="@{/jobs}" class="nav-link">
+                    <i class="fas fa-briefcase"></i> Việc làm
+                </a>
+                <a th:href="@{/companies}" class="nav-link">
+                    <i class="fas fa-building"></i> Công ty
+                </a>
+                <a th:href="@{/candidate/cv-builder}" class="nav-link">
+                    <i class="fas fa-file-alt"></i> Tạo CV
+                </a>
             </nav>
-            
+
             <!-- Right Section -->
             <div class="header-right">
                 <!-- Notification and Favorite Badges -->
-                <div class="header-badges" style="display: none;">
-                    <div class="header-badge favorite" title="Việc làm đã lưu">
-                        <span>❤️</span>
+                <div class="header-badges" style="display: flex;">
+                    <div class="header-badge favorite" title="Việc làm đã lưu"
+                        onclick="window.location.href='/candidate/saved-jobs'">
+                        <i class="fas fa-heart"></i>
                         <span class="badge-count" id="favoriteCount">0</span>
                     </div>
                     <div class="header-badge" title="Thông báo" onclick="window.location.href='/notifications'">
-                        <span>🔔</span>
+                        <i class="fas fa-bell"></i>
                         <span class="badge-count" id="notificationCount">0</span>
                     </div>
                 </div>
-                
+
                 <!-- Upgrade Button (for candidates) -->
-                <a th:href="@{/employer/upgrade}" 
-                   class="btn-upgrade"
-                   style="display: none;">
-                    Nâng cấp lên Nhà tuyển dụng
+                <a th:href="@{/employer/upgrade}" class="btn-upgrade" style="display: none;">
+                    <i class="fas fa-crown"></i>
+                    Nâng cấp
                 </a>
-                
+
                 <!-- User Profile -->
                 <div class="user-profile" style="display: none;">
-                    <div class="user-avatar">
-                        <span class="avatar-icon">👤</span>
+                    <div class="user-avatar" id="userAvatarDisplay">
+                        <i class="fas fa-user"></i>
                     </div>
                     <div class="user-info">
-                        <span class="user-name">User Name</span>
-                        <span class="user-role">Role</span>
+                        <span class="user-name" id="userName">User</span>
+                        <span class="user-role" id="userRole">Role</span>
                     </div>
+                    <i class="fas fa-chevron-down" style="margin-left: 4px; font-size: 12px; color: #999;"></i>
                     <div class="user-dropdown">
-                        <a th:href="@{/candidate/profile}" class="profile-link-candidate">Hồ sơ</a>
-                        <a th:href="@{/employer/profile}" class="profile-link-employer">Hồ sơ</a>
-                        <a th:href="@{/admin/dashboard}" class="profile-link-admin">Dashboard</a>
-                        <a href="#" onclick="logout(); return false;">Đăng xuất</a>
+                        <!-- User Header in Dropdown -->
+                        <div class="dropdown-header profile-link-candidate" style="display: none;">
+                            <div class="dropdown-header-avatar" id="userAvatarDropdown">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div class="dropdown-header-name" id="userNameDropdown">User</div>
+                                <div class="dropdown-header-role" id="userRoleDropdown">Ứng Viên</div>
+                            </div>
+                        </div>
+                        <hr class="profile-link-candidate"
+                            style="margin: 8px 0; border: none; border-top: 1px solid #eee; display: none;">
+
+                        <!-- Candidate Menu Items -->
+                        <a th:href="@{/candidate/profile}" class="dropdown-item profile-link-candidate"
+                            style="display: none;">
+                            <i class="fas fa-id-card"></i>
+                            <span>Hồ sơ cá nhân</span>
+                        </a>
+                        <a th:href="@{/candidate/applications}" class="dropdown-item profile-link-candidate"
+                            style="display: none;">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Đơn ứng tuyển</span>
+                        </a>
+                        <a th:href="@{/candidate/saved-jobs}" class="dropdown-item profile-link-candidate"
+                            style="display: none;">
+                            <i class="fas fa-bookmark"></i>
+                            <span>Việc làm yêu thích</span>
+                        </a>
+                        <a th:href="@{/candidate/cv-index}" class="dropdown-item profile-link-candidate"
+                            style="display: none;">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Quản lý CV</span>
+                        </a>
+
+                        <!-- Separator -->
+                        <hr class="profile-link-candidate"
+                            style="margin: 8px 0; border: none; border-top: 1px solid #eee; display: none;">
+
+                        <!-- Messages -->
+                        <a th:href="@{/candidate/messages}" class="dropdown-item profile-link-candidate"
+                            style="display: none;">
+                            <i class="fas fa-inbox"></i>
+                            <span>Tin nhắn</span>
+                        </a>
+
+                        <!-- Separator before logout -->
+                        <hr style="margin: 8px 0; border: none; border-top: 1px solid #eee;">
+
+                        <!-- Logout -->
+                        <a href="#" onclick="logout(); return false;" class="dropdown-item dropdown-item-danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Đăng xuất</span>
+                        </a>
                     </div>
                 </div>
-                
+
                 <!-- Login/Register (if not authenticated) -->
-                <div class="auth-buttons">
+                <div class="auth-buttons" id="authButtons">
                     <a th:href="@{/login}" class="btn-login">Đăng nhập</a>
                     <a th:href="@{/register}" class="btn-register">Đăng ký</a>
                 </div>
             </div>
         </div>
-        
+
         <!-- Mobile Menu Overlay -->
         <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
-        </div>
     </header>
-    
+
     <!-- Header Auth Script -->
     <script th:src="@{/js/shared/header.js}"></script>
 </body>
-</html>
 
+</html>

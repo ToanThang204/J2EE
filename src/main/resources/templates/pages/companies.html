@@ -4,56 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách công ty - WebCV</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link th:href="@{/css/main.css}" rel="stylesheet">
-    <link th:href="@{/css/cards.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
+    <link th:href="@{/css/home.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
 </head>
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
     
-    <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
-        <div class="page-header">
-            <h1>Danh sách công ty</h1>
-        </div>
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Danh sách công ty</h1>
+                <p class="hero-subtitle">Khám phá các công ty hàng đầu đang tuyển dụng</p>
+            </div>
+        </section>
         
-        <div class="search-filter-section">
-            <div class="search-box">
-                <div class="search-input-wrapper">
-                    <span class="search-icon">🔍</span>
+        <!-- Search Section -->
+        <section class="section">
+            <div class="search-section">
+                <div class="search-box">
                     <input type="text" 
                            id="searchInput" 
-                           class="form-input" 
+                           class="search-input" 
                            placeholder="Tìm kiếm công ty...">
+                    <button class="btn btn-primary" onclick="searchCompanies()">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
                 </div>
-                <button class="btn btn-primary" onclick="searchCompanies()">Tìm kiếm</button>
             </div>
-        </div>
+            
+            <!-- Filter Tags -->
+            <div class="filter-section">
+                <span class="filter-label">Lọc theo:</span>
+                <div class="filter-tags">
+                    <button class="filter-tag active" data-filter="">Tất cả</button>
+                    <button class="filter-tag" data-filter="tech">Công nghệ</button>
+                    <button class="filter-tag" data-filter="finance">Tài chính</button>
+                    <button class="filter-tag" data-filter="education">Giáo dục</button>
+                    <button class="filter-tag" data-filter="healthcare">Y tế</button>
+                </div>
+            </div>
+        </section>
         
-        <div class="jobs-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
-            <div th:each="company : ${companies}" class="company-card" th:onclick="'window.location.href=\'/companies/' + ${company.id} + '\''">
-                <div style="text-align: center; margin-bottom: var(--spacing-md);">
-                    <div class="company-logo-small" style="margin: 0 auto; width: 80px; height: 80px; font-size: var(--font-size-2xl);">
-                        <span th:text="${company.companyName != null ? company.companyName.substring(0, 2).toUpperCase() : 'CO'}">CO</span>
+        <!-- Companies Grid -->
+        <section class="section">
+            <div class="companies-grid" id="companiesGrid">
+                <th:block th:each="company : ${companies}">
+                    <div class="company-card" th:onclick="'window.location.href=\'/companies/' + ${company.id} + '\''">
+                        <div class="company-logo" th:text="${company.companyName != null ? company.companyName.substring(0, 1).toUpperCase() : 'C'}">
+                        </div>
+                        <h3 class="company-name" th:text="${company.companyName}">Company Name</h3>
+                        <p class="company-desc" th:text="${company.description != null ? (company.description.length() > 80 ? company.description.substring(0, 80) + '...' : company.description) : 'Chưa có mô tả'}">
+                            Company description
+                        </p>
+                        <div class="company-info">
+                            <span th:if="${company.status != null and company.status.name() == 'APPROVED'}">
+                                <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                                Đã xác minh
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <h3 style="text-align: center; margin-bottom: var(--spacing-sm);" th:text="${company.companyName}">Company Name</h3>
-                <p style="text-align: center; color: var(--medium-grey); font-size: var(--font-size-sm);" 
-                   th:text="${company.description != null ? (company.description.length() > 100 ? company.description.substring(0, 100) + '...' : company.description) : 'Chưa có mô tả'}">
-                    Company description
-                </p>
-                <div style="margin-top: var(--spacing-md); text-align: center;">
-                    <span class="badge badge-primary" th:if="${company.status != null and company.status.name() == 'APPROVED'}">Đã duyệt</span>
-                </div>
+                </th:block>
             </div>
-        </div>
-        
-        <div th:if="${companies == null or companies.isEmpty()}" class="empty-state">
-            <div class="empty-state-icon">🏢</div>
-            <h3 class="empty-state-title">Không tìm thấy công ty nào</h3>
-            <p class="empty-state-message">Hãy thử tìm kiếm với từ khóa khác.</p>
-        </div>
-    </div>
+            
+            <!-- Empty State -->
+            <div th:if="${companies == null or companies.isEmpty()}" class="empty-state">
+                <div class="empty-state-icon">🏢</div>
+                <h3 class="empty-state-title">Không tìm thấy công ty nào</h3>
+                <p class="empty-state-message">Hãy thử tìm kiếm với từ khóa khác.</p>
+            </div>
+        </section>
+    </main>
     
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
     

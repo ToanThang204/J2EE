@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Việc làm yêu thích - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/cards.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+
+        <main class="main-content with-sidebar">
+            <!-- Green Bar Title -->
+            <div class="section-title-bar"
+                style="background: #5cb85c; color: white; padding: 12px 20px; border-radius: 4px; margin-bottom: 24px; font-weight: 500;">
+                Việc làm yêu thích
+            </div>
+
+            <div th:if="${savedJobs != null and !savedJobs.isEmpty()}" class="jobs-grid">
+                <div th:each="savedJob : ${savedJobs}" class="card" style="margin-bottom: 16px; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <h3 style="margin: 0 0 8px; font-size: 18px; color: #333;"
+                                th:text="${savedJob.job != null ? savedJob.job.title : 'N/A'}">Job Title</h3>
+                            <p style="margin: 0 0 12px; color: #666;"
+                                th:text="${savedJob.job != null and savedJob.job.company != null ? savedJob.job.company.companyName : 'N/A'}">
+                                Company Name</p>
+                            <span style="font-size: 13px; color: #999;"
+                                th:text="${savedJob.createdAt != null ? 'Đã lưu: ' + #temporals.format(savedJob.createdAt, 'dd-MM-yyyy') : ''}">Date</span>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <a th:href="@{'/jobs/' + ${savedJob.job != null ? savedJob.job.id : ''}}"
+                                class="btn btn-secondary" style="font-size: 13px;">Chi tiết</a>
+                            <button class="btn btn-outline-danger"
+                                th:onclick="'removeFromFavorites(' + ${savedJob.id} + ')'" style="font-size: 13px;">Bỏ
+                                lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State Match Image 3 -->
+            <div th:if="${savedJobs == null or savedJobs.isEmpty()}" class="empty-state"
+                style="background: white; border-radius: 8px; padding: 60px 20px; text-align: center; border: 1px solid #eee;">
+                <div class="empty-state-icon" style="margin-bottom: 20px;">
+                    <i class='fas fa-heart' style='font-size: 64px; color: #ff4757; opacity: 0.8;'></i>
+                </div>
+                <h3 style="font-size: 16px; color: #333; margin-bottom: 10px;">Không tìm thấy việc làm yêu thích nào
+                </h3>
+                <p style="color: #999; font-size: 13px;">Hãy thử thay đổi bộ lọc hoặc lưu thêm việc làm mới!</p>
+            </div>
+        </main>
+    </div>
+
+    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script>
+        async function removeFromFavorites(id) {
+            if (!confirm('Bạn có chắc chắn muốn bỏ lưu việc làm này?')) return;
+            try {
+                const response = await fetch(`/api/candidate/saved-jobs/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                });
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error removing favorite:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>

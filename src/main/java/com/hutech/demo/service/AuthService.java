@@ -74,13 +74,21 @@ public class AuthService {
 
         // Check password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            System.err.println("🔴 Password mismatch for user: " + request.getEmail());
+            System.err.println("   User status: " + user.getStatus());
+            System.err.println("   User role: " + user.getRole());
             throw new RuntimeException("Email hoặc mật khẩu không đúng");
         }
 
         // Check if user is suspended
         if (user.getStatus() == UserStatus.SUSPENDED) {
+            System.err.println("🔴 User account suspended: " + request.getEmail());
             throw new RuntimeException("Tài khoản đã bị tạm ngưng");
         }
+
+        System.out.println("✅ Login successful for user: " + request.getEmail());
+        System.out.println("   User status: " + user.getStatus());
+        System.out.println("   User role: " + user.getRole());
 
         // Generate token
         String token = jwtService.generateToken(user);

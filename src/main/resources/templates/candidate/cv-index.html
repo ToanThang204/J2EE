@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,48 +15,79 @@
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
 </head>
+
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
-    
+
     <div class="main-container">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
+
         <main class="main-content with-sidebar">
-            <div class="page-header">
-                <h1>Danh sách CV</h1>
-                <a th:href="@{/candidate/cv-builder}" class="btn btn-primary">+ Tạo CV mới</a>
+            <div class="section-title-bar"
+                style="background: #5cb85c; color: white; padding: 12px 20px; border-radius: 4px; margin-bottom: 24px; font-weight: 500;">
+                Quản lý CV
             </div>
-            
-            <div th:if="${resumes != null and !resumes.isEmpty()}">
-                <div th:each="resume : ${resumes}" class="resume-card" th:onclick="'window.location.href=\'/candidate/resumes/\' + ${resume.id}">
-                    <div class="resume-card-header">
-                        <div>
-                            <h3 class="resume-card-title" th:text="${resume.title != null ? resume.title : 'CV chưa có tiêu đề'}">Resume Title</h3>
-                            <p class="resume-card-meta" th:text="${resume.updatedAt != null ? 'Cập nhật: ' + ${#temporals.format(resume.updatedAt, 'dd-MM-yyyy')} : ''}">Updated date</p>
+            <div class="page-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <h1 style="margin: 0; font-size: 20px; color: #333; font-weight: 600;">Danh sách CV của bạn</h1>
+                <a th:href="@{/candidate/cv-builder}" class="btn btn-success"
+                    style="background: #5cb85c; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 500;">
+                    <i class="fas fa-plus" style="margin-right: 8px;"></i> Tạo CV mới
+                </a>
+            </div>
+
+            <div th:if="${resumes != null and !resumes.isEmpty()}" class="cv-list">
+                <div th:each="resume : ${resumes}" class="card"
+                    style="margin-bottom: 20px; padding: 25px; transition: all 0.3s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0 0 15px; font-size: 18px; color: #333; font-weight: 600;"
+                                th:text="${resume.title != null ? resume.title : 'CV chưa có tiêu đề'}">Candidate Resume
+                            </h3>
+                            <div style="display: flex; gap: 30px; color: #666; font-size: 13px;">
+                                <span><i class="far fa-calendar-alt" style="margin-right: 8px; color: #999;"></i>
+                                    <strong>Tạo ngày:</strong> <span
+                                        th:text="${resume.createdAt != null ? #temporals.format(resume.createdAt, 'dd/MM/yyyy') : 'N/A'}">13/12/2023</span></span>
+                                <span><i class="fas fa-sync-alt" style="margin-right: 8px; color: #999;"></i>
+                                    <strong>Cập nhật:</strong> <span
+                                        th:text="${resume.updatedAt != null ? #temporals.format(resume.updatedAt, 'dd/MM/yyyy') : 'N/A'}">24/12/2023</span></span>
+                            </div>
                         </div>
-                        <div class="resume-card-actions" onclick="event.stopPropagation()">
-                            <button class="btn-icon edit" onclick="editResume(/*[[${resume.id}]]*/)" title="Chỉnh sửa">✏️</button>
-                            <button class="btn-icon delete" onclick="deleteResume(/*[[${resume.id}]]*/)" title="Xóa">🗑️</button>
+                        <div style="display: flex; gap: 12px;">
+                            <a th:href="@{'/candidate/resumes/' + ${resume.id}}" class="action-btn" title="Xem"
+                                style="color: #6c757d; font-size: 18px;"><i class="fas fa-eye"></i></a>
+                            <a th:href="@{'/candidate/cv-builder?id=' + ${resume.id}}" class="action-btn"
+                                title="Chỉnh sửa" style="color: #6c757d; font-size: 18px;"><i
+                                    class="fas fa-edit"></i></a>
+                            <a href="javascript:void(0)" th:onclick="'deleteCV(' + ${resume.id} + ')'"
+                                class="action-btn text-danger" title="Xóa" style="font-size: 18px;"><i
+                                    class="fas fa-trash-alt"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div th:if="${resumes == null or resumes.isEmpty()}" class="empty-state">
-                <div class="empty-state-icon">📄</div>
-                <h3 class="empty-state-title">Chưa có CV nào</h3>
-                <p class="empty-state-message">Tạo CV đầu tiên của bạn để bắt đầu ứng tuyển!</p>
-                <a th:href="@{/candidate/cv-builder}" class="btn btn-primary">Tạo CV ngay</a>
+
+            <div th:if="${resumes == null or resumes.isEmpty()}" class="empty-state"
+                style="background: white; border-radius: 8px; padding: 60px 20px; text-align: center; border: 1px solid #eee;">
+                <div class="empty-state-icon" style="margin-bottom: 20px;">
+                    <i class="fas fa-file-invoice" style="font-size: 64px; color: #eee;"></i>
+                </div>
+                <h3 style="font-size: 16px; color: #333; margin-bottom: 10px;">Chưa có CV nào</h3>
+                <p style="color: #999; font-size: 13px; margin-bottom: 20px;">Hãy tạo CV đầu tiên của bạn để bắt đầu ứng
+                    tuyển các công việc hấp dẫn!</p>
+                <a th:href="@{/candidate/cv-builder}" class="btn btn-success"
+                    style="background: #20c997; border: none; padding: 10px 25px; border-radius: 6px;">Tạo CV ngay</a>
             </div>
         </main>
     </div>
-    
+
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/candidate/cv-management.js}"></script>
 </body>
-</html>
 
+</html>

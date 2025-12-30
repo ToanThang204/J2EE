@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API Login</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group { 
+            margin: 10px 0; 
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input { 
+            padding: 8px; 
+            width: 300px;
+            font-size: 14px;
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px;
+            cursor: pointer;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .output { 
+            background: #f9f9f9; 
+            padding: 10px; 
+            margin-top: 10px; 
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        pre { 
+            white-space: pre-wrap; 
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .success {
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test API Login & Register</h1>
+        
+        <div class="section">
+            <h2>Test Login API</h2>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="email" value="phamquanghieu100804@gmail.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="password" value="password123">
+            </div>
+            
+            <button onclick="testLogin()">🔐 Test Login</button>
+            
+            <div class="output" id="loginOutput"></div>
+        </div>
+
+        <div class="section">
+            <h2>Test Register API</h2>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" id="regName" value="Test User">
+            </div>
+            
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="regEmail" value="testuser@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="regPassword" value="password123">
+            </div>
+            
+            <div class="form-group">
+                <label>Password Confirmation:</label>
+                <input type="password" id="regPasswordConfirm" value="password123">
+            </div>
+            
+            <button onclick="testRegister()">✍️ Test Register</button>
+            
+            <div class="output" id="registerOutput"></div>
+        </div>
+
+        <div class="section">
+            <h2>Check LocalStorage</h2>
+            <button onclick="checkStorage()">📦 Check Storage</button>
+            <button onclick="clearStorage()">🗑️ Clear Storage</button>
+            <div class="output" id="storageOutput"></div>
+        </div>
+    </div>
+    
+    <script>
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const output = document.getElementById('loginOutput');
+            
+            output.innerHTML = '⏳ Sending request...';
+            output.className = 'output';
+            
+            try {
+                console.log('📤 Sending login request:', { email, password });
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                console.log('📥 Response status:', response.status);
+                const data = await response.json();
+                
+                console.log('📦 Response data:', data);
+                
+                output.innerHTML = '<strong>✅ Response:</strong><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                output.className = 'output success';
+                
+                if (data && data.success && data.data && data.data.token) {
+                    console.log('💾 Token:', data.data.token);
+                    output.innerHTML += '<strong>✅ Token received!</strong><pre>' + data.data.token + '</pre>';
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                output.innerHTML = '<strong>❌ Error:</strong><pre>' + error.message + '\n' + error.stack + '</pre>';
+                output.className = 'output error';
+            }
+        }
+
+        async function testRegister() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirmation = document.getElementById('regPasswordConfirm').value;
+            const output = document.getElementById('registerOutput');
+            
+            output.innerHTML = '⏳ Sending request...';
+            output.className = 'output';
+            
+            try {
+                console.log('📤 Sending register request:', { name, email, password });
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password, passwordConfirmation })
+                });
+                
+                console.log('📥 Response status:', response.status);
+                const data = await response.json();
+                
+                console.log('📦 Response data:', data);
+                
+                output.innerHTML = '<strong>✅ Response:</strong><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                output.className = 'output success';
+                
+                if (data && data.success && data.data && data.data.token) {
+                    console.log('💾 Token:', data.data.token);
+                    output.innerHTML += '<strong>✅ Token received!</strong><pre>' + data.data.token + '</pre>';
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                output.innerHTML = '<strong>❌ Error:</strong><pre>' + error.message + '\n' + error.stack + '</pre>';
+                output.className = 'output error';
+            }
+        }
+
+        function checkStorage() {
+            const output = document.getElementById('storageOutput');
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            const data = {
+                token: token || '(empty)',
+                user: user ? JSON.parse(user) : '(empty)',
+                allKeys: Object.keys(localStorage)
+            };
+            
+            output.innerHTML = '<strong>📦 LocalStorage Content:</strong><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            output.className = 'output success';
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            document.getElementById('storageOutput').innerHTML = '🗑️ LocalStorage cleared!';
+            document.getElementById('storageOutput').className = 'output error';
+        }
+    </script>
+</body>
+</html>

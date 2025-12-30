@@ -1,78 +1,87 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - WebCV</title>
+    <title>Dashboard - Quản trị viên</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
     <link th:href="@{/css/shared/header.css}" rel="stylesheet">
-    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
     <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
-    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
     <link th:href="@{/css/admin/admin.css}" rel="stylesheet">
-    <link th:href="@{/css/responsive.css}" rel="stylesheet">
-    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <header th:replace="~{layout/fragments/header :: header}"></header>
-    
     <div class="main-container">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
+
         <main class="main-content with-sidebar">
             <div class="admin-header">
                 <h1>Dashboard</h1>
                 <div class="admin-user-info">
-                    <span class="admin-user-name" th:text="${currentUser != null ? currentUser.name : 'Admin'}">Admin</span>
-                    <span class="admin-user-role">Quản trị viên</span>
-                    <button class="btn btn-logout" onclick="logout()">
-                        [+ Đăng xuất]
+                    <div class="user-meta">
+                        <span class="admin-user-name"
+                            th:text="${currentUser != null ? currentUser.user.name : 'System Admin'}">System
+                            Admin</span>
+                        <span class="admin-user-role">Quản trị viên</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
                     </button>
                 </div>
             </div>
-            
+
             <!-- Summary Cards -->
             <div class="summary-cards">
                 <div class="summary-card">
-                    <div class="summary-card-icon orange">⏰</div>
+                    <div class="summary-card-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
                     <div class="summary-card-content">
-                        <div class="summary-card-number" th:text="${pendingCompanies}">0</div>
+                        <div class="summary-card-number" th:text="${pendingCompanies}">14</div>
                         <div class="summary-card-label">Công ty chờ duyệt</div>
                     </div>
                 </div>
-                
+
                 <div class="summary-card">
-                    <div class="summary-card-icon green">✓</div>
+                    <div class="summary-card-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
                     <div class="summary-card-content">
-                        <div class="summary-card-number" th:text="${approvedCompanies}">0</div>
+                        <div class="summary-card-number" th:text="${approvedCompanies}">7</div>
                         <div class="summary-card-label">Công ty đã duyệt</div>
                     </div>
                 </div>
-                
+
                 <div class="summary-card">
-                    <div class="summary-card-icon blue">👥</div>
+                    <div class="summary-card-icon blue">
+                        <i class="fas fa-users"></i>
+                    </div>
                     <div class="summary-card-content">
-                        <div class="summary-card-number" th:text="${totalUsers}">0</div>
+                        <div class="summary-card-number" th:text="${totalUsers}">55</div>
                         <div class="summary-card-label">Tổng số user</div>
                     </div>
                 </div>
-                
+
                 <div class="summary-card">
-                    <div class="summary-card-icon purple">🏢</div>
+                    <div class="summary-card-icon purple">
+                        <i class="fas fa-building"></i>
+                    </div>
                     <div class="summary-card-content">
-                        <div class="summary-card-number" th:text="${totalCompanies}">0</div>
+                        <div class="summary-card-number" th:text="${totalCompanies}">23</div>
                         <div class="summary-card-label">Tổng số công ty</div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Candidates Awaiting Approval Table -->
-            <div class="card">
+
+            <!-- Main Content Area -->
+            <div class="admin-card">
                 <div class="section-header-flex">
                     <h2 class="section-title">Ứng viên chờ duyệt nâng cấp</h2>
-                    <a href="#" class="btn btn-secondary">Xem tất cả</a>
+                    <a href="/admin/users" class="btn-view-all">Xem tất cả</a>
                 </div>
-                
+
                 <div class="data-table">
                     <table>
                         <thead>
@@ -85,11 +94,26 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Table rows will be populated from backend -->
-                            <tr>
-                                <td colspan="5" class="empty-state">
-                                    <div class="empty-state-icon">📊</div>
-                                    <p class="empty-state-message">Chưa có dữ liệu</p>
+                            <!-- Dynamic items or dummy for UI match -->
+                            <tr th:each="i : ${#numbers.sequence(1, 5)}">
+                                <td>
+                                    <div class="name-cell">
+                                        <div class="admin-avatar" style="background-color: #f6ad55; color: white;"><i
+                                                class="fas fa-building"></i></div>
+                                        <div>
+                                            <span class="name-main">asd</span>
+                                            <span class="name-sub">Dao Van Luong</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>tumtum@gmail.com</td>
+                                <td style="font-weight: 700;">asd</td>
+                                <td>18/12/2025 01:51</td>
+                                <td><span class="status-badge pending">CHỜ DUYỆT</span></td>
+                            </tr>
+                            <tr th:if="${totalUsers == 0}">
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">
+                                    Chưa có dữ liệu chờ duyệt
                                 </td>
                             </tr>
                         </tbody>
@@ -98,32 +122,16 @@
             </div>
         </main>
     </div>
-    
-    <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
-    <!-- Scroll to Top Button -->
-    <button class="scroll-to-top-btn" id="scrollToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Lên đầu trang">
-        ↑
-    </button>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
-    <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
-        // Scroll to top button
-        window.addEventListener('scroll', function() {
-            const scrollBtn = document.getElementById('scrollToTop');
-            if (scrollBtn) {
-                if (window.pageYOffset > 300) {
-                    scrollBtn.classList.add('show');
-                } else {
-                    scrollBtn.classList.remove('show');
-                }
-            }
-        });
+        function logout() {
+            window.location.href = '/logout';
+        }
     </script>
 </body>
-</html>
 
+</html>

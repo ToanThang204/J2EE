@@ -26,10 +26,10 @@ public class PaymentController {
             @RequestParam Long userId,
             @RequestParam BigDecimal amount,
             @RequestParam(required = false) String description) {
-        
+
         try {
             Map<String, Object> result = sepayService.createQRPayment(userId, amount, description);
-            
+
             if ((boolean) result.get("success")) {
                 return ResponseEntity.ok(ApiResponse.success("Tạo QR code thành công", result));
             } else {
@@ -43,13 +43,13 @@ public class PaymentController {
         }
     }
 
-    @PostMapping("/webhook")
+    @PostMapping({ "/webhook", "/hooks/sepay-payment" })
     public ResponseEntity<Map<String, String>> webhook(
             @RequestBody Map<String, Object> data,
             @RequestHeader(value = "X-Sepay-Signature", required = false) String signature) {
-        
+
         log.info("Received Sepay webhook: {}", data);
-        
+
         try {
             // Verify signature
             if (signature == null || !sepayService.verifyWebhook(data, signature)) {
@@ -71,11 +71,10 @@ public class PaymentController {
                 return ResponseEntity.status(404).body(Map.of("error", "Payment not found"));
             }
 
-            // Update payment status
+            // Update payment status using unified logic
             if ("paid".equals(status) || "success".equals(status)) {
-                payment.setStatus("paid");
-                paymentRepository.save(payment);
-                log.info("Payment marked as paid: {}", orderId);
+                sepayService.processSuccessfulPayment(payment);
+                log.info("Payment processed successfully via webhook: {}", orderId);
             }
 
             return ResponseEntity.ok(Map.of("message", "Webhook processed"));
@@ -88,13 +87,19 @@ public class PaymentController {
     }
 
     @GetMapping("/check-status/{orderId}")
-    public ResponseEntity<ApiResponse<Payment>> checkStatus(@PathVariable String orderId) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkStatus(@PathVariable String orderId) {
         Payment payment = paymentRepository.findBySepayOrderId(orderId).orElse(null);
-        
+
         if (payment == null) {
             return ResponseEntity.notFound().build();
         }
-        
-        return ResponseEntity.ok(ApiResponse.success("Payment found", payment));
+
+        Map<String, Object> data = Map.of(
+                "id", payment.getId(),
+                "status", payment.getStatus(),
+                "amount", payment.getAmount(),
+                "orderCode", payment.getSepayOrderId());
+
+        return ResponseEntity.ok(ApiResponse.success("Payment found", data));
     }
 }

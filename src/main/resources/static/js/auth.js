@@ -1,22 +1,22 @@
 // Authentication JavaScript
 
 // Handle login form
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
-    
+
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
     }
-    
+
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     if (forgotPasswordForm) {
         forgotPasswordForm.addEventListener('submit', handleForgotPassword);
     }
-    
+
     const resetPasswordForm = document.getElementById('resetPasswordForm');
     if (resetPasswordForm) {
         resetPasswordForm.addEventListener('submit', handleResetPassword);
@@ -25,84 +25,99 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleLogin(e) {
     e.preventDefault();
-    
+
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-    
+
     // Clear previous errors
     clearErrors();
-    
+
     // Validate
     if (!validateEmail(email)) {
         showError('emailError', 'Email không hợp lệ');
         return;
     }
-    
+
     if (!password) {
         showError('passwordError', 'Vui lòng nhập mật khẩu');
         return;
     }
-    
+
     try {
         const response = await api.post('/auth/login', { email, password });
-        
+
+        console.log('🔐 Login response:', response);
+
         if (response && response.success) {
+            console.log('✅ Login success detected');
             // Save token and user
             if (response.data && response.data.token) {
+                console.log('💾 Saving token:', response.data.token);
                 localStorage.setItem('token', response.data.token);
                 if (response.data.user) {
+                    console.log('💾 Saving user:', response.data.user);
                     localStorage.setItem('user', JSON.stringify(response.data.user));
                 }
             }
-            
+
             showToast('Đăng nhập thành công!', 'success');
-            
-            // Redirect to homepage
+
+            // Redirect based on role
             setTimeout(() => {
-                // Clear any cached redirects
                 sessionStorage.clear();
-                window.location.replace('/');
+                const user = response.data.user;
+                if (user.role === 'ADMIN') {
+                    window.location.replace('/admin/dashboard');
+                } else if (user.role === 'EMPLOYER') {
+                    window.location.replace('/employer/dashboard');
+                } else {
+                    window.location.replace('/');
+                }
             }, 500);
+        } else {
+            console.error('❌ Login response is not successful:', response);
+            showError('emailError', 'Không nhận được token từ server');
         }
     } catch (error) {
+        console.error('❌ Login error:', error);
         showError('emailError', error.message || 'Đăng nhập thất bại');
     }
 }
 
 async function handleRegister(e) {
     e.preventDefault();
-    
+
     const form = e.target;
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
     const passwordConfirmation = form.passwordConfirmation.value;
-    
+
     // Clear previous errors
     clearErrors();
-    
+
     // Validate
     if (!name || name.trim().length < 2) {
         showError('nameError', 'Tên phải có ít nhất 2 ký tự');
         return;
     }
-    
+
     if (!validateEmail(email)) {
         showError('emailError', 'Email không hợp lệ');
         return;
     }
-    
+
     if (!validatePassword(password)) {
         showError('passwordError', 'Mật khẩu phải có ít nhất 6 ký tự');
         return;
     }
-    
+
     if (password !== passwordConfirmation) {
         showError('passwordConfirmationError', 'Mật khẩu xác nhận không khớp');
         return;
     }
-    
+
     try {
         const response = await api.post('/auth/register', {
             name,
@@ -110,48 +125,57 @@ async function handleRegister(e) {
             password,
             passwordConfirmation
         });
-        
+
+        console.log('🔐 Register response:', response);
+
         if (response && response.success) {
+            console.log('✅ Register success detected');
             // Save token and user
             if (response.data && response.data.token) {
+                console.log('💾 Saving token:', response.data.token);
                 localStorage.setItem('token', response.data.token);
                 if (response.data.user) {
+                    console.log('💾 Saving user:', response.data.user);
                     localStorage.setItem('user', JSON.stringify(response.data.user));
                 }
             }
-            
+
             showToast('Đăng ký thành công!', 'success');
-            
+
             // Redirect to homepage
             setTimeout(() => {
                 // Clear any cached redirects
                 sessionStorage.clear();
                 window.location.replace('/');
             }, 500);
+        } else {
+            console.error('❌ Register response is not successful:', response);
+            showError('emailError', 'Không nhận được token từ server');
         }
     } catch (error) {
+        console.error('❌ Register error:', error);
         showError('emailError', error.message || 'Đăng ký thất bại');
     }
 }
 
 async function handleForgotPassword(e) {
     e.preventDefault();
-    
+
     const form = e.target;
     const email = form.email.value;
-    
+
     // Clear previous errors
     clearErrors();
-    
+
     // Validate
     if (!validateEmail(email)) {
         showError('emailError', 'Email không hợp lệ');
         return;
     }
-    
+
     try {
         const response = await api.post('/auth/forgot-password', { email });
-        
+
         if (response && response.success) {
             showToast('Email đã được gửi! Vui lòng kiểm tra hộp thư của bạn.', 'success');
             form.reset();
@@ -163,32 +187,32 @@ async function handleForgotPassword(e) {
 
 async function handleResetPassword(e) {
     e.preventDefault();
-    
+
     const form = e.target;
     const email = form.email.value;
     const token = form.token.value;
     const password = form.password.value;
     const passwordConfirmation = form.passwordConfirmation.value;
-    
+
     // Clear previous errors
     clearErrors();
-    
+
     // Validate
     if (!validateEmail(email)) {
         showError('emailError', 'Email không hợp lệ');
         return;
     }
-    
+
     if (!validatePassword(password)) {
         showError('passwordError', 'Mật khẩu phải có ít nhất 6 ký tự');
         return;
     }
-    
+
     if (password !== passwordConfirmation) {
         showError('passwordConfirmationError', 'Mật khẩu xác nhận không khớp');
         return;
     }
-    
+
     try {
         const response = await api.post('/auth/reset-password', {
             email,
@@ -196,7 +220,7 @@ async function handleResetPassword(e) {
             password,
             passwordConfirmation
         });
-        
+
         if (response && response.success) {
             showToast('Đặt lại mật khẩu thành công!', 'success');
             setTimeout(() => {
@@ -222,7 +246,7 @@ function showError(elementId, message) {
 function clearErrors() {
     const errorElements = document.querySelectorAll('.error-message');
     errorElements.forEach(el => el.textContent = '');
-    
+
     const inputs = document.querySelectorAll('.form-input');
     inputs.forEach(input => input.classList.remove('error'));
 }

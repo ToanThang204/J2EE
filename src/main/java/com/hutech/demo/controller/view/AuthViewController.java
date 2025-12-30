@@ -1,6 +1,7 @@
 package com.hutech.demo.controller.view;
 
 import com.hutech.demo.util.SecurityUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,21 +13,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthViewController {
 
     @GetMapping("/login")
-    public String login(Model model) {
-        // If already authenticated, redirect to homepage
-        if (SecurityUtils.getCurrentUser() != null) {
-            return "redirect:/";
-        }
-        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+    public String login(HttpServletResponse response, Model model) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+        model.addAttribute("currentUser", null);
         return "auth/login";
     }
 
     @GetMapping("/register")
-    public String register(Model model) {
-        if (SecurityUtils.getCurrentUser() != null) {
-            return "redirect:/";
-        }
-        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+    public String register(HttpServletResponse response, Model model) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+        model.addAttribute("currentUser", null);
         return "auth/register";
     }
 
@@ -42,5 +42,10 @@ public class AuthViewController {
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "auth/reset-password";
     }
-}
 
+    @GetMapping("/auth/oauth-callback")
+    public String oauthCallback(Model model) {
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "auth/oauth-callback";
+    }
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,105 +10,164 @@
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
 </head>
+
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
-    
-    <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
-        <div class="card" style="max-width: 600px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <h1>Thanh toán</h1>
-                <p th:if="${payment != null}" style="color: var(--medium-grey);">
-                    Mã giao dịch: <strong th:text="${payment.id}">Payment ID</strong>
-                </p>
+
+    <div class="container" style="padding-top: 40px; padding-bottom: 60px;">
+        <div class="card"
+            style="max-width: 800px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <div
+                style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 30px; color: white; text-align: center;">
+                <h1 style="color: white; margin-bottom: 10px;">Xác nhận thanh toán</h1>
+                <p style="opacity: 0.9;">Vui lòng hoàn tất thanh toán để kích hoạt tài khoản</p>
             </div>
-            
-            <div th:if="${payment != null}">
-                <div class="form-layout">
-                    <div class="form-group">
-                        <label class="form-label">Số tiền</label>
-                        <div style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--primary-green);">
-                            <span th:text="${payment.amount != null ? #numbers.formatDecimal(payment.amount, 0, 'POINT', 0, 'POINT') : '0'}">0</span>
-                            <span th:text="${payment.currency != null ? payment.currency : 'VND'}">VND</span>
+
+            <div style="padding: 40px;">
+                <div th:if="${payment != null}">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                        <!-- QR Section -->
+                        <div style="text-align: center;">
+                            <h3 style="margin-bottom: 20px; color: #333;">Quét mã QR để thanh toán nhanh</h3>
+                            <div
+                                style="padding: 20px; background: white; border: 1px solid #eee; border-radius: 12px; display: inline-block;">
+                                <img th:src="${payment.sepayQrUrl}" alt="QR Code" style="width: 250px; height: 250px;">
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <span class="status-badge"
+                                    th:classappend="${payment.status == 'paid' ? 'approved' : 'pending'}"
+                                    th:text="${payment.status == 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán'}">Status</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Section -->
+                        <div>
+                            <h3 style="margin-bottom: 20px; color: #333;">Thông tin chuyển khoản</h3>
+
+                            <div
+                                style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #28a745;">
+                                <div style="margin-bottom: 15px;">
+                                    <label
+                                        style="display: block; font-size: 12px; color: #666; text-transform: uppercase;">Ngân
+                                        hàng</label>
+                                    <strong th:text="${bankCode}" style="font-size: 16px;">BIDV</strong>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label
+                                        style="display: block; font-size: 12px; color: #666; text-transform: uppercase;">Số
+                                        tài khoản</label>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <strong th:text="${accountNumber}"
+                                            style="font-size: 18px; color: #28a745;">962470388277806</strong>
+                                        <button onclick="copyText('accountNumber')"
+                                            style="border: none; background: none; color: #007bff; cursor: pointer; font-size: 12px;"><i
+                                                class="fas fa-copy"></i> Sao chép</button>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label
+                                        style="display: block; font-size: 12px; color: #666; text-transform: uppercase;">Chủ
+                                        tài khoản</label>
+                                    <strong th:text="${accountName}" style="font-size: 16px;">Phạm Quang Hiếu</strong>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label
+                                        style="display: block; font-size: 12px; color: #666; text-transform: uppercase;">Số
+                                        tiền</label>
+                                    <strong style="font-size: 20px; color: #e74c3c;">
+                                        <span
+                                            th:text="${#numbers.formatDecimal(payment.amount, 0, 'POINT', 0, 'POINT')}">0</span>
+                                        VND
+                                    </strong>
+                                </div>
+                                <div>
+                                    <label
+                                        style="display: block; font-size: 12px; color: #666; text-transform: uppercase;">Nội
+                                        dung chuyển khoản</label>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <strong th:text="${payment.description + ' - ' + payment.sepayOrderId}"
+                                            style="font-size: 14px; background: #fff; padding: 5px 10px; border: 1px dashed #ccc; border-radius: 4px;">Content</strong>
+                                        <button onclick="copyText('paymentContent')"
+                                            style="border: none; background: none; color: #007bff; cursor: pointer; font-size: 12px;"><i
+                                                class="fas fa-copy"></i> Sao chép</button>
+                                    </div>
+                                    <p style="font-size: 11px; color: #e74c3c; margin-top: 5px;"><i
+                                            class="fas fa-exclamation-triangle"></i> Nhập chính xác nội dung này để được
+                                        cộng tiền tự động</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="form-group" th:if="${payment.description != null}">
-                        <label class="form-label">Mô tả</label>
-                        <p th:text="${payment.description}">Description</p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Trạng thái</label>
-                        <span class="status-badge" 
-                              th:classappend="${payment.status != null and payment.status == 'paid' ? 'approved' : 'pending'}"
-                              th:text="${payment.status != null ? payment.status : 'N/A'}">Status</span>
-                    </div>
-                    
-                    <div class="form-group" th:if="${payment.sepayQrUrl != null}">
-                        <label class="form-label">QR Code thanh toán</label>
-                        <div style="text-align: center; padding: var(--spacing-lg); background-color: var(--light-grey); border-radius: var(--radius-md);">
-                            <img th:src="${payment.sepayQrUrl}" alt="QR Code" style="max-width: 300px; height: auto;">
+
+                    <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 30px;">
+                        <p style="color: #666; margin-bottom: 20px;">Hệ thống sẽ tự động cập nhật sau khi nhận được tiền
+                            (thường từ 1-5 phút)</p>
+                        <div style="display: flex; justify-content: center; gap: 15px;">
+                            <button class="btn btn-primary" onclick="checkStatus()">
+                                <i class="fas fa-sync-alt"></i> Kiểm tra ngay
+                            </button>
+                            <a href="/" class="btn btn-secondary">Quay lại trang chủ</a>
                         </div>
-                        <p style="text-align: center; color: var(--medium-grey); font-size: var(--font-size-sm); margin-top: var(--spacing-md);">
-                            Quét mã QR để thanh toán
-                        </p>
-                    </div>
-                    
-                    <div class="form-group" th:if="${payment.expiredAt != null}">
-                        <label class="form-label">Hạn thanh toán</label>
-                        <p th:text="${#temporals.format(payment.expiredAt, 'dd-MM-yyyy HH:mm')}">Expiration date</p>
                     </div>
                 </div>
-                
-                <div class="action-buttons" style="margin-top: var(--spacing-xl);">
-                    <button class="btn btn-primary" onclick="checkPaymentStatus()">Kiểm tra trạng thái</button>
-                    <a href="/employer/payment" class="btn btn-secondary">Quay lại</a>
+
+                <div th:if="${payment == null}" style="text-align: center; padding: 40px 0;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 60px; color: #ccc; margin-bottom: 20px;"></i>
+                    <h3>Không tìm thấy giao dịch</h3>
+                    <p>Mã giao dịch không hợp lệ hoặc đã hết hạn.</p>
+                    <a href="/" class="btn btn-primary" style="margin-top: 20px;">Quay lại Trang chủ</a>
                 </div>
-            </div>
-            
-            <div th:if="${payment == null}" class="empty-state">
-                <div class="empty-state-icon">💳</div>
-                <h3 class="empty-state-title">Không tìm thấy giao dịch</h3>
-                <p class="empty-state-message">Giao dịch không tồn tại hoặc đã bị xóa.</p>
             </div>
         </div>
     </div>
-    
+
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
-    <script>
-        const paymentId = /*[[${payment != null ? payment.id : null}]]*/ null;
-        
-        async function checkPaymentStatus() {
-            if (!paymentId) return;
-            
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const orderCode = /*[[${payment != null ? payment.sepayOrderId : null}]]*/ null;
+        const paymentStatus = /*[[${payment != null ? payment.status : null}]]*/ null;
+
+        async function checkStatus() {
+            if (!orderCode) return;
+
             try {
-                const response = await api.get('/api/payment/' + paymentId);
+                const response = await api.get('/payment/check-status/' + orderCode);
                 if (response && response.success && response.data) {
-                    const payment = response.data;
-                    if (payment.status === 'paid') {
+                    if (response.data.status === 'paid') {
                         showToast('Thanh toán thành công!', 'success');
-                        setTimeout(() => window.location.reload(), 1000);
+                        setTimeout(() => window.location.reload(), 1500);
                     } else {
-                        showToast('Giao dịch chưa được thanh toán', 'info');
+                        showToast('Đang chờ thanh toán...', 'info');
                     }
                 }
             } catch (error) {
-                showToast('Lỗi khi kiểm tra trạng thái', 'error');
+                console.error('Error checking status:', error);
             }
         }
-        
-        // Auto check payment status every 5 seconds if pending
-        if (paymentId) {
-            const paymentStatus = /*[[${payment != null ? payment.status : null}]]*/ null;
-            if (paymentStatus === 'pending') {
-                setInterval(checkPaymentStatus, 5000);
+
+        function copyText(type) {
+            let text = "";
+            if (type === 'accountNumber') {
+                text = /*[[${accountNumber}]]*/ "";
+            } else if (type === 'paymentContent') {
+                text = /*[[${payment != null ? payment.description + ' - ' + payment.sepayOrderId : ''}]]*/ "";
             }
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Đã sao chép vào bộ nhớ tạm', 'success');
+            });
         }
+
+        // Tự động kiểm tra mỗi 5 giây
+        if (orderCode && paymentStatus === 'pending') {
+            setInterval(checkStatus, 5000);
+        }
+        /*]]>*/
     </script>
 </body>
-</html>
 
+</html>

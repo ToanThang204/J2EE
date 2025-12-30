@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${pageTitle != null ? pageTitle + ' - WebCV' : 'WebCV'}">WebCV</title>
     
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <!-- CSS -->
     <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/components.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <link th:href="@{/css/home.css}" rel="stylesheet">
     <th:block th:if="${pageStyle != null}">
         <link th:href="@{'/css/' + ${pageStyle} + '.css'}" rel="stylesheet">
     </th:block>

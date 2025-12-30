@@ -26,25 +26,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-        
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
+            FilterChain filterChain) throws ServletException, IOException {
 
-        // Skip if no Authorization header or doesn't start with Bearer
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        final String authHeader = request.getHeader("Authorization");
+        String jwt = null;
+        String userEmail = null;
+
+        // 1. Check Authorization header
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+        }
+        // 2. If header missing, check Cookies (for SSR/Thymeleaf)
+        else {
+            if (request.getCookies() != null) {
+                for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                    if ("auth_token".equals(cookie.getName())) {
+                        jwt = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        // If no token found, skip
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
-            // Extract JWT token
-            jwt = authHeader.substring(7);
             userEmail = jwtService.extractUsername(jwt);
 
             // If token is valid and user is not authenticated yet
@@ -55,11 +73,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
-                            userDetails.getAuthorities()
-                    );
+                            userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    
+
                     log.debug("User {} authenticated successfully", userEmail);
                 }
             }

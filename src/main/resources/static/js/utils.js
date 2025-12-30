@@ -48,11 +48,11 @@ function showToast(message, type = 'info') {
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
-    
+
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
@@ -77,7 +77,7 @@ function debounce(func, wait) {
 // Throttle function
 function throttle(func, limit) {
     let inThrottle;
-    return function(...args) {
+    return function (...args) {
         if (!inThrottle) {
             func.apply(this, args);
             inThrottle = true;
@@ -91,14 +91,14 @@ function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     sessionStorage.clear();
-    window.location.href = '/';
+    window.location.href = '/logout';
 }
 
 // Toggle mobile menu
 function toggleMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.getElementById('mobileMenuOverlay');
-    
+
     if (sidebar && overlay) {
         sidebar.classList.toggle('mobile-open');
         overlay.classList.toggle('show');
@@ -109,7 +109,7 @@ function toggleMobileMenu() {
 async function loadBadgeCounts() {
     const token = localStorage.getItem('token');
     if (!token) return;
-    
+
     try {
         // Load notification count
         const notifResponse = await api.get('/notifications/unread-count');
@@ -121,7 +121,7 @@ async function loadBadgeCounts() {
                 notifBadge.style.display = count > 0 ? 'flex' : 'none';
             }
         }
-        
+
         // Load favorite count (if endpoint exists)
         // const favResponse = await api.get('/saved-jobs/count');
         // Similar implementation
@@ -131,9 +131,9 @@ async function loadBadgeCounts() {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadBadgeCounts();
-    
+
     // Set interval to refresh counts every 30 seconds
     setInterval(loadBadgeCounts, 30000);
 });

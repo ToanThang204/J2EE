@@ -1,14 +1,14 @@
 // Candidate Applications JavaScript
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initApplicationFilters();
-    loadApplications();
+    // loadApplications(); // Removed as data is now SSR-ed
 });
 
 function initApplicationFilters() {
     const tabs = document.querySelectorAll('.application-tab');
     tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             const status = this.dataset.status || 'all';
             filterApplications(status);
         });
@@ -29,10 +29,10 @@ async function loadApplications() {
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const status = urlParams.get('status');
-        
+
         const endpoint = status ? `/applications?status=${status}` : '/applications';
         const response = await api.get(endpoint);
-        
+
         if (response && response.success && response.data) {
             displayApplications(response.data);
         }
@@ -44,12 +44,12 @@ async function loadApplications() {
 function displayApplications(applications) {
     const container = document.getElementById('applicationsList');
     if (!container) return;
-    
+
     if (!applications || applications.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>Chưa có đơn ứng tuyển nào</p></div>';
         return;
     }
-    
+
     container.innerHTML = applications.map(app => `
         <div class="application-card-candidate ${app.status ? app.status.toLowerCase() : ''}">
             <div class="application-card-candidate-header">
