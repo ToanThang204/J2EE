@@ -27,23 +27,24 @@
             </div>
             
             <div th:if="${jobs != null and !jobs.isEmpty()}">
-                <div th:each="job : ${jobs}" class="application-card">
+                <div th:each="job : ${jobs}" class="application-card" th:if="${job != null}">
                     <div class="application-card-header">
                         <div>
-                            <h3 class="application-card-title" th:text="${job.title}">Job Title</h3>
-                            <p class="application-card-company" th:text="${job.company != null ? job.company.companyName : 'N/A'}">Company Name</p>
-                            <p style="color: var(--medium-grey); font-size: var(--font-size-sm);" th:text="${job.location != null ? '📍 ' + job.location : ''}">Location</p>
+                            <h3 class="application-card-title" th:text="${job.title != null ? job.title : 'N/A'}">Job Title</h3>
+                            <p class="application-card-company" th:if="${job.company != null}" th:text="${job.company.companyName}">Company Name</p>
+                            <p class="application-card-company" th:if="${job.company == null}">N/A</p>
+                            <p style="color: var(--medium-grey); font-size: var(--font-size-sm);" th:if="${job.location != null}" th:text="${'📍 ' + job.location}">Location</p>
                         </div>
                         <span class="status-badge" 
                               th:classappend="${job.status != null and job.status.name() == 'OPEN' ? 'approved' : 'pending'}"
                               th:text="${job.status != null and job.status.name() == 'OPEN' ? 'Đang tuyển' : 'Đã đóng'}">Đang tuyển</span>
                     </div>
                     <div class="application-card-footer">
-                        <span class="application-date" th:text="${job.createdAt != null ? 'Đăng: ' + ${#temporals.format(job.createdAt, 'dd-MM-yyyy')} : ''}">Date</span>
+                        <span class="application-date" th:if="${job.createdAt != null}" th:text="${'Đăng: ' + #temporals.format(job.createdAt, 'dd-MM-yyyy')}">Date</span>
                         <div class="action-buttons">
-                            <a th:href="@{'/jobs/' + ${job.id}}" class="btn btn-secondary">Xem</a>
+                            <button type="button" class="btn btn-secondary view-job" th:attr="data-job-id=${job.id}">Xem</button>
                             <a th:href="@{'/employer/jobs/' + ${job.id} + '/edit'}" class="btn btn-primary">Chỉnh sửa</a>
-                            <button class="btn-icon delete" onclick="deleteJob(/*[[${job.id}]]*/)" title="Xóa">🗑️</button>
+                            <button class="btn-icon delete" th:onclick="'deleteJob(' + ${job.id} + ')'" title="Xóa">🗑️</button>
                         </div>
                     </div>
                 </div>
@@ -56,6 +57,24 @@
                 <a th:href="@{/employer/jobs/create}" class="btn btn-primary">Đăng tin tuyển dụng ngay</a>
             </div>
         </main>
+    </div>
+    
+    <!-- Job Detail Modal -->
+    <div id="jobDetailModal" class="job-detail-modal" style="display:none;">
+        <div class="job-detail-overlay"></div>
+        <div class="job-detail-panel">
+            <button class="job-detail-close" title="Đóng">×</button>
+            <div class="job-detail-content">
+                <h2 class="job-detail-title"></h2>
+                <p class="job-detail-company"></p>
+                <p class="job-detail-location"></p>
+                <div class="job-detail-body"></div>
+                <div class="job-detail-actions">
+                    <a href="#" class="btn btn-primary job-detail-edit">Chỉnh sửa</a>
+                    <button class="btn btn-secondary job-detail-close-btn">Đóng</button>
+                </div>
+            </div>
+        </div>
     </div>
     
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>

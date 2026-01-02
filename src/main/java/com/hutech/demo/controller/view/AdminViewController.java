@@ -88,6 +88,22 @@ public class AdminViewController {
         return "admin/categories";
     }
 
+    @GetMapping("/admin/categories/create")
+    public String createCategoryForm(Model model) {
+        model.addAttribute("category", new Category());
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/category-form";
+    }
+
+    @GetMapping("/admin/categories/{id}/edit")
+    public String editCategoryForm(@PathVariable Long id, Model model) {
+        Category category = categoryService.getCategoryById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        model.addAttribute("category", category);
+        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+        return "admin/category-form";
+    }
+
     @GetMapping("/admin/companies-pending")
     public String companiesPending(Model model) {
         List<Company> pendingCompanies = companyService.getCompaniesByStatus(CompanyStatus.PENDING);
@@ -127,7 +143,7 @@ public class AdminViewController {
 
     @GetMapping("/admin/payments-pending")
     public String paymentsPending(Model model) {
-        List<Payment> pendingPayments = paymentRepository.findByStatus("pending");
+        List<Payment> pendingPayments = paymentRepository.findByStatus("awaiting_approval");
         model.addAttribute("pendingPayments", pendingPayments);
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "admin/payments-pending";

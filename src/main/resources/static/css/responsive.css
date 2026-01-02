@@ -272,10 +272,7 @@
 /* =============== LARGE SCREENS (1200px+) =============== */
 
 @media (min-width: 1200px) {
-    .main-container {
-        max-width: 1400px;
-        margin: 0 auto;
-    }
+    /* Removed max-width constraint to allow full-width layout */
     
     .jobs-grid,
     .companies-grid,
@@ -348,18 +345,19 @@
 
 /* Tablet */
 @media (min-width: 769px) and (max-width: 1024px) {
+    /* keep main content flow controlled by flexbox; don't offset with margin-left */
     .main-content.with-sidebar {
-        margin-left: 200px;
+        margin-left: 0;
     }
-    
+
     .sidebar {
         width: 200px;
     }
-    
+
     .jobs-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .summary-cards {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -367,14 +365,15 @@
 
 /* Desktop */
 @media (min-width: 1025px) {
+    /* Use the flex layout (aside + main) without forcing margin offsets */
     .main-content.with-sidebar {
-        margin-left: 250px;
+        margin-left: 0;
     }
-    
+
     .mobile-menu-toggle {
         display: none;
     }
-    
+
     .jobs-grid {
         grid-template-columns: repeat(3, 1fr);
     }

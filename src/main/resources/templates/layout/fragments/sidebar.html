@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
-<body>
-    <aside th:fragment="sidebar" class="sidebar sidebar-light">
+    <aside th:fragment="sidebar" class="sidebar sidebar-light" xmlns:th="http://www.thymeleaf.org">
 
         <nav class="sidebar-nav">
             <!-- Admin Sidebar -->
@@ -54,7 +50,7 @@
                     <span class="nav-text">Quản lý việc làm</span>
                 </a>
                 <a href="/employer/applications" class="nav-item">
-                    <span class="nav-icon"><i class="fas fa-file-alt"></i></span>
+                    <span class="nav-icon"><i class="fas fa-file-invoice"></i></span>
                     <span class="nav-text">Quản lý ứng tuyển</span>
                 </a>
                 <a href="/employer/messages" class="nav-item">
@@ -91,6 +87,3 @@
         <!-- Sidebar Authentication Script -->
         <script th:src="@{/js/shared/sidebar.js}"></script>
     </aside>
-</body>
-
-</html>

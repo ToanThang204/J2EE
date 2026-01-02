@@ -102,4 +102,36 @@ public class PaymentController {
 
         return ResponseEntity.ok(ApiResponse.success("Payment found", data));
     }
+
+    @PostMapping("/test-payment/{orderId}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> testPayment(@PathVariable String orderId) {
+        try {
+            Payment payment = paymentRepository.findBySepayOrderId(orderId).orElse(null);
+            
+            if (payment == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            if ("paid".equals(payment.getStatus())) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Giao dịch đã được thanh toán", null));
+            }
+
+            // Simulate successful payment
+            sepayService.processSuccessfulPayment(payment);
+            log.info("TEST PAYMENT: Payment {} marked as paid for testing", orderId);
+
+            Map<String, Object> data = Map.of(
+                    "id", payment.getId(),
+                    "status", payment.getStatus(),
+                    "amount", payment.getAmount(),
+                    "orderCode", payment.getSepayOrderId());
+
+            return ResponseEntity.ok(ApiResponse.success("Thanh toán test thành công", data));
+        } catch (Exception e) {
+            log.error("Error processing test payment", e);
+            return ResponseEntity.internalServerError()
+                    .body(ApiResponse.error("Lỗi xử lý thanh toán test", null));
+        }
+    }
 }

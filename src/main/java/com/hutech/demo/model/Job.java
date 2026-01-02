@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 @Table(name = "jobs")
 @Data
 @NoArgsConstructor
@@ -50,6 +51,9 @@ public class Job {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobStatus status = JobStatus.OPEN;
+
+    @Column(name = "ai_context", columnDefinition = "NVARCHAR(MAX)")
+    private String aiContext; // JSON: must_have_skills, nice_to_have, weights, red_flags
 
     @CreationTimestamp
     private LocalDateTime createdAt;

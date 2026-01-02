@@ -25,6 +25,7 @@
             <div class="card">
                 <form id="jobForm" class="form-layout">
                     <input type="hidden" id="companyId" th:value="${company != null ? company.id : ''}">
+                        <input type="hidden" id="jobId" th:value="${job != null ? job.id : ''}">
                     
                     <div class="form-group">
                         <label class="form-label">Công ty</label>
@@ -95,11 +96,9 @@
     <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
-        const jobId = /*[[${job != null ? job.id : null}]]*/ null;
-        
         document.getElementById('jobForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+            const jobId = document.getElementById('jobId') ? document.getElementById('jobId').value : null;
             if (!jobId) {
                 showToast('Không tìm thấy việc làm', 'error');
                 return;

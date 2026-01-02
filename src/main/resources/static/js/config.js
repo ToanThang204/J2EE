@@ -7,6 +7,13 @@ const API_CONFIG = {
 
 // Helper to get full API URL
 function getApiUrl(endpoint) {
-    return `${API_CONFIG.BASE_URL}${endpoint}`;
+    if (!endpoint) return API_CONFIG.BASE_URL;
+    // If endpoint already contains the base, return as-is
+    if (endpoint.startsWith(API_CONFIG.BASE_URL)) return endpoint;
+    // Ensure single slash between base and endpoint
+    if (endpoint.startsWith('/')) {
+        return API_CONFIG.BASE_URL + endpoint;
+    }
+    return API_CONFIG.BASE_URL + '/' + endpoint;
 }
 

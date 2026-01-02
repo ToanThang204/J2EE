@@ -3,32 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${company.name + ' - WebCV'}">Company Detail - WebCV</title>
+    <title th:text="${company != null and company.name != null ? company.name + ' - WebCV' : 'Chi tiết công ty - WebCV'}">Company Detail - WebCV</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
     <link th:href="@{/css/cards.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <style>
+        .company-header {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        .company-detail-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            flex-shrink: 0;
+            font-size: 36px;
+            font-weight: bold;
+            color: #666;
+        }
+        .company-detail-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .company-detail-info {
+            flex: 1;
+        }
+        .company-detail-info h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+        }
+        .company-detail-description {
+            color: #666;
+            line-height: 1.6;
+        }
+        .company-meta {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .company-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+        }
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .job-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        .job-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .company-logo-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            font-weight: bold;
+            color: #666;
+            font-size: 14px;
+        }
+        .company-logo-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .company-name-small {
+            font-size: 14px;
+            color: #666;
+        }
+        .job-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 10px 0;
+            color: #333;
+        }
+        .job-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        .job-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        .job-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .salary-badge {
+            padding: 4px 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 8px;
+        }
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .empty-state-message {
+            font-size: 16px;
+            color: #666;
+        }
+        .scroll-to-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .scroll-to-top-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .scroll-to-top-btn:hover {
+            background: #45a049;
+        }
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
     
     <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
-        <div class="card">
+        <!-- Error message -->
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+        
+        <div class="card" th:if="${company != null}">
             <div class="company-header">
                 <div class="company-detail-logo">
-                    <span th:text="${company.name != null ? company.name.substring(0, 2).toUpperCase() : 'CO'}">CO</span>
+                    <th:block th:if="${company.logo != null and !company.logo.isEmpty()}">
+                        <img th:if="${company.logo.startsWith('data:')}" 
+                             th:src="${company.logo}" 
+                             alt="Company Logo"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        <img th:if="${company.logo.startsWith('http')}" 
+                             th:src="${company.logo}" 
+                             alt="Company Logo"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        <img th:if="${!company.logo.startsWith('data:') and !company.logo.startsWith('http')}" 
+                             th:src="${'data:image/png;base64,' + company.logo}" 
+                             alt="Company Logo"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    </th:block>
+                    <span th:if="${company.logo == null or company.logo.isEmpty()}" 
+                          th:text="${company.name != null ? #strings.substring(company.name, 0, #strings.length(company.name) >= 2 ? 2 : #strings.length(company.name)).toUpperCase() : 'CO'}">
+                        CO
+                    </span>
                 </div>
                 <div class="company-detail-info">
-                    <h1 th:text="${company.name}">Company Name</h1>
-                    <p class="company-detail-description" th:text="${company.description != null ? company.description.substring(0, 100) + '...' : 'Chưa có mô tả'}">
-                        Company Description
+                    <h1 th:text="${company.name != null ? company.name : 'Tên công ty'}">Tên công ty</h1>
+                    <div class="company-meta">
+                        <div class="company-meta-item" th:if="${company.address != null and !company.address.isEmpty()}">
+                            <span>📍</span>
+                            <span th:text="${company.address}">Địa chỉ</span>
+                        </div>
+                        <div class="company-meta-item" th:if="${company.industry != null and !company.industry.isEmpty()}">
+                            <span>🏢</span>
+                            <span th:text="${company.industry}">Ngành nghề</span>
+                        </div>
+                        <div class="company-meta-item" th:if="${company.employeeCount != null}">
+                            <span>👥</span>
+                            <span th:text="${company.employeeCount + ' nhân viên'}">Số nhân viên</span>
+                        </div>
+                        <div class="company-meta-item" th:if="${company.website != null and !company.website.isEmpty()}">
+                            <span>🌐</span>
+                            <a th:href="${company.website}" target="_blank" th:text="${company.website}">Website</a>
+                        </div>
+                    </div>
+                    <p class="company-detail-description" 
+                       th:if="${company.description != null and !company.description.isEmpty()}"
+                       th:text="${#strings.length(company.description) > 200 ? #strings.substring(company.description, 0, 200) + '...' : company.description}">
+                        Mô tả công ty
                     </p>
                 </div>
             </div>
             
-            <div th:if="${company.description != null}">
+            <div th:if="${company.description != null and !company.description.isEmpty() and #strings.length(company.description) > 200}">
                 <h3>Về công ty</h3>
-                <p th:text="${company.description}">Description</p>
+                <p th:text="${company.description}" style="line-height: 1.8; color: #555;">Mô tả chi tiết</p>
             </div>
         </div>
         
@@ -37,23 +262,50 @@
             <div class="jobs-grid" th:if="${jobs != null and !jobs.isEmpty()}">
                 <div th:each="job : ${jobs}" class="job-card" th:onclick="'window.location.href=\'/jobs/' + ${job.id} + '\''">
                     <div class="job-card-header">
-                        <div class="company-logo-small" th:text="${job.company != null ? job.company.name.substring(0, 2).toUpperCase() : 'CO'}">
-                            CO
+                        <div class="company-logo-small">
+                            <th:block th:if="${job.company != null and job.company.logo != null and !job.company.logo.isEmpty()}">
+                                <img th:if="${job.company.logo.startsWith('data:')}" 
+                                     th:src="${job.company.logo}" 
+                                     alt="Company Logo"
+                                     onerror="this.style.display='none';" />
+                                <img th:if="${job.company.logo.startsWith('http')}" 
+                                     th:src="${job.company.logo}" 
+                                     alt="Company Logo"
+                                     onerror="this.style.display='none';" />
+                                <img th:if="${!job.company.logo.startsWith('data:') and !job.company.logo.startsWith('http')}" 
+                                     th:src="${'data:image/png;base64,' + job.company.logo}" 
+                                     alt="Company Logo"
+                                     onerror="this.style.display='none';" />
+                            </th:block>
+                            <span th:if="${job.company == null or job.company.logo == null or job.company.logo.isEmpty()}" 
+                                  th:text="${job.company != null and job.company.name != null ? #strings.substring(job.company.name, 0, #strings.length(job.company.name) >= 2 ? 2 : #strings.length(job.company.name)).toUpperCase() : 'CO'}">
+                                CO
+                            </span>
                         </div>
-                        <div class="company-name-small" th:text="${job.company != null ? job.company.name : 'Company'}">
-                            Company Name
+                        <div class="company-name-small" th:text="${job.company != null and job.company.name != null ? job.company.name : 'Công ty'}">
+                            Công ty
                         </div>
                     </div>
-                    <h3 class="job-title" th:text="${job.title}">Job Title</h3>
+                    <h3 class="job-title" th:text="${job.title != null ? job.title : 'Vị trí tuyển dụng'}">Vị trí tuyển dụng</h3>
                     <div class="job-meta">
                         <div class="job-meta-item">
                             <span>📍</span>
-                            <span th:text="${job.location != null ? job.location : 'N/A'}">Location</span>
+                            <span th:text="${job.location != null and !job.location.isEmpty() ? job.location : 'Chưa cập nhật'}">Vị trí</span>
+                        </div>
+                        <div class="job-meta-item" th:if="${job.employmentType != null and !job.employmentType.isEmpty()}">
+                            <span>💼</span>
+                            <span th:text="${job.employmentType}">Loại hình</span>
+                        </div>
+                        <div class="job-meta-item" th:if="${job.expirationDate != null}">
+                            <span>📅</span>
+                            <span th:text="'Hạn nộp: ' + ${#temporals.format(job.expirationDate, 'dd/MM/yyyy')}">
+                                Hạn nộp
+                            </span>
                         </div>
                     </div>
                     <div class="job-footer">
-                        <span class="salary-badge" th:text="${job.salaryRange != null ? job.salaryRange : 'Cạnh tranh'}">
-                            Salary
+                        <span class="salary-badge" th:text="${job.salaryRange != null and !job.salaryRange.isEmpty() ? job.salaryRange : 'Thỏa thuận'}">
+                            Mức lương
                         </span>
                     </div>
                 </div>
@@ -69,15 +321,20 @@
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
     
     <!-- Scroll to Top Button -->
-    <button class="scroll-to-top-btn" id="scrollToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Lên đầu trang">
+    <button class="scroll-to-top-btn" id="scrollToTop" onclick="scrollToTop()" title="Lên đầu trang">
         ↑
     </button>
     
-    <script th:src="@{/js/config.js}"></script>
-    <script th:src="@{/js/utils.js}"></script>
-    <script th:src="@{/js/api.js}"></script>
     <script>
-        // Scroll to top button
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Show/hide scroll to top button
         window.addEventListener('scroll', function() {
             const scrollBtn = document.getElementById('scrollToTop');
             if (scrollBtn) {
@@ -88,7 +345,12 @@
                 }
             }
         });
+        
+        // Prevent errors from propagating
+        window.addEventListener('error', function(e) {
+            console.error('Page error:', e);
+            return true;
+        });
     </script>
 </body>
 </html>
-

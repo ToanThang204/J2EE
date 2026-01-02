@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${category.id != null ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'} + ' - WebCV'">Quản lý danh mục - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/admin/admin.css}" rel="stylesheet">
+    <link th:href="@{/css/forms.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="main-container">
+        <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
+
+        <main class="main-content with-sidebar">
+            <div class="admin-header">
+                <div>
+                    <a href="/admin/categories" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                    <h1 th:text="${category.id != null ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'}">Thêm danh mục mới</h1>
+                </div>
+                <div class="admin-user-info">
+                    <div class="user-meta">
+                        <span class="admin-user-name" th:text="${currentUser != null ? currentUser.user.name : 'System Admin'}">System Admin</span>
+                        <span class="admin-user-role">Quản trị viên</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="admin-card">
+                <form id="categoryForm">
+                    <input type="hidden" id="categoryId" th:value="${category.id}">
+                    
+                    <div class="form-group">
+                        <label for="name">Tên danh mục <span class="required">*</span></label>
+                        <input type="text" 
+                               id="name" 
+                               class="form-control" 
+                               placeholder="Ví dụ: Backend Developer, Digital Marketing..." 
+                               th:value="${category.name}"
+                               required>
+                        <small class="form-text">Tên hiển thị của danh mục công việc</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Mô tả</label>
+                        <textarea id="description" 
+                                  class="form-control" 
+                                  rows="3" 
+                                  placeholder="Mô tả chi tiết về danh mục này..."
+                                  th:text="${category.description}"></textarea>
+                        <small class="form-text">Mô tả ngắn gọn về danh mục (không bắt buộc)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="industryKey">Ngành nghề <span class="required">*</span></label>
+                        <select id="industryKey" class="form-control" required>
+                            <option value="">-- Chọn ngành nghề --</option>
+                            <option value="it" th:selected="${category.industryKey == 'it'}">
+                                <i class="fas fa-laptop-code"></i> IT / Công nghệ thông tin
+                            </option>
+                            <option value="marketing" th:selected="${category.industryKey == 'marketing'}">
+                                <i class="fas fa-bullhorn"></i> Marketing / Truyền thông
+                            </option>
+                            <option value="sales" th:selected="${category.industryKey == 'sales'}">
+                                <i class="fas fa-chart-line"></i> Kinh doanh / Bán hàng
+                            </option>
+                            <option value="finance" th:selected="${category.industryKey == 'finance'}">
+                                <i class="fas fa-coins"></i> Tài chính / Kế toán
+                            </option>
+                            <option value="general" th:selected="${category.industryKey == 'general'}">
+                                <i class="fas fa-briefcase"></i> Tổng hợp / Khác
+                            </option>
+                        </select>
+                        <small class="form-text">Chọn ngành nghề mà danh mục này thuộc về</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/categories'">
+                            <i class="fas fa-times"></i> Hủy
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> <span th:text="${category.id != null ? 'Cập nhật' : 'Tạo mới'}">Tạo mới</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Industry Context Preview -->
+            <div class="admin-card" style="margin-top: 20px;">
+                <h3><i class="fas fa-info-circle"></i> Thông tin ngành nghề</h3>
+                <div id="industryPreview" class="industry-preview">
+                    <p class="text-muted">Chọn ngành nghề để xem thông tin chi tiết</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/config.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
+    <script>
+        const industryInfo = {
+            'it': {
+                name: 'IT / Công nghệ thông tin',
+                icon: 'laptop-code',
+                description: 'Ngành công nghệ thông tin, lập trình, phát triển phần mềm',
+                focus: ['Tech Stack cụ thể', 'Kinh nghiệm dự án thực tế', 'Portfolio/GitHub'],
+                metrics: 'Số năm kinh nghiệm với tech stack, quy mô dự án'
+            },
+            'marketing': {
+                name: 'Marketing / Truyền thông',
+                icon: 'bullhorn',
+                description: 'Marketing số, truyền thông, quảng cáo',
+                focus: ['Kênh marketing', 'Tools (GA, Ads Manager)', 'Metrics (CTR, ROI)'],
+                metrics: 'Budget quản lý, tăng trưởng traffic, conversion rate'
+            },
+            'sales': {
+                name: 'Kinh doanh / Bán hàng',
+                icon: 'chart-line',
+                description: 'Bán hàng, phát triển kinh doanh, chăm sóc khách hàng',
+                focus: ['Doanh số', 'Quy mô deal', 'Tỷ lệ chốt đơn'],
+                metrics: 'Revenue, số lượng deal, customer retention'
+            },
+            'finance': {
+                name: 'Tài chính / Kế toán',
+                icon: 'coins',
+                description: 'Kế toán, tài chính, kiểm toán',
+                focus: ['Chứng chỉ', 'Compliance', 'Kinh nghiệm audit'],
+                metrics: 'Năm kinh nghiệm, chứng chỉ (CPA, ACCA)'
+            },
+            'general': {
+                name: 'Tổng hợp / Khác',
+                icon: 'briefcase',
+                description: 'Các ngành nghề khác',
+                focus: ['Kinh nghiệm làm việc', 'Kỹ năng chuyên môn', 'Học vấn'],
+                metrics: 'Số năm kinh nghiệm'
+            }
+        };
+
+        // Preview industry info
+        document.getElementById('industryKey').addEventListener('change', function() {
+            const key = this.value;
+            const preview = document.getElementById('industryPreview');
+            
+            if (!key) {
+                preview.innerHTML = '<p class="text-muted">Chọn ngành nghề để xem thông tin chi tiết</p>';
+                return;
+            }
+            
+            const info = industryInfo[key];
+            preview.innerHTML = `
+                <div class="industry-info">
+                    <h4><i class="fas fa-${info.icon}"></i> ${info.name}</h4>
+                    <p>${info.description}</p>
+                    <div class="info-section">
+                        <strong>Tiêu chí đánh giá:</strong>
+                        <ul>
+                            ${info.focus.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <strong>Key Metrics:</strong>
+                        <p>${info.metrics}</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Trigger preview if editing
+        const currentKey = document.getElementById('industryKey').value;
+        if (currentKey) {
+            document.getElementById('industryKey').dispatchEvent(new Event('change'));
+        }
+
+        function logout() {
+            window.location.href = '/logout';
+        }
+
+        // Form submission
+        document.getElementById('categoryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const categoryId = document.getElementById('categoryId').value;
+            const data = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                industryKey: document.getElementById('industryKey').value
+            };
+            
+            try {
+                let response;
+                if (categoryId) {
+                    // Update
+                    response = await api.put(`/api/categories/${categoryId}`, data);
+                } else {
+                    // Create
+                    response = await api.post('/api/categories', data);
+                }
+                
+                if (response && response.success) {
+                    alert(response.message || 'Thành công!');
+                    window.location.href = '/admin/categories';
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể lưu danh mục'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+            }
+        });
+    </script>
+
+    <style>
+        .btn-back {
+            display: inline-block;
+            color: #4a5568;
+            text-decoration: none;
+            margin-bottom: 15px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .btn-back:hover {
+            background: #e2e8f0;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .required {
+            color: #e53e3e;
+        }
+        
+        .industry-preview {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .industry-info h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+        
+        .info-section {
+            margin-top: 16px;
+        }
+        
+        .info-section strong {
+            color: #4a5568;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .info-section ul {
+            margin-left: 20px;
+            color: #718096;
+        }
+        
+        .text-muted {
+            color: #a0aec0;
+        }
+    </style>
+</body>
+
+</html>

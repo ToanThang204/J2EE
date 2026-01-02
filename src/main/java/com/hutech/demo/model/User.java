@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 @Table(name = "users")
 @Data
 @NoArgsConstructor

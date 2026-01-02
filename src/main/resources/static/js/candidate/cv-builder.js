@@ -28,11 +28,18 @@ let cvData = {
     hobbies: [],
     additional: []
 };
+let currentResumeId = null;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function () {
     initializeFormElements();
     updateCVPreview();
+    // If an id is provided in the query string, load the resume for editing
+    const params = new URLSearchParams(window.location.search);
+    const resumeId = params.get('id');
+    if (resumeId) {
+        loadResume(resumeId);
+    }
 });
 
 // Initialize form elements
@@ -772,14 +779,21 @@ function saveCV() {
 
         const cvTitle = document.getElementById('cv-title').value || 'CV của tôi';
 
-        const payload = {
+        const htmlContent = document.getElementById('cv-template').innerHTML;
+        
+        // Build payload with all fields to match Resume entity
+        const resumePayload = {
             title: cvTitle,
-            template: currentTemplate,
-            data: cvData,
-            htmlContent: document.getElementById('cv-template').innerHTML
+            fullName: cvData.header.fullName || '',
+            email: cvData.header.email || '',
+            phone: cvData.header.phone || '',
+            address: cvData.header.address || '',
+            summary: cvData.objective || '',
+            personalInfo: htmlContent,
+            skillsSummary: cvData.skills ? cvData.skills.map(s => s.text).join(', ') : ''
         };
 
-        console.log('Saving CV:', payload);
+        console.log('Saving CV:', resumePayload);
 
         const saveBtn = document.querySelector('button[onclick="saveCV()"]');
         if (saveBtn) {
@@ -788,7 +802,8 @@ function saveCV() {
         }
 
         if (typeof api !== 'undefined') {
-            api.post('/api/candidate/resumes', payload)
+            const request = currentResumeId ? api.put(`/resumes/${currentResumeId}`, resumePayload) : api.post('/resumes', resumePayload);
+            request
                 .then(response => {
                     showToast('Lưu CV thành công!', 'success');
                     setTimeout(() => window.location.href = '/candidate/cv-index', 1000);
@@ -811,10 +826,90 @@ function saveCV() {
     }
 }
 
+// Load an existing resume into the builder for editing
+function loadResume(id) {
+    if (typeof api === 'undefined') return;
+    api.get(`/resumes/${id}`)
+        .then(response => {
+            console.log('Raw API response:', response);
+            
+            // Check if response is wrapped in a data property
+            const resume = response.data || response;
+            
+            if (!resume) return;
+            
+            console.log('Loaded resume data:', resume);
+            
+            currentResumeId = resume.id;
+            
+            // Populate simple fields
+            if (document.getElementById('cv-title')) {
+                document.getElementById('cv-title').value = resume.title || '';
+                console.log('Set title:', resume.title);
+            }
+            
+            // Populate header fields from resume data
+            if (document.getElementById('header-full-name')) {
+                document.getElementById('header-full-name').value = resume.fullName || '';
+                console.log('Set fullName:', resume.fullName);
+            }
+            if (document.getElementById('header-email')) {
+                document.getElementById('header-email').value = resume.email || '';
+                console.log('Set email:', resume.email);
+            }
+            if (document.getElementById('header-phone')) {
+                document.getElementById('header-phone').value = resume.phone || '';
+                console.log('Set phone:', resume.phone);
+            }
+            if (document.getElementById('header-address')) {
+                document.getElementById('header-address').value = resume.address || '';
+                console.log('Set address:', resume.address);
+            }
+            if (document.getElementById('cv-objective')) {
+                document.getElementById('cv-objective').value = resume.summary || '';
+                console.log('Set summary:', resume.summary);
+            }
+            
+            // If resume.personalInfo contains the rendered HTML, inject into preview
+            if (resume.personalInfo) {
+                document.getElementById('cv-template').innerHTML = resume.personalInfo;
+            }
+            
+            // Also try to populate header from nested header object if it exists
+            if (resume.header) {
+                console.log('Found nested header:', resume.header);
+                const h = resume.header;
+                if (document.getElementById('header-full-name') && h.fullName) {
+                    document.getElementById('header-full-name').value = h.fullName;
+                }
+                if (document.getElementById('header-email') && h.email) {
+                    document.getElementById('header-email').value = h.email;
+                }
+                if (document.getElementById('header-phone') && h.phone) {
+                    document.getElementById('header-phone').value = h.phone;
+                }
+                if (document.getElementById('header-title') && h.title) {
+                    document.getElementById('header-title').value = h.title;
+                }
+                if (document.getElementById('header-address') && h.address) {
+                    document.getElementById('header-address').value = h.address;
+                }
+            }
+            
+            updateCVPreview();
+            showToast('Đã tải CV để chỉnh sửa', 'success');
+        })
+        .catch(err => {
+            console.error('Load resume error:', err);
+            showToast('Không thể tải CV để chỉnh sửa', 'error');
+        });
+}
+
 // Load Candidate Profile
 function loadCandidateProfile() {
     if (typeof api !== 'undefined') {
-        api.get('/api/users/profile')
+        // ProfileController is at /api/candidate/profile
+        api.get('/candidate/profile')
             .then(res => {
                 if (res && res.data) {
                     const user = res.data;

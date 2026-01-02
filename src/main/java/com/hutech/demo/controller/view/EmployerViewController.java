@@ -8,7 +8,6 @@ import com.hutech.demo.service.JobService;
 import com.hutech.demo.service.ApplicationService;
 import com.hutech.demo.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +37,11 @@ public class EmployerViewController {
         return "employer/dashboard";
     }
 
+    @GetMapping("/employer")
+    public String employerRoot() {
+        return "redirect:/employer/dashboard";
+    }
+
     @GetMapping("/employer/company/info")
     public String companyInfo(Model model) {
         Long userId = SecurityUtils.getCurrentUserId();
@@ -60,20 +64,57 @@ public class EmployerViewController {
 
     @GetMapping("/employer/jobs")
     public String jobList(Model model) {
-        Long userId = SecurityUtils.getCurrentUserId();
-        List<Company> companies = companyService.getAllCompanies().stream()
-                .filter(c -> c.getUserId().equals(userId))
-                .toList();
-        
-        List<Job> allJobs = jobService.getAllJobs();
-        List<Job> userJobs = allJobs.stream()
-                .filter(job -> companies.stream()
-                        .anyMatch(c -> c.getId().equals(job.getCompany().getId())))
-                .toList();
-        
-        model.addAttribute("jobs", userJobs);
-        model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
-        return "employer/job-list";
+        try {
+            Long userId = SecurityUtils.getCurrentUserId();
+            if (userId == null) {
+                model.addAttribute("jobs", new java.util.ArrayList<>());
+                model.addAttribute("currentUser", null);
+                return "employer/job-list";
+            }
+            
+            // Get companies by user ID
+            List<Company> companies = companyService.getCompaniesByUserId(userId);
+            
+            // Collect all jobs from user's companies
+            List<Job> userJobs = new java.util.ArrayList<>();
+            if (companies != null && !companies.isEmpty()) {
+                for (Company company : companies) {
+                    if (company != null && company.getId() != null) {
+                        try {
+                            List<Job> companyJobs = jobService.getJobsByCompany(company.getId());
+                            if (companyJobs != null && !companyJobs.isEmpty()) {
+                                userJobs.addAll(companyJobs);
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Error loading jobs for company " + company.getId() + ": " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            
+            // Debug logging
+            System.out.println("=== Job List Debug ===");
+            System.out.println("User ID: " + userId);
+            System.out.println("Companies found: " + (companies != null ? companies.size() : 0));
+            System.out.println("Total jobs found: " + userJobs.size());
+            
+            model.addAttribute("jobs", userJobs);
+            model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+            return "employer/job-list";
+        } catch (Exception e) {
+            System.err.println("=== ERROR in jobList ===");
+            System.err.println("Error message: " + e.getMessage());
+            System.err.println("Error class: " + e.getClass().getName());
+            e.printStackTrace();
+            model.addAttribute("jobs", new java.util.ArrayList<>());
+            try {
+                model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
+            } catch (Exception ex) {
+                model.addAttribute("currentUser", null);
+            }
+            return "employer/job-list";
+        }
     }
 
     @GetMapping("/employer/jobs/create")
@@ -128,19 +169,11 @@ public class EmployerViewController {
     }
 
     @GetMapping("/employer/applications")
-    public String applications(Model model) {
+    public String applicationsPage(Model model) {
         Long userId = SecurityUtils.getCurrentUserId();
-        List<Company> companies = companyService.getAllCompanies().stream()
-                .filter(c -> c.getUserId().equals(userId))
-                .toList();
-        
-        List<Application> allApplications = applicationService.getAllApplications();
-        List<Application> userApplications = allApplications.stream()
-                .filter(app -> companies.stream()
-                        .anyMatch(c -> c.getId().equals(app.getJob().getCompany().getId())))
-                .toList();
-        
-        model.addAttribute("applications", userApplications);
+        // Provide companies list (or empty) so frontend knows company IDs
+        List<Company> companies = userId == null ? java.util.List.of() : companyService.getCompaniesByUserId(userId);
+        model.addAttribute("companies", companies);
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "employer/applications";
     }

@@ -3,6 +3,12 @@ package com.hutech.demo.controller;
 import com.hutech.demo.model.Application;
 import com.hutech.demo.model.enums.ApplicationStatus;
 import com.hutech.demo.service.ApplicationService;
+import com.hutech.demo.model.Job;
+import com.hutech.demo.model.Resume;
+import com.hutech.demo.repository.JobRepository;
+import com.hutech.demo.repository.ResumeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.hutech.demo.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,12 +18,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/applications")
 @RequiredArgsConstructor
 public class ApplicationController {
     private final ApplicationService applicationService;
+    private final JobRepository jobRepository;
+    private final ResumeRepository resumeRepository;
+    private static final Logger log = LoggerFactory.getLogger(ApplicationController.class);
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -63,10 +74,55 @@ public class ApplicationController {
 
     @PostMapping
     @PreAuthorize("hasRole('CANDIDATE')")
-    public ResponseEntity<Application> createApplication(@RequestBody Application application) {
+    public ResponseEntity<?> createApplication(@RequestBody Application application,
+                                                         @RequestParam(required = false) Long jobId,
+                                                         @RequestParam(required = false) Long resumeId) {
+        log.debug("Incoming application payload: {}", application);
+
+        // Ensure job is a managed reference so Hibernate can set FK correctly
+        try {
+            if (application.getJob() != null && application.getJob().getId() != null) {
+                Job managed = jobRepository.getReferenceById(application.getJob().getId());
+                application.setJob(managed);
+            } else if (application.getJob() == null && jobId != null) {
+                Job managed = jobRepository.getReferenceById(jobId);
+                application.setJob(managed);
+            }
+
+            if (application.getResume() != null && application.getResume().getId() != null) {
+                Resume managedR = resumeRepository.getReferenceById(application.getResume().getId());
+                application.setResume(managedR);
+            } else if (application.getResume() == null && resumeId != null) {
+                Resume managedR = resumeRepository.getReferenceById(resumeId);
+                application.setResume(managedR);
+            }
+        } catch (Exception ex) {
+            log.warn("Could not resolve job/resume references: {}", ex.getMessage());
+        }
+
         application.setUserId(SecurityUtils.getCurrentUserId());
-        Application createdApplication = applicationService.createApplication(application);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdApplication);
+
+        Long jobIdLog = application.getJob() != null ? application.getJob().getId() : null;
+        Long resumeIdLog = application.getResume() != null ? application.getResume().getId() : null;
+        log.debug("Creating application - userId={}, jobId={}, resumeId={}, coverLetterPresent={}",
+                SecurityUtils.getCurrentUserId(), jobIdLog, resumeIdLog, application.getCoverLetter() != null);
+
+        try {
+            Application createdApplication = applicationService.createApplication(application);
+            // Return minimal envelope {success:true, data:{...}} to match frontend expectation
+            Map<String, Object> resp = new HashMap<>();
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", createdApplication.getId());
+            data.put("status", createdApplication.getStatus());
+            resp.put("success", true);
+            resp.put("data", data);
+            log.debug("Application created with id={}", createdApplication.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+        } catch (Exception ex) {
+            log.error("Failed to create application", ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to create application", "detail", ex.getMessage()));
+        }
     }
 
     @PatchMapping("/{id}/status")

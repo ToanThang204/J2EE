@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lỗi - Chi tiết công việc</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+<header th:replace="~{layout/fragments/header :: header}"></header>
+
+<div class="container" style="padding-top: var(--spacing-xl);">
+    <div class="card">
+        <h2>Không thể hiển thị chi tiết công việc</h2>
+        <p th:text="${errorMessage}">Đã xảy ra lỗi khi tải trang. Vui lòng thử lại sau.</p>
+        <p>
+            <a th:href="@{'/jobs/' + ${jobId}}">Thử tải lại</a> |
+            <a th:href="@{/jobs}">Quay lại danh sách việc làm</a>
+        </p>
+    </div>
+</div>
+
+<footer th:replace="~{layout/fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface AiUsageLogRepository extends JpaRepository<AiUsageLog, Long> {
-    @Query("SELECT COUNT(a) FROM AiUsageLog a WHERE a.user.id = ?1 AND a.featureType = ?2 AND a.createdAt >= ?3")
-    long countByUserIdAndFeatureTypeAndCreatedAtAfter(Long userId, String featureType, LocalDateTime after);
+    @Query("SELECT COUNT(a) FROM AiUsageLog a WHERE a.user.id = ?1 AND a.featureName = ?2 AND a.createdAt >= ?3")
+    long countByUserIdAndFeatureNameAndCreatedAtAfter(Long userId, String featureName, LocalDateTime after);
 
-    @Query("SELECT COUNT(a) FROM AiUsageLog a WHERE a.ipAddress = ?1 AND a.featureType = ?2 AND a.createdAt >= ?3")
-    long countByIpAddressAndFeatureTypeAndCreatedAtAfter(String ipAddress, String featureType, LocalDateTime after);
+    @Query("SELECT COUNT(a) FROM AiUsageLog a WHERE a.ipAddress = ?1 AND a.user IS NULL AND a.featureName = ?2 AND a.createdAt >= ?3")
+    long countByIpAddressAndFeatureNameAndCreatedAtAfter(String ipAddress, String featureName, LocalDateTime after);
 }

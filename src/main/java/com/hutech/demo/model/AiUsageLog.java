@@ -9,7 +9,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ai_usage_logs")
+@Table(name = "ai_usage_logs", indexes = {
+    @Index(name = "idx_user_feature_time", columnList = "user_id, feature_name, created_at"),
+    @Index(name = "idx_ip_feature_time", columnList = "ip_address, feature_name, created_at")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,21 +25,13 @@ public class AiUsageLog {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
-    private String featureType; // match_cv, generate_cv, etc.
-
-    @Column(nullable = false)
+    @Column(name = "ip_address", length = 45)
     private String ipAddress;
 
-    @Column(columnDefinition = "TEXT")
-    private String requestData;
-
-    @Column(nullable = false)
-    private Boolean success;
-
-    @Column(columnDefinition = "TEXT")
-    private String errorMessage;
+    @Column(name = "feature_name", nullable = false, length = 50)
+    private String featureName; // match_cv, generate_cv, etc.
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

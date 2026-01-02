@@ -9,12 +9,18 @@ async function applyJob(jobId, resumeId = null) {
     try {
         showLoading();
         
-        const data = {};
+        const coverLetter = document.getElementById('coverLetter') ? document.getElementById('coverLetter').value : null;
+
+        // Build Application payload: include job and optionally resume and coverLetter
+        const data = { job: { id: Number(jobId) } };
         if (resumeId) {
-            data.resumeId = resumeId;
+            data.resume = { id: Number(resumeId) };
         }
-        
-        const response = await api.post(`/applications?jobId=${jobId}`, data);
+        if (coverLetter) {
+            data.coverLetter = coverLetter;
+        }
+
+        const response = await api.post(`/applications`, data);
         
         if (response && response.success) {
             showToast('Ứng tuyển thành công!', 'success');

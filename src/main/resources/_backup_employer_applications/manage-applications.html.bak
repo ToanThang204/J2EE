@@ -1,0 +1,12 @@
+<!- Full backup: src/main/resources/templates/employer/manage-applications.html ->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+... (original content backed up)
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    ...
+</body>
+</html>

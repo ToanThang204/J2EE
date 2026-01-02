@@ -26,7 +26,12 @@
         <div class="jobs-grid" th:if="${jobs != null and !jobs.isEmpty()}">
             <div th:each="job : ${jobs}" class="job-card" th:onclick="'window.location.href=\'/jobs/' + ${job.id} + '\''">
                 <div class="job-card-header">
-                    <div class="company-logo-small" th:text="${job.company != null ? job.company.companyName.substring(0, 2).toUpperCase() : 'CO'}">CO</div>
+                    <div class="company-logo-small">
+                        <img th:if="${job.company != null and job.company.logo != null and job.company.logo.startsWith('data:')}" th:src="${job.company.logo}" alt="logo" />
+                        <img th:if="${job.company != null and job.company.logo != null and job.company.logo.startsWith('http')}" th:src="${job.company.logo}" alt="logo" />
+                        <img th:if="${job.company != null and job.company.logo != null and !(job.company.logo.startsWith('data:') or job.company.logo.startsWith('http'))}" th:src="${'data:image/png;base64,' + job.company.logo}" alt="logo" />
+                        <span th:if="${job.company == null or job.company.logo == null or job.company.logo == ''}" th:text="${job.company != null and job.company.companyName != null ? job.company.companyName.substring(0, job.company.companyName.length() >= 2 ? 2 : job.company.companyName.length()).toUpperCase() : 'CO'}">CO</span>
+                    </div>
                     <div class="company-name-small" th:text="${job.company != null ? job.company.companyName : 'Company'}">Company Name</div>
                 </div>
                 <h3 class="job-title" th:text="${job.title}">Job Title</h3>
@@ -56,6 +61,7 @@
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
     <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
 </body>
 </html>
 

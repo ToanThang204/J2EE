@@ -28,16 +28,17 @@ public class AiMatchResult {
     private Job job;
 
     @ManyToOne
-    @JoinColumn(name = "resume_id", nullable = false)
+    @JoinColumn(name = "resume_id")
     private Resume resume;
 
     @Column(nullable = false)
     private Integer matchScore; // 0-100
 
-    @Column(columnDefinition = "LONGTEXT")
-    private String analysisData; // JSON data from Gemini API
+    @Column(length = 50)
+    private String industryDetected; // it, marketing, sales, finance, general
 
-    private String ipAddress;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String analysisData; // JSON data from Gemini API
 
     @CreationTimestamp
     private LocalDateTime createdAt;

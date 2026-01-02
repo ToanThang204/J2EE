@@ -15,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
+    private final EmailService emailService;
 
     public List<Application> getAllApplications() {
         return applicationRepository.findAll();
@@ -43,7 +44,35 @@ public class ApplicationService {
     @Transactional
     public Application createApplication(Application application) {
         application.setAppliedAt(LocalDateTime.now());
-        return applicationRepository.save(application);
+        Application savedApplication = applicationRepository.save(application);
+        
+        // Gửi email cho ứng viên xác nhận đã nhận đơn
+        try {
+            if (savedApplication.getUser() != null && savedApplication.getUser().getEmail() != null) {
+                String jobTitle = savedApplication.getJob() != null ? savedApplication.getJob().getTitle() : "Vị trí tuyển dụng";
+                String companyName = savedApplication.getJob() != null && savedApplication.getJob().getCompany() != null 
+                    ? savedApplication.getJob().getCompany().getCompanyName() : "Công ty";
+                emailService.sendApplicationSubmittedEmail(savedApplication.getUser().getEmail(), jobTitle, companyName);
+            }
+            
+            // Gửi email cho nhà tuyển dụng thông báo có đơn ứng tuyển mới
+            if (savedApplication.getJob() != null && savedApplication.getJob().getCompany() != null 
+                && savedApplication.getJob().getCompany().getEmail() != null) {
+                String candidateName = savedApplication.getUser() != null && savedApplication.getUser().getName() != null 
+                    ? savedApplication.getUser().getName() : "Ứng viên";
+                String jobTitle = savedApplication.getJob().getTitle();
+                emailService.sendNewApplicationReceivedEmail(
+                    savedApplication.getJob().getCompany().getEmail(), 
+                    candidateName, 
+                    jobTitle
+                );
+            }
+        } catch (Exception e) {
+            // Log error nhưng không ảnh hưởng đến việc tạo application
+            System.err.println("Error sending application email: " + e.getMessage());
+        }
+        
+        return savedApplication;
     }
 
     @Transactional
@@ -52,7 +81,25 @@ public class ApplicationService {
                 .orElseThrow(() -> new RuntimeException("Application not found"));
         
         application.setStatus(status);
-        return applicationRepository.save(application);
+        Application updatedApplication = applicationRepository.save(application);
+        
+        // Gửi email thông báo cập nhật trạng thái cho ứng viên
+        try {
+            if (updatedApplication.getUser() != null && updatedApplication.getUser().getEmail() != null) {
+                String jobTitle = updatedApplication.getJob() != null ? updatedApplication.getJob().getTitle() : "Vị trí tuyển dụng";
+                String statusText = status != null ? status.name() : "UNKNOWN";
+                emailService.sendApplicationStatusEmail(
+                    updatedApplication.getUser().getEmail(), 
+                    jobTitle, 
+                    statusText
+                );
+            }
+        } catch (Exception e) {
+            // Log error nhưng không ảnh hưởng đến việc cập nhật
+            System.err.println("Error sending status update email: " + e.getMessage());
+        }
+        
+        return updatedApplication;
     }
 
     @Transactional

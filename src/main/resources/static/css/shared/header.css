@@ -172,7 +172,7 @@
 
 .user-dropdown {
     position: absolute;
-    top: calc(100% + 8px);
+    top: 100%;
     right: 0;
     background: white;
     border: 1px solid #e0e0e0;
@@ -186,6 +186,7 @@
     transition: opacity 0.2s ease;
     overflow: hidden;
     pointer-events: auto;
+    margin-top: 4px;
 }
 
 .user-dropdown[style*="display: block"] {

@@ -20,40 +20,26 @@
         
         <main class="main-content with-sidebar">
             <div class="page-header">
-                <h1 th:text="${resume != null ? resume.title : 'CV'}">CV Title</h1>
+                <h1 th:text="${resumeTitle != null ? resumeTitle : 'CV'}">CV Title</h1>
                 <div class="action-buttons">
-                    <a th:href="@{'/candidate/resumes/' + ${resume.id} + '/edit'}" class="btn btn-primary">Chỉnh sửa</a>
+                    <a th:if="${resumeId != null}" th:href="@{'/candidate/resumes/' + ${resumeId} + '/edit'}" class="btn btn-primary">Chỉnh sửa</a>
                     <button class="btn btn-secondary" onclick="window.print()">In CV</button>
                     <button class="btn btn-secondary" onclick="downloadPDF()">Tải PDF</button>
                 </div>
             </div>
             
             <div class="card" id="cvContent">
-                <div th:if="${resume != null}">
+                <div>
                     <div style="margin-bottom: var(--spacing-xl);">
                         <h2 th:text="${currentUser != null ? currentUser.name : 'Họ và tên'}">Full Name</h2>
                         <p th:if="${currentUser != null and currentUser.email != null}" th:text="${currentUser.email}">email@example.com</p>
                         <p th:if="${currentUser != null and currentUser.profile != null and currentUser.profile.phone != null}" th:text="${currentUser.profile.phone}">Phone</p>
                     </div>
-                    
-                    <div th:if="${resume.objective != null}" style="margin-bottom: var(--spacing-lg);">
-                        <h3>Mục tiêu nghề nghiệp</h3>
-                        <p th:text="${resume.objective}">Objective</p>
-                    </div>
-                    
-                    <div th:if="${resume.experience != null}" style="margin-bottom: var(--spacing-lg);">
-                        <h3>Kinh nghiệm</h3>
-                        <div th:utext="${resume.experience}">Experience</div>
-                    </div>
-                    
-                    <div th:if="${resume.education != null}" style="margin-bottom: var(--spacing-lg);">
-                        <h3>Học vấn</h3>
-                        <div th:utext="${resume.education}">Education</div>
-                    </div>
-                    
-                    <div th:if="${resume.skills != null}" style="margin-bottom: var(--spacing-lg);">
-                        <h3>Kỹ năng</h3>
-                        <div th:utext="${resume.skills}">Skills</div>
+
+                    <!-- Render saved personalInfo (contains the rendered CV HTML) -->
+                    <div th:if="${resumePersonalInfo != null}" th:utext="${resumePersonalInfo}"></div>
+                    <div th:if="${resumePersonalInfo == null}">
+                        <p class="empty-state-message">Nội dung CV chưa được lưu.</p>
                     </div>
                 </div>
                 
@@ -71,6 +57,7 @@
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
     <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script>
         function downloadPDF() {
             const resumeId = /*[[${resume != null ? resume.id : null}]]*/ null;

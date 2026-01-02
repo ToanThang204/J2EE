@@ -23,6 +23,7 @@ public class AdminApiController {
 
     private final PaymentRepository paymentRepository;
     private final com.hutech.demo.repository.CompanyRepository companyRepository;
+    private final com.hutech.demo.repository.UserRepository userRepository;
     private final com.hutech.demo.service.SepayService sepayService;
 
     @GetMapping("/revenue-report")
@@ -89,7 +90,34 @@ public class AdminApiController {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        sepayService.processSuccessfulPayment(payment);
+        // Check if payment is awaiting approval
+        if (!"awaiting_approval".equals(payment.getStatus())) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Thanh toán này không ở trạng thái chờ duyệt", null));
+        }
+
+        // Update payment status to paid
+        payment.setStatus("paid");
+        paymentRepository.save(payment);
+
+        // Activate company and upgrade user role
+        if (payment.getCompany() != null) {
+            com.hutech.demo.model.Company company = payment.getCompany();
+            company.setStatus(com.hutech.demo.model.enums.CompanyStatus.ACTIVE);
+            companyRepository.save(company);
+
+            if (company.getUser() != null) {
+                com.hutech.demo.model.User user = company.getUser();
+                user.setRole(com.hutech.demo.model.enums.UserRole.EMPLOYER);
+                userRepository.save(user);
+
+                // Send success notification
+                sepayService.sendNotification(user, "Yêu cầu nâng cấp nhà tuyển dụng",
+                        "Chúc mừng! Công ty " + company.getCompanyName()
+                                + " đã được kích hoạt. Bạn hiện là Nhà tuyển dụng. Bạn hãy đăng nhập lại để cập nhật vai trò.",
+                        "/employer/company/info");
+            }
+        }
 
         return ResponseEntity.ok(ApiResponse.success("Phê duyệt thanh toán thành công", null));
     }

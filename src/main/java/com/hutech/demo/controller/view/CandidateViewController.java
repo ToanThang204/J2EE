@@ -17,7 +17,9 @@ import com.hutech.demo.service.UserService;
 import com.hutech.demo.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class CandidateViewController {
@@ -65,11 +67,20 @@ public class CandidateViewController {
 
     @GetMapping("/candidate/resumes/{id}/edit")
     public String resumeEdit(@PathVariable Long id, Model model) {
+        // Redirect to the CV builder with the resume id so the builder can handle editing
+        return "redirect:/candidate/cv-builder?id=" + id;
+    }
+
+    @GetMapping("/candidate/resumes/{id}")
+    public String resumeView(@PathVariable Long id, Model model) {
         Resume resume = resumeService.getResumeById(id)
                 .orElseThrow(() -> new RuntimeException("Resume not found"));
-        model.addAttribute("resume", resume);
+        // Add only simple fields to the model to avoid serializing full JPA entity with relations
+        model.addAttribute("resumeId", resume.getId());
+        model.addAttribute("resumeTitle", resume.getTitle());
+        model.addAttribute("resumePersonalInfo", resume.getPersonalInfo());
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
-        return "candidate/resume-edit";
+        return "candidate/cv-view";
     }
 
     @GetMapping("/candidate/cv-builder")
@@ -127,7 +138,9 @@ public class CandidateViewController {
     @GetMapping("/candidate/cv-index")
     public String cvIndex(Model model) {
         Long userId = SecurityUtils.getCurrentUserId();
+        log.info("Loading CV index for user ID: {}", userId);
         List<Resume> resumes = resumeService.getResumesByUser(userId);
+        log.info("Loaded {} resumes for user {}", resumes != null ? resumes.size() : 0, userId);
         model.addAttribute("resumes", resumes);
         model.addAttribute("currentUser", SecurityUtils.getCurrentUser());
         return "candidate/cv-index";

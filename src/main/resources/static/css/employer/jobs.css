@@ -1,10 +1,24 @@
-/* Employer Jobs Management Styles */
+/* Employer Jobs Management Styles - Modern Design */
 
 .employer-jobs-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 2px solid rgba(226, 232, 240, 0.5);
+    position: relative;
+}
+
+.employer-jobs-header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, #28a745, #20c997);
+    border-radius: 2px;
 }
 
 .employer-jobs-filters {
@@ -15,16 +29,37 @@
 }
 
 .job-card-employer {
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    box-shadow: var(--shadow-md);
-    margin-bottom: var(--spacing-md);
-    transition: all 0.3s;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 20px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
+    margin-bottom: var(--spacing-lg);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.job-card-employer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(to bottom, #28a745, #20c997);
+    transform: translateX(-5px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.job-card-employer:hover::before {
+    transform: translateX(0);
 }
 
 .job-card-employer:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 32px rgba(40, 167, 69, 0.15), 0 0 0 1px rgba(40, 167, 69, 0.1);
+    transform: translateY(-4px) translateX(4px);
+    border-color: rgba(40, 167, 69, 0.2);
 }
 
 .job-card-employer-header {
@@ -35,10 +70,16 @@
 }
 
 .job-card-employer-title {
-    font-size: var(--font-size-lg);
-    font-weight: 700;
+    font-size: var(--font-size-xl);
+    font-weight: 800;
     color: var(--dark-grey);
     margin-bottom: var(--spacing-xs);
+    letter-spacing: -0.3px;
+    transition: color 0.3s ease;
+}
+
+.job-card-employer:hover .job-card-employer-title {
+    color: #28a745;
 }
 
 .job-card-employer-meta {
@@ -68,24 +109,35 @@
 }
 
 .job-status-badge {
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-lg);
+    padding: 8px 16px;
+    border-radius: 12px;
     font-size: var(--font-size-sm);
-    font-weight: 500;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .job-status-badge.active {
-    background-color: #D1FAE5;
-    color: var(--primary-green);
+    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+    color: #065F46;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .job-status-badge.inactive {
-    background-color: #FEE2E2;
-    color: var(--red);
+    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+    color: #991B1B;
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .job-status-badge.draft {
-    background-color: #FEF3C7;
-    color: var(--orange);
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    color: #92400E;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.job-status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 

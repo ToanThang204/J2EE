@@ -27,6 +27,9 @@ public class Category {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "industry_key", length = 50)
+    private String industryKey; // Liên kết với IndustryContext
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

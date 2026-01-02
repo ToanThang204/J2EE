@@ -56,14 +56,16 @@ public class SepayService {
     }
 
     public void processSuccessfulPayment(Payment payment) {
-        if (payment == null || "paid".equals(payment.getStatus()))
+        if (payment == null || "paid".equals(payment.getStatus()) || "awaiting_approval".equals(payment.getStatus()))
             return;
 
-        payment.setStatus("paid");
+        // Set status to awaiting_approval instead of paid
+        payment.setStatus("awaiting_approval");
         payment.setPaidAt(LocalDateTime.now());
         paymentRepository.save(payment);
 
-        // If this payment is for a company upgrade
+        // Don't activate company yet - wait for admin approval
+        /* Commented out - will be done when admin approves
         if (payment.getCompany() != null) {
             com.hutech.demo.model.Company company = payment.getCompany();
             company.setStatus(com.hutech.demo.model.enums.CompanyStatus.ACTIVE);
@@ -80,6 +82,15 @@ public class SepayService {
                                 + " đã được kích hoạt. Bạn hiện là Nhà tuyển dụng.",
                         "/employer/company/info");
             }
+        }
+        */
+        
+        // Send notification that payment is awaiting admin approval
+        if (payment.getCompany() != null && payment.getCompany().getUser() != null) {
+            com.hutech.demo.model.User user = payment.getCompany().getUser();
+            sendNotification(user, "Thanh toán thành công",
+                    "Thanh toán của bạn đã được xác nhận. Đang chờ quản trị viên duyệt để kích hoạt công ty.",
+                    "/payment/order/" + payment.getSepayOrderId());
         }
     }
 

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật trạng thái đơn ứng tuyển</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .info-box {
+            background: #f9fafb;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        .info-row {
+            margin: 12px 0;
+            font-size: 15px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            display: inline-block;
+            min-width: 120px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .status-pending {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .status-reviewed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status-interview {
+            background: #fed7aa;
+            color: #c2410c;
+        }
+        .status-accepted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .message {
+            margin: 20px 0;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #555;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 25px 0;
+            transition: background 0.3s;
+        }
+        .cta-button:hover {
+            background: #45a049;
+        }
+        .footer {
+            background: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 13px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 8px 0;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="icon">📧</div>
+            <h1>Cập nhật đơn ứng tuyển</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">Xin chào <span th:text="${candidateName}">Ứng viên</span>,</div>
+
+            <p class="message">
+                Đơn ứng tuyển của bạn đã có cập nhật mới. Dưới đây là thông tin chi tiết:
+            </p>
+
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">📋 Vị trí:</span>
+                    <span th:text="${jobTitle}">Vị trí tuyển dụng</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">🏢 Công ty:</span>
+                    <span th:text="${companyName}">Tên công ty</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📊 Trạng thái:</span>
+                    <span class="status-badge" 
+                          th:classappend="${'status-' + status}"
+                          th:text="${statusText}">Trạng thái</span>
+                </div>
+                <div class="info-row" th:if="${updatedAt != null}">
+                    <span class="info-label">🕐 Cập nhật:</span>
+                    <span th:text="${#temporals.format(updatedAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</span>
+                </div>
+            </div>
+
+            <div th:if="${message != null and !message.isEmpty()}" class="message">
+                <strong>📝 Lời nhắn từ nhà tuyển dụng:</strong><br/>
+                <span th:text="${message}">Thông tin thêm từ nhà tuyển dụng</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="message">
+                Vui lòng đăng nhập vào hệ thống để xem chi tiết và cập nhật thêm thông tin nếu cần.
+            </p>
+
+            <center>
+                <a href="http://localhost:8081/candidate/applications" class="cta-button">
+                    Xem chi tiết đơn ứng tuyển
+                </a>
+            </center>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Hệ thống tuyển dụng WebCV</strong></p>
+            <p>Email này được gửi tự động, vui lòng không trả lời.</p>
+            <p>Nếu bạn có thắc mắc, vui lòng liên hệ: support@webcv.com</p>
+            <div style="margin-top: 15px;">
+                <a href="http://localhost:8081" style="color: #667eea; text-decoration: none; margin: 0 10px;">Trang chủ</a>
+                <span style="color: #d1d5db;">|</span>
+                <a href="http://localhost:8081/help" style="color: #667eea; text-decoration: none; margin: 0 10px;">Trợ giúp</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

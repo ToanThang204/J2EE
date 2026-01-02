@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
-<body>
-    <header th:fragment="header" class="main-header">
+<header th:fragment="header" class="main-header" xmlns:th="http://www.thymeleaf.org">
         <!-- FontAwesome for all pages -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -65,7 +61,7 @@
                     </div>
                     <i class="fas fa-chevron-down" style="margin-left: 4px; font-size: 12px; color: #999;"></i>
                     <div class="user-dropdown">
-                        <!-- User Header in Dropdown -->
+                        <!-- User Header in Dropdown (Candidate) -->
                         <div class="dropdown-header profile-link-candidate" style="display: none;">
                             <div class="dropdown-header-avatar" id="userAvatarDropdown">
                                 <i class="fas fa-user"></i>
@@ -104,8 +100,48 @@
                         <hr class="profile-link-candidate"
                             style="margin: 8px 0; border: none; border-top: 1px solid #eee; display: none;">
 
-                        <!-- Messages -->
+                        <!-- Candidate Messages -->
                         <a th:href="@{/candidate/messages}" class="dropdown-item profile-link-candidate"
+                            style="display: none;">
+                            <i class="fas fa-inbox"></i>
+                            <span>Tin nhắn</span>
+                        </a>
+
+                        <!-- Employer Header in Dropdown -->
+                        <div class="dropdown-header profile-link-employer" style="display: none; margin-top:8px;">
+                            <div class="dropdown-header-avatar" id="userAvatarDropdownEmployer">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div>
+                                <div class="dropdown-header-name" id="userNameDropdownEmployer">Nhà Tuyển Dụng</div>
+                                <div class="dropdown-header-role" id="userRoleDropdownEmployer">Nhà Tuyển Dụng</div>
+                            </div>
+                        </div>
+                        <hr class="profile-link-employer"
+                            style="margin: 8px 0; border: none; border-top: 1px solid #eee; display: none;">
+
+                        <!-- Employer Menu Items -->
+                        <a th:href="@{/employer/company/info}" class="dropdown-item profile-link-employer"
+                            style="display: none;">
+                            <i class="fas fa-building"></i>
+                            <span>Thông tin công ty</span>
+                        </a>
+                        <a th:href="@{/employer/profile}" class="dropdown-item profile-link-employer"
+                            style="display: none;">
+                            <i class="fas fa-id-badge"></i>
+                            <span>Thông tin cá nhân</span>
+                        </a>
+                        <a th:href="@{/employer/jobs}" class="dropdown-item profile-link-employer"
+                            style="display: none;">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Quản lý việc làm</span>
+                        </a>
+                        <a th:href="@{/employer/applications}" class="dropdown-item profile-link-employer"
+                            style="display: none;">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Quản lý ứng tuyển</span>
+                        </a>
+                        <a th:href="@{/employer/messages}" class="dropdown-item profile-link-employer"
                             style="display: none;">
                             <i class="fas fa-inbox"></i>
                             <span>Tin nhắn</span>
@@ -136,6 +172,3 @@
 
     <!-- Header Auth Script -->
     <script th:src="@{/js/shared/header.js}"></script>
-</body>
-
-</html>

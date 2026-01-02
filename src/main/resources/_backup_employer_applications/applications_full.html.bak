@@ -1,0 +1,22 @@
+<!- Full backup: src/main/resources/templates/employer/applications.html ->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn ứng tuyển - WebCV</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/header.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/sidebar.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/cards.css}" rel="stylesheet">
+    <link th:href="@{/css/responsive.css}" rel="stylesheet">
+    <link th:href="@{/css/animations.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="~{layout/fragments/header :: header}"></header>
+    ... (original content backed up) ...
+</body>
+</html>

@@ -54,6 +54,7 @@ public class SecurityConfig {
                                                                 "/jobs",
                                                                 "/jobs/**",
                                                                 "/companies/**",
+                                                                "/notifications",
                                                                 "/css/**",
                                                                 "/js/**",
                                                                 "/images/**",
@@ -68,7 +69,8 @@ public class SecurityConfig {
                                                 .requestMatchers(
                                                                 "/candidate/**",
                                                                 "/employer/**",
-                                                                "/admin/**")
+                                                                "/admin/**",
+                                                                "/payment/**")
                                                 .permitAll()
 
                                                 // Public API endpoints

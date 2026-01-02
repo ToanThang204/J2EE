@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đơn ứng tuyển - WebCV</title>
+    <title>Quản lý ứng tuyển - WebCV</title>
     <link th:href="@{/css/main.css}" rel="stylesheet">
     <link th:href="@{/css/shared/header.css}" rel="stylesheet">
     <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
@@ -12,66 +12,49 @@
     <link th:href="@{/css/cards.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
     <link th:href="@{/css/animations.css}" rel="stylesheet">
+    <style>
+        .application-card{background:#fff;border-radius:8px;padding:16px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+        .status-badge{padding:6px 10px;border-radius:16px;font-weight:600}
+    </style>
 </head>
 <body>
     <header th:replace="~{layout/fragments/header :: header}"></header>
-    
     <div class="main-container">
         <aside th:replace="~{layout/fragments/sidebar :: sidebar}"></aside>
-        
         <main class="main-content with-sidebar">
             <div class="page-header">
-                <h1>Đơn ứng tuyển</h1>
+                <h1>Quản lý đơn ứng tuyển</h1>
             </div>
-            
-            <div class="tabs">
-                <button class="tab active" onclick="filterApplications('all')">Tất cả</button>
-                <button class="tab" onclick="filterApplications('pending')">Chờ duyệt</button>
-                <button class="tab" onclick="filterApplications('reviewed')">Đã xem</button>
-                <button class="tab" onclick="filterApplications('interview')">Phỏng vấn</button>
-                <button class="tab" onclick="filterApplications('rejected')">Từ chối</button>
-                <button class="tab" onclick="filterApplications('hired')">Trúng tuyển</button>
-            </div>
-            
-            <div id="applicationsList" class="tab-content active">
-                <div th:if="${applications != null and !applications.isEmpty()}">
-                    <div th:each="app : ${applications}" class="application-card" th:classappend="${app.status != null ? app.status.name().toLowerCase() : ''}">
-                        <div class="application-card-header">
-                            <div>
-                                <h3 class="application-card-title" th:text="${app.user != null ? app.user.name : 'N/A'}">Candidate Name</h3>
-                                <p class="application-card-company" th:text="${app.job != null ? app.job.title : 'N/A'}">Job Title</p>
-                                <p style="color: var(--medium-grey); font-size: var(--font-size-sm);" th:text="${app.job != null and app.job.company != null ? app.job.company.companyName : 'N/A'}">Company</p>
-                            </div>
-                            <span class="status-badge" 
-                                  th:classappend="${app.status != null ? app.status.name().toLowerCase() : ''}"
-                                  th:text="${app.status != null ? app.status.name() : 'N/A'}">Status</span>
-                        </div>
-                        <div class="application-card-footer">
-                            <span class="application-date" th:text="${app.createdAt != null ? 'Ứng tuyển: ' + ${#temporals.format(app.createdAt, 'dd-MM-yyyy HH:mm')} : ''}">Date</span>
-                            <div class="action-buttons">
-                                <button class="btn btn-primary" onclick="viewApplication(/*[[${app.id}]]*/)">Xem chi tiết</button>
-                                <button class="btn btn-secondary" onclick="viewResume(/*[[${app.resume != null ? app.resume.id : null}]]*/)">Xem CV</button>
-                            </div>
-                        </div>
+
+            <div class="card">
+                <div class="section-header-flex">
+                    <h2 class="section-title">Danh sách yêu cầu ứng tuyển</h2>
+                    <div class="action-buttons">
+                        <select id="companySelect" class="form-input">
+                            <option value="">Chọn công ty</option>
+                            <th:block th:each="c : ${companies}">
+                                <option th:value="${c.id}" th:text="${c.companyName}"></option>
+                            </th:block>
+                        </select>
+                        <button id="btnRefresh" class="btn btn-primary">Làm mới</button>
                     </div>
                 </div>
-                <div th:if="${applications == null or applications.isEmpty()}" class="empty-state">
-                    <div class="empty-state-icon">📋</div>
-                    <h3 class="empty-state-title">Chưa có đơn ứng tuyển nào</h3>
-                    <p class="empty-state-message">Các đơn ứng tuyển sẽ xuất hiện ở đây khi có ứng viên ứng tuyển vào vị trí của bạn.</p>
+
+                <div id="applicationsContainer" class="card-body">
+                    <div id="appsLoading">Đang tải...</div>
+                    <div id="appsList"></div>
                 </div>
             </div>
         </main>
     </div>
-    
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
-    
+
     <script th:src="@{/js/config.js}"></script>
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
     <script th:src="@{/js/shared/header.js}"></script>
     <script th:src="@{/js/shared/sidebar.js}"></script>
-    <script th:src="@{/js/shared/application.js}"></script>
+    <script th:src="@{/js/employer/manage-applications.js}"></script>
 </body>
 </html>
 

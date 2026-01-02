@@ -7,6 +7,7 @@
     <link th:href="@{/css/main.css}" rel="stylesheet">
     <link th:href="@{/css/shared/header.css}" rel="stylesheet">
     <link th:href="@{/css/shared/footer.css}" rel="stylesheet">
+    <link th:href="@{/css/shared/ai-match-modal.css}" rel="stylesheet">
     <link th:href="@{/css/pages/home.css}" rel="stylesheet">
     <link th:href="@{/css/cards.css}" rel="stylesheet">
     <link th:href="@{/css/responsive.css}" rel="stylesheet">
@@ -32,8 +33,11 @@
                     <!-- Logo và Tiêu đề -->
                     <div class="job-card-top">
                         <div class="company-logo-box">
-                            <div class="company-logo-img" th:text="${job.company != null and job.company.companyName != null and job.company.companyName.length() >= 3 ? job.company.companyName.substring(0, 3).toUpperCase() : (job.company != null and job.company.companyName != null and job.company.companyName.length() > 0 ? job.company.companyName.substring(0, job.company.companyName.length()).toUpperCase() : 'CO')}">
-                                CO
+                            <div class="company-logo-img">
+                                <img th:if="${job.company != null and job.company.logo != null and job.company.logo.startsWith('data:')}" th:src="${job.company.logo}" alt="logo" />
+                                <img th:if="${job.company != null and job.company.logo != null and job.company.logo.startsWith('http')}" th:src="${job.company.logo}" alt="logo" />
+                                <img th:if="${job.company != null and job.company.logo != null and !(job.company.logo.startsWith('data:') or job.company.logo.startsWith('http'))}" th:src="${'data:image/png;base64,' + job.company.logo}" alt="logo" />
+                                <span th:if="${job.company == null or job.company.logo == null or job.company.logo == ''}" th:text="${job.company != null and job.company.companyName != null ? job.company.companyName.substring(0, job.company.companyName.length() >= 3 ? 3 : job.company.companyName.length()).toUpperCase() : 'CO'}">CO</span>
                             </div>
                         </div>
                         <div class="job-info">
@@ -63,7 +67,7 @@
                             18-25 triệu VNĐ
                         </div>
                         <div class="job-actions">
-                            <button class="btn-ai" onclick="event.stopPropagation(); alert('AI matching feature')">
+                            <button class="btn-ai" th:attr="data-job-id=${job.id}" onclick="event.stopPropagation(); checkAiMatch(this.getAttribute('data-job-id'))">
                                 <span>✨</span> AI
                             </button>
                             <button class="btn-favorite" onclick="event.stopPropagation(); this.classList.toggle('active')" title="Lưu việc làm">
@@ -122,6 +126,23 @@
         </div>
     </div>
     
+    <!-- AI Match Result Modal -->
+    <div id="aiMatchModal" class="ai-modal" style="display: none;">
+        <div class="ai-modal-overlay" onclick="closeAiModal()"></div>
+        <div class="ai-modal-content">
+            <div class="ai-modal-header">
+                <h3>🤖 AI Phân tích độ phù hợp</h3>
+                <button class="ai-modal-close" onclick="closeAiModal()">&times;</button>
+            </div>
+            <div class="ai-modal-body" id="aiModalBody">
+                <div class="ai-loading">
+                    <div class="spinner"></div>
+                    <p>AI đang phân tích... Vui lòng đợi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <footer th:replace="~{layout/fragments/footer :: footer}"></footer>
     
     <script th:src="@{/js/config.js}"></script>
@@ -129,7 +150,9 @@
     <script th:src="@{/js/api.js}"></script>
     <script th:src="@{/js/debug.js}"></script>
     <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script th:src="@{/js/shared/home.js}"></script>
+    <script th:src="@{/js/shared/ai-match.js}"></script>
 </body>
 </html>
 

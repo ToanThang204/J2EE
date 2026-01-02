@@ -16,67 +16,92 @@
     <header th:replace="~{layout/fragments/header :: header}"></header>
     
     <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
-        <div class="card">
-            <div class="job-detail-header">
-                <div class="job-detail-title-section">
-                    <h1 th:text="${job.title}">Job Title</h1>
-                    <p class="job-detail-company" th:text="${job.company != null ? job.company.name : 'Company'}">
-                        Company Name
-                    </p>
-                </div>
-                <div class="job-detail-actions">
-                    <button class="btn btn-secondary" onclick="toggleFavorite()">❤️ Lưu</button>
-                    <a th:href="@{'/companies/' + ${job.company != null ? job.company.id : ''}}" class="btn btn-secondary">
-                        Xem công ty
-                    </a>
+        <div class="layout-two-column">
+            <div class="main-column">
+                <div class="card">
+                    <div class="job-detail-header">
+                        <div class="job-detail-title-section">
+                            <h1 th:text="${job.title}">Job Title</h1>
+                            <p class="job-detail-company" th:text="${job.company != null ? job.company.name : 'Company'}">
+                                Company Name
+                            </p>
+                        </div>
+                        <div class="job-detail-actions">
+                            <button id="favoriteBtn" class="btn btn-secondary">❤️ Lưu</button>
+                            <a th:href="@{'/companies/' + ${job.company != null ? job.company.id : ''}}" class="btn btn-secondary">
+                                Xem công ty
+                            </a>
+                        </div>
+                        <input type="hidden" id="jobId" th:value="${job != null ? job.id : ''}" />
+                    </div>
+
+                    <div class="job-detail-content">
+                        <div>
+                            <h3>Mô tả công việc</h3>
+                            <p th:text="${job.description != null ? job.description : 'Chưa có mô tả'}">Description</p>
+                        </div>
+
+                        <div th:if="${job.requirements != null}">
+                            <h3>Yêu cầu</h3>
+                            <p th:text="${job.requirements}">Requirements</p>
+                        </div>
+
+                        <div class="job-info-grid">
+                            <div class="job-info-item">
+                                <strong>Địa điểm:</strong>
+                                <p th:text="${job.location != null ? job.location : 'N/A'}">Location</p>
+                            </div>
+                            <div class="job-info-item">
+                                <strong>Mức lương:</strong>
+                                <p th:text="${job.salaryRange != null ? job.salaryRange : 'Cạnh tranh'}">Salary</p>
+                            </div>
+                            <div class="job-info-item">
+                                <strong>Loại hình:</strong>
+                                <p th:text="${job.employmentType != null ? job.employmentType : 'N/A'}">Employment Type</p>
+                            </div>
+                            <div class="job-info-item">
+                                <strong>Hạn nộp:</strong>
+                                <p th:text="${job.expirationDate != null ? #temporals.format(job.expirationDate, 'dd-MM-yyyy') : 'N/A'}">
+                                    Deadline
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Action buttons removed: Apply and AI Analysis handled in side panel -->
+                    </div>
                 </div>
             </div>
-            
-            <div class="job-detail-content">
-                <div>
-                    <h3>Mô tả công việc</h3>
-                    <p th:text="${job.description != null ? job.description : 'Chưa có mô tả'}">Description</p>
-                </div>
-                
-                <div th:if="${job.requirements != null}">
-                    <h3>Yêu cầu</h3>
-                    <p th:text="${job.requirements}">Requirements</p>
-                </div>
-                
-                <div class="job-info-grid">
-                    <div class="job-info-item">
-                        <strong>Địa điểm:</strong>
-                        <p th:text="${job.location != null ? job.location : 'N/A'}">Location</p>
+
+            <aside class="side-column">
+                <div class="card company-card">
+                    <div class="company-detail-logo">
+                        <img th:if="${job.company != null and job.company.logo != null and job.company.logo.startsWith('data:')}" th:src="${job.company.logo}" alt="logo" />
+                        <img th:if="${job.company != null and job.company.logo != null and job.company.logo.startsWith('http')}" th:src="${job.company.logo}" alt="logo" />
+                        <img th:if="${job.company != null and job.company.logo != null and !(job.company.logo.startsWith('data:') or job.company.logo.startsWith('http'))}" th:src="${'data:image/png;base64,' + job.company.logo}" alt="logo" />
+                        <span th:if="${job.company == null or job.company.logo == null or job.company.logo == ''}" th:text="${job.company != null and job.company.name != null ? job.company.name.substring(0, job.company.name.length() >= 3 ? 3 : job.company.name.length()).toUpperCase() : 'CO'}">CO</span>
                     </div>
-                    <div class="job-info-item">
-                        <strong>Mức lương:</strong>
-                        <p th:text="${job.salaryRange != null ? job.salaryRange : 'Cạnh tranh'}">Salary</p>
-                    </div>
-                    <div class="job-info-item">
-                        <strong>Loại hình:</strong>
-                        <p th:text="${job.employmentType != null ? job.employmentType : 'N/A'}">Employment Type</p>
-                    </div>
-                    <div class="job-info-item">
-                        <strong>Hạn nộp:</strong>
-                        <p th:text="${job.expirationDate != null ? #temporals.format(job.expirationDate, 'dd-MM-yyyy') : 'N/A'}">
-                            Deadline
-                        </p>
+                    <div class="company-card-body">
+                        <h3 th:text="${job.company != null ? job.company.name : 'Công ty'}">Company</h3>
+                        <p class="company-address" th:text="${job.company != null ? job.company.address : ''}">Address</p>
+                        <a th:href="@{'/companies/' + ${job.company != null ? job.company.id : ''}}" class="link">Xem trang công ty</a>
                     </div>
                 </div>
-                
-                <div class="job-detail-footer">
-                    <button th:if="${currentUser != null and currentUser.role.name() == 'CANDIDATE'}" 
-                            class="btn btn-primary" 
-                            onclick="applyJob()">
-                        Ứng tuyển ngay
-                    </button>
-                    <button th:if="${currentUser != null and currentUser.role.name() == 'CANDIDATE'}" 
-                            class="btn btn-secondary" 
-                            onclick="analyzeMatch()">
-                        Phân tích AI
-                    </button>
+
+                <div class="card apply-card">
+                    <h4>Ứng tuyển ngay</h4>
+                    <label for="resumeSelect">Chọn CV để ứng tuyển</label>
+                    <select id="resumeSelect" class="form-control">
+                        <option value="">-- Chọn CV --</option>
+                    </select>
+                    <div style="margin-top:8px; font-size:0.9rem;">
+                        Hoặc tải CV mới: <input type="file" id="cvFileInput" />
+                    </div>
+                    <p style="font-size:0.85rem; color:var(--muted); margin-top:8px;">Nếu chưa có CV, vui lòng <a th:href="@{/candidate/cv-builder}">tạo CV tại đây</a>.</p>
+                    <label for="coverLetter">Thư xin việc (tùy chọn)</label>
+                    <textarea id="coverLetter" class="form-control" rows="4" placeholder="Thư xin việc (không bắt buộc)"></textarea>
+                    <button id="applyJobBtnSide" class="btn btn-primary" style="margin-top:12px;">Ứng tuyển</button>
                 </div>
-            </div>
+            </aside>
         </div>
     </div>
     
@@ -86,12 +111,10 @@
     <script th:src="@{/js/utils.js}"></script>
     <script th:src="@{/js/api.js}"></script>
     <script th:src="@{/js/shared/application.js}"></script>
+    <script th:src="@{/js/shared/header.js}"></script>
+    <script th:src="@{/js/shared/sidebar.js}"></script>
     <script th:src="@{/js/shared/ai-analysis.js}"></script>
     <script th:src="@{/js/pages/job-detail.js}"></script>
-    <script>
-        const currentJobId = /*[[${job != null ? job.id : null}]]*/ null;
-        document.getElementById('jobId').value = currentJobId;
-    </script>
 </body>
 </html>
 

@@ -1,0 +1,402 @@
+{
+  "info": {
+    "name": "AI CV Matching API",
+    "description": "Collection for testing AI CV Matching system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "userToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Login as User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"userToken\", jsonData.data.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"adminToken\", jsonData.data.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. AI Matching",
+      "item": [
+        {
+          "name": "Check Match (Guest)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": 1,\n  \"resumeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/check-match",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "check-match"]
+            }
+          }
+        },
+        {
+          "name": "Check Match (Authenticated)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": 1,\n  \"resumeId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/check-match",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "check-match"]
+            }
+          }
+        },
+        {
+          "name": "Check Match (IT - High Score)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": 1,\n  \"resumeId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/check-match",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "check-match"]
+            },
+            "description": "Test case: Backend job + Backend CV = High match score (85-95)"
+          }
+        },
+        {
+          "name": "Check Match (Mismatch)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": 5,\n  \"resumeId\": 8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/check-match",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "check-match"]
+            },
+            "description": "Test case: Frontend job + Designer CV = Low match score (10-30)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Admin - Industry Contexts",
+      "item": [
+        {
+          "name": "Get All Industry Contexts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/industry-contexts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "industry-contexts"]
+            }
+          }
+        },
+        {
+          "name": "Get Industry Context by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/industry-contexts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "industry-contexts", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Industry Context",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"healthcare\",\n  \"name\": \"Y tế\",\n  \"description\": \"Ngành y tế và chăm sóc sức khỏe\",\n  \"config\": \"{\\\"role\\\":\\\"Chuyên gia Tuyển dụng Y tế\\\",\\\"focus_areas\\\":[\\\"Chứng chỉ hành nghề\\\",\\\"Kinh nghiệm lâm sàng\\\"],\\\"key_metrics\\\":\\\"Số năm kinh nghiệm, chứng chỉ\\\",\\\"red_flags\\\":\\\"Thiếu chứng chỉ bắt buộc\\\"}\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/industry-contexts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "industry-contexts"]
+            }
+          }
+        },
+        {
+          "name": "Update Industry Context",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Y tế - Cập nhật\",\n  \"description\": \"Ngành y tế và chăm sóc sức khỏe (updated)\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/industry-contexts/6",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "industry-contexts", "6"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Industry Context Active",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/industry-contexts/1/toggle",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "industry-contexts", "1", "toggle"]
+            }
+          }
+        },
+        {
+          "name": "Delete Industry Context",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/industry-contexts/6",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "industry-contexts", "6"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Rate Limiting Tests",
+      "item": [
+        {
+          "name": "Test Rate Limit - Call 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": 1,\n  \"resumeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/check-match",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "check-match"]
+            },
+            "description": "Guest user - Call 1 of 2"
+          }
+        },
+        {
+          "name": "Test Rate Limit - Call 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": 1,\n  \"resumeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/check-match",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "check-match"]
+            },
+            "description": "Guest user - Call 2 of 2"
+          }
+        },
+        {
+          "name": "Test Rate Limit - Call 3 (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobId\": 1,\n  \"resumeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/check-match",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "check-match"]
+            },
+            "description": "Guest user - Call 3 → Should return 429 Too Many Requests"
+          }
+        }
+      ]
+    }
+  ]
+}

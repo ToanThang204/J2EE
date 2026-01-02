@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 @Table(name = "resumes")
 @Data
 @NoArgsConstructor
@@ -25,6 +26,18 @@ public class Resume {
     private User user;
 
     private String title;
+
+    @Column(name = "full_name")
+    private String fullName;
+
+    private String email;
+
+    private String phone;
+
+    private String address;
+
+    @Column(columnDefinition = "TEXT")
+    private String summary;
 
     @Column(columnDefinition = "LONGTEXT")
     private String photo;
@@ -66,23 +79,27 @@ public class Resume {
     @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
     private List<ResumeHobby> hobbies;
 
-    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ResumeActivity> activities;
+
+    // Transient field để lưu userId tạm thời (không lưu vào DB)
+    @Transient
+    private Long tempUserId;
 
     // Helper methods for compatibility
     public Long getUserId() {
-        return user != null ? user.getId() : null;
-    }
-
-    public void setUserId(Long userId) {
-        if (userId != null) {
-            User u = new User();
-            u.setId(userId);
-            this.user = u;
+        if (user != null) {
+            return user.getId();
         }
+        return tempUserId; // Fallback to temp userId if user not loaded yet
     }
 
-    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL)
+    // Setter để lưu userId tạm thời, Service layer sẽ load User entity đầy đủ
+    public void setUserId(Long userId) {
+        this.tempUserId = userId;
+    }
+
+    @OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ResumeExtrainfo> extraInfos;
 
     @OneToOne(mappedBy = "resume", cascade = CascadeType.ALL)

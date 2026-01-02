@@ -69,10 +69,12 @@ function closeAnalysisResult() {
 
 function applyJobAfterAnalysis() {
     const jobId = document.getElementById('currentJobId')?.value;
-    const resumeId = document.getElementById('currentResumeId')?.value;
-    
-    if (jobId && resumeId) {
-        applyJob(jobId, resumeId);
+
+    // Redirect user to job detail page so they can choose CV and confirm application
+    if (jobId) {
+        window.location.href = `/jobs/${jobId}`;
+    } else {
+        showToast('Không tìm thấy việc làm để ứng tuyển', 'error');
     }
 }
 

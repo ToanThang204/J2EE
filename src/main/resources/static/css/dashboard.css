@@ -1,15 +1,6 @@
 /* Dashboard Styles */
 
-/* Sidebar */
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 80px;
-    height: calc(100vh - 80px);
-    width: 250px;
-    overflow-y: auto;
-    z-index: 50;
-}
+/* Sidebar - Override removed, using shared/sidebar.css instead */
 
 .sidebar-dark {
     background-color: var(--dark-grey);

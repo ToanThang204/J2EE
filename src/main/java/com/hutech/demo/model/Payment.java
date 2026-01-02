@@ -35,7 +35,7 @@ public class Payment {
     private String currency = "VND";
 
     @Column(nullable = false)
-    private String status = "pending"; // pending, paid, failed, cancelled
+    private String status = "pending"; // pending, awaiting_approval, paid, failed, cancelled
 
     private String sepayOrderId;
     private String sepayTransactionId;
